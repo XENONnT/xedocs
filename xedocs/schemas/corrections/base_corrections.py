@@ -1,6 +1,7 @@
 import datetime
 import re
 from typing import ClassVar
+from pydantic import validator
 
 import pandas as pd
 import rframe
@@ -87,10 +88,22 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
     The cutoff is set to prevent values changing after already being used
     for processing data.
     """
-
+    class Config:
+        allow_population_by_field_name = True
+        
     _NAME = ""
 
-    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
+    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
+
+    @validator('time', pre=True)
+    def run_id_to_time(cls, v):
+        """Convert run id to time"""
+        if isinstance(v, (str, int)):
+            try:
+                v = settings.run_id_to_time(v)
+            except:
+                pass
+        return v
 
     @classmethod
     def url_protocol(cls, attr, **labels):
@@ -165,10 +178,23 @@ class TimeSampledCorrection(BaseCorrectionSchema):
     from affecting the interpolated values that have already been used
     for processing.
     """
-
+    class Config:
+        allow_population_by_field_name = True
+        
     _NAME = ""
 
-    time: datetime.datetime = rframe.InterpolatingIndex(extrapolate=can_extrapolate)
+    time: datetime.datetime = rframe.InterpolatingIndex(extrapolate=can_extrapolate,
+                                                        alias='run_id')
+
+    @validator('time', pre=True)
+    def run_id_to_time(cls, v):
+        """Convert run id to time"""
+        if isinstance(v, (str, int)):
+            try:
+                v = settings.run_id_to_time(v)
+            except:
+                pass
+        return v
 
     @classmethod
     def url_protocol(cls, attr, **labels):
