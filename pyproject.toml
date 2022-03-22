@@ -2,7 +2,7 @@
 [tool.poetry]
 name = "xedocs"
 version = "0.1.0"
-homepage = "https://github.com/jmosbacher/xedocs"
+homepage = "https://github.com/XENONnT/xedocs"
 description = "Top-level package for xedocs."
 authors = ["Yossi Mosbacher <joe.mosbacher@gmail.com>"]
 readme = "README.rst"
