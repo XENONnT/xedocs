@@ -62,8 +62,7 @@ try:
         """URLConfig protocol for fetching values from
         correction documents.
         """
-        dtime = settings.extract_time(kwargs)
-        docs = find(name, time=dtime, version=version, **kwargs)
+        docs = find(name, version=version, **kwargs)
 
         if not docs:
             raise KeyError(f"No matching documents found for {name}.")
