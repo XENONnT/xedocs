@@ -37,6 +37,8 @@ sphinx-material = "*"
 nbsphinx = "*"
 invoke = "*"
 black = "^22.1.0"
+pytest-cov = "^3.0.0"
+hypothesis = "^6.39.4"
 
 [tool.poetry.scripts]
 xedocs = 'xedocs.cli:main'
@@ -49,3 +51,15 @@ build-backend = "poetry.masonry.api"
 versioning = "semver"
 from = {format = "poetry", path = "pyproject.toml"}
 to = {format = "setuppy", path = "setup.py"}
+
+[tool.poe.tasks]
+test   = "pytest --cov=xedocs"
+format = "black ."
+clean  = """
+    rm -rf .coverage
+        .mypy_cache
+        .pytest_cache
+        dist
+        ./**/__pycache__
+    """
+lint   = "pylint xedocs"

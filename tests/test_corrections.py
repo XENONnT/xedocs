@@ -281,10 +281,9 @@ class TestCorrections(unittest.TestCase):
             doc_found.value += 1
             if clock.after_cutoff(doc.time.left):
                 doc_found.save(datasource)
-
             else:
                 with self.assertRaises(UpdateError):
-                    doc_found.value += 1
+                    doc_found.value = 2*doc_found.value + 1
                     doc_found.save(datasource)
             doc.save(datasource)
 

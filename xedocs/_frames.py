@@ -1,13 +1,11 @@
 from typing import Any
 
-import pandas as pd
 import pytz
 import rframe
 import utilix
 
-import xedocs
-from xedocs import settings
-from xedocs.xedocs import find_schema
+from .schemas import XeDoc
+from ._settings import settings
 
 
 class SchemaFrames:
@@ -42,7 +40,7 @@ class SchemaFrames:
 
     @property
     def schemas(self):
-        return dict(xedocs.XeDoc._XEDOCS)
+        return dict(XeDoc._XEDOCS)
 
     @property
     def schema_names(self):

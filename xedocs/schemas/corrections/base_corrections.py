@@ -5,7 +5,7 @@ from typing import ClassVar
 import pandas as pd
 import rframe
 
-from xedocs import settings
+from ..._settings import settings
 
 from ..base_schemas import XeDoc
 
@@ -117,7 +117,7 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
             return
 
         if current_right > new_right:
-            # Interval if being shortened.
+            # Interval is being shortened.
             # We only allow shortening intervals that extend beyong the cutoff time
             assert clock.after_cutoff(
                 current_right
