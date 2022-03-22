@@ -2,10 +2,10 @@ from typing import Any, Dict, Union
 
 import rframe
 
-from .base_corrections import BaseCorrectionSchema
+from .base_schemas import VersionedXeDoc
 
 
-class PluginLineage(BaseCorrectionSchema):
+class PluginLineage(VersionedXeDoc):
     _NAME = "plugin_lineages"
 
     class Config:

@@ -2,11 +2,11 @@ from typing import Dict
 
 import rframe
 
-from .base_references import BaseCorrectionSchema
+from .base_schemas import VersionedXeDoc
 from .plugin_lineages import PluginLineage
 
 
-class ContextLineage(BaseCorrectionSchema):
+class ContextLineage(VersionedXeDoc):
     _NAME = "context_lineages"
 
     strax: str = rframe.Index()

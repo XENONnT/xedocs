@@ -1,6 +1,6 @@
 import rframe
 
-from .base_references import CorrectionReference
+from .base_schemas import VersionedXeDoc
 
 
 class GlobalVersion(CorrectionReference):
