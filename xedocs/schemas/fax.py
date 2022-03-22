@@ -3,10 +3,10 @@ import rframe
 
 from typing import Literal, Union
 
-from .base_corrections import BaseCorrectionSchema
+from .base_schemas import XeDoc
 
 
-class FaxConfig(BaseCorrectionSchema):
+class FaxConfig(XeDoc):
     '''fax configuration values for WFSim
     '''
     _NAME = 'fax_configs'

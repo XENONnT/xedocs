@@ -8,7 +8,7 @@ import pandas as pd
 
 from xedocs import settings
 
-from ..xedoc import XeDoc
+from ..base_schemas import XeDoc
 
 def camel_to_snake(name):
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)

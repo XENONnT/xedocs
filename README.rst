@@ -5,6 +5,8 @@ XeDocs - AKA Corrections Managment Tool 2.0
 Basic Usage
 -----------
 
+Explore the available schemas
+
 .. code-block:: python
 
     import xedocs
@@ -17,14 +19,7 @@ Basic Usage
         'pmt_gains',
         'global_versions',
         'electron_drift_velocities',
-        'electron_drift_time_gates',
-        'electron_lifetimes',
-        'rel_extraction_effs',
-        'fdc_maps',
-        'hit_thresholds',
-        'posrec_models',
-        's1_xyz_maps',
-        's2_xy_maps']
+        ...]
 
     >>> xedocs.help('pmt_gains')
 
@@ -34,7 +29,7 @@ Basic Usage
             Column fields: ['created_date', 'comments', 'value']
     
 
-Fetching data
+Read data from the default data source
 
 .. code-block:: python
 
@@ -46,7 +41,8 @@ Fetching data
     doc = xedocs.find_one('pmt_gains',  version='v1', pmt=1, time='2021-01-01T00:00:00', detector='tpc')
     pmt1_gain = doc.value
 
-Alternative data sources
+
+Read data from alternative data sources
 
 .. code-block:: python
 

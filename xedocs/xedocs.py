@@ -3,7 +3,7 @@
 from typing import ClassVar
 
 from ._settings import settings
-from .xedoc import XeDoc
+from .schemas import XeDoc
 
 
 def find(schema, datasource=None,  **kwargs):
@@ -33,6 +33,8 @@ def find_one(schema, datasource=None,  **kwargs):
 def list_schemas():
     return list(XeDoc._XEDOCS)
 
+def all_schemas():
+    return dict(XeDoc._XEDOCS)
 
 def find_schema(name):
     schema = XeDoc._XEDOCS.get(name, None)

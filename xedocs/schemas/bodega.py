@@ -3,11 +3,10 @@
 import rframe
 import datetime
 
-from .base_corrections import BaseCorrectionSchema
+from .base_schemas import XeDoc
 
 
-
-class Bodega(BaseCorrectionSchema):
+class Bodega(XeDoc):
     '''Detector parameters
        A collection of non-time dependent detector
        values.
