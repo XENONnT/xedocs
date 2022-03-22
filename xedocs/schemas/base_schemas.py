@@ -2,7 +2,7 @@ import re
 from typing import ClassVar
 
 import rframe
-
+from .._settings import settings
 
 def camel_to_snake(name):
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
@@ -21,6 +21,16 @@ class XeDoc(rframe.BaseSchema):
         if cls._NAME:
             if cls._NAME not in cls._XEDOCS:
                 cls._XEDOCS[cls._NAME] = cls
+    @classmethod
+    def default_datasource(cls):
+        """This method is called when a query method is
+        called and no datasource is passed.
+        """
+        return settings.get_datasource_for(cls._NAME)
+
+    @classmethod
+    def default_collection_name(cls):
+        return cls._NAME
 
     @classmethod
     def help(cls):

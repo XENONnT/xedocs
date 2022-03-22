@@ -41,26 +41,6 @@ class BaseCorrectionSchema(XeDoc):
 
         super().__init_subclass__()
 
-    @classmethod
-    def default_datasource(cls):
-        """This method is called when a query method is
-        called and no datasource is passed.
-        """
-        return settings.get_datasource_for(cls._NAME)
-
-    @classmethod
-    def url_protocol(cls, attr, **labels):
-        """This is meant to be used as the URLConfig protocol"""
-        values = [getattr(doc, attr) for doc in cls.find(**labels)]
-        if not values:
-            raise KeyError(f"No documents found for {cls._NAME} with {labels}")
-        if len(values) == 1:
-            return values[0]
-        return values
-
-    @classmethod
-    def default_collection_name(cls):
-        return cls._NAME
 
     def pre_update(self, datasource, new):
         """This method is called if the `new` document is

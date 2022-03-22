@@ -2,10 +2,10 @@ from typing import Literal, Union
 
 import rframe
 
-from .base_schemas import XeDoc
+from .base_schemas import VersionedXeDoc
 
 
-class FaxConfig(XeDoc):
+class FaxConfig(VersionedXeDoc):
     """fax configuration values for WFSim"""
 
     _NAME = "fax_configs"

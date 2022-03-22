@@ -3,7 +3,7 @@ import rframe
 from .base_schemas import VersionedXeDoc
 
 
-class GlobalVersion(CorrectionReference):
+class GlobalVersion(VersionedXeDoc):
     _NAME = "global_versions"
 
     strax_version: str = rframe.Index()

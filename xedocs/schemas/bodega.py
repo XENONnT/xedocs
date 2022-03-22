@@ -2,10 +2,10 @@ import datetime
 
 import rframe
 
-from .base_schemas import XeDoc
+from .base_schemas import VersionedXeDoc
 
 
-class Bodega(XeDoc):
+class Bodega(VersionedXeDoc):
     """Detector parameters
     A collection of non-time dependent detector
     values.
