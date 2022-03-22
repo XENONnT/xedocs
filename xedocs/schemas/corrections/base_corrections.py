@@ -1,19 +1,18 @@
-
+import datetime
 import re
 from typing import ClassVar
-import rframe
-import datetime
-import pandas as pd
 
+import pandas as pd
+import rframe
 
 from xedocs import settings
 
 from ..base_schemas import XeDoc
 
+
 def camel_to_snake(name):
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
-
 
 
 class BaseCorrectionSchema(XeDoc):
@@ -29,10 +28,9 @@ class BaseCorrectionSchema(XeDoc):
     _CORRECTIONS = {}
 
     version: str = rframe.Index()
-    
+
     created_date: datetime.datetime = datetime.datetime.utcnow()
     comments: str = ''
-
 
     def __init_subclass__(cls) -> None:
 
@@ -53,7 +51,7 @@ class BaseCorrectionSchema(XeDoc):
     def url_protocol(cls, attr, **labels):
         '''This is meant to be used as the URLConfig protocol
         '''
-        values = [getattr(doc, attr)  for doc in cls.find(**labels)]
+        values = [getattr(doc, attr) for doc in cls.find(**labels)]
         if not values:
             raise KeyError(f'No documents found for {cls._NAME} with {labels}')
         if len(values) == 1:
@@ -76,9 +74,9 @@ class BaseCorrectionSchema(XeDoc):
         '''
 
         if not self.same_values(new):
-            index = ', '.join([f'{k}={v}' for k,v in self.index_labels.items()])
+            index = ', '.join(
+                [f'{k}={v}' for k, v in self.index_labels.items()])
             raise IndexError(f'Values already set for {index}')
-
 
 
 class TimeIntervalCorrection(BaseCorrectionSchema):
@@ -94,7 +92,7 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
     _NAME = ''
 
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
-    
+
     @classmethod
     def url_protocol(cls, attr, **labels):
         labels['time'] = settings.extract_time(labels)
@@ -116,26 +114,29 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
 
         if clock.after_cutoff(current_left) and \
            clock.after_cutoff(new_left):
-           # current and new interval are completely in the future
-           # all changes are allowed
-           return
+            # current and new interval are completely in the future
+            # all changes are allowed
+            return
 
         if current_right > new_right:
             # Interval if being shortened.
             # We only allow shortening intervals that extend beyong the cutoff time
-            assert clock.after_cutoff(current_right), f'Can only shorten intervals \
+            assert clock.after_cutoff(
+                current_right), f'Can only shorten intervals \
                                                         that ends after {cutoff}'
 
             # The resulting interval must extend beyong the cutoff time
-            assert clock.after_cutoff(new_right), f'Can only shorten an interval \
+            assert clock.after_cutoff(
+                new_right), f'Can only shorten an interval \
                                                     to end after {cutoff}'
 
         # Only allow changes to the right side of the interval
         assert current_left == new_left, f'Can only change endtime of existing interval. \
                                            start time must be {self.time.left}'
-        
+
         # Only allow changes to the interval, not the values
-        assert self.same_values(new), f'Values already set for {self.index_labels}.'
+        assert self.same_values(
+            new), f'Values already set for {self.index_labels}.'
 
 
 def can_extrapolate(doc):
@@ -147,7 +148,6 @@ def can_extrapolate(doc):
         return not clock.after_cutoff(ts)
 
     return False
-
 
 
 class TimeSampledCorrection(BaseCorrectionSchema):
@@ -166,7 +166,8 @@ class TimeSampledCorrection(BaseCorrectionSchema):
     '''
     _NAME = ''
 
-    time: datetime.datetime = rframe.InterpolatingIndex(extrapolate=can_extrapolate)
+    time: datetime.datetime = rframe.InterpolatingIndex(
+        extrapolate=can_extrapolate)
 
     @classmethod
     def url_protocol(cls, attr, **labels):
@@ -187,11 +188,10 @@ class TimeSampledCorrection(BaseCorrectionSchema):
         if self.version == 'ONLINE':
             clock = settings.clock
             cutoff = clock.cutoff_datetime(buffer=60)
-   
+
             assert clock.after_cutoff(self.time), f'Can only insert online \
                                                     values after {cutoff}.'
-            
-            
+
             new_index = self.index_labels
             new_index['time'] = clock.cutoff_datetime(buffer=1)
 

@@ -1,9 +1,10 @@
-
 from typing import Any
-import pytz
-import utilix
+
 import pandas as pd
+import pytz
 import rframe
+import utilix
+
 import xedocs
 from xedocs import settings
 from xedocs.xedocs import find_schema
@@ -14,7 +15,7 @@ class SchemaFrames:
 
     def __init__(self, db=None):
         self.db = db
-    
+
     @classmethod
     def default(cls, **kwargs):
         try:
@@ -40,7 +41,7 @@ class SchemaFrames:
     @property
     def schemas(self):
         return dict(xedocs.XeDoc._XEDOCS)
-    
+
     @property
     def schema_names(self):
         return list(self.schemas)
@@ -56,18 +57,18 @@ class SchemaFrames:
     def __getitem__(self, key):
         if isinstance(key, tuple) and key[0] in self.schemas:
             return self.get_df(key[0])[key[1:]]
-        
+
         if key in self.schemas:
             return self.get_df(key)
         raise KeyError(key)
-        
+
     def __dir__(self):
         return super().__dir__() + list(self.schemas)
-    
+
     def __getattr__(self, name):
         if name != 'schemas' and name in self.schemas:
             return self.get_df(name)
-        return super().__getattribute__( name)
+        return super().__getattribute__(name)
 
     def sel(self, schema_name, *args, **kwargs):
         return self.get_df(schema_name).sel(*args, **kwargs)
@@ -77,16 +78,16 @@ class SchemaFrames:
 
     def insert(self, schema_name, records):
         return self.get_df(schema_name).insert(records=records)
-        
+
+
 def run_id_to_time(run_id):
     run_id = int(run_id)
     runsdb = utilix.rundb.xent_collection()
-    rundoc = runsdb.find_one(
-            {'number': run_id},
-            {'start': 1})
+    rundoc = runsdb.find_one({'number': run_id}, {'start': 1})
     if rundoc is None:
         raise ValueError(f'run_id = {run_id} not found')
     time = rundoc['start']
     return time.replace(tzinfo=pytz.utc)
+
 
 frames = SchemaFrames()

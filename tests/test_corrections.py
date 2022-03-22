@@ -1,37 +1,49 @@
-
-from typing import List
-import pydantic
-import numbers
-import unittest
-import pytz
-import xedocs
-import os
 import datetime
-import pymongo
-import pandas as pd
+import numbers
+import os
+import unittest
+from typing import List
 
-from hypothesis import settings, given, assume, strategies as st
+import pandas as pd
+import pydantic
+import pymongo
+import pytz
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 from rframe.schema import InsertionError, UpdateError
+
+import xedocs
 
 
 def round_datetime(dt):
-    return dt.replace(microsecond=int(dt.microsecond/1000)*1000, second=0)
+    return dt.replace(microsecond=int(dt.microsecond / 1000) * 1000, second=0)
+
 
 # enforce datetimes are in the a reasonable range
 # pandas nanosecond resolution has trouble with extreme dates
 datetimes = st.datetimes(min_value=datetime.datetime(2000, 1, 1, 0, 0),
-                         max_value=datetime.datetime(2231, 1, 1, 0, 0)).map(round_datetime)
-floats = st.floats(min_value=-1e10, max_value=1e10, allow_nan=False, allow_infinity=False)
+                         max_value=datetime.datetime(2231, 1, 1, 0,
+                                                     0)).map(round_datetime)
+floats = st.floats(min_value=-1e10,
+                   max_value=1e10,
+                   allow_nan=False,
+                   allow_infinity=False)
+
 
 def mongo_uri_not_set():
     return 'TEST_MONGO_URI' not in os.environ
 
+
 def api_server_no_set():
     return 'TEST_CMT_SERVER_URI' not in os.environ
 
+
 def make_datetime_index(start, stop, step='1d'):
     if isinstance(start, numbers.Number):
-        start = pd.to_datetime(start, unit='s',)
+        start = pd.to_datetime(
+            start,
+            unit='s',
+        )
     if isinstance(stop, numbers.Number):
         stop = pd.to_datetime(stop, unit='s')
     return pd.date_range(start, stop, freq=step)
@@ -47,7 +59,8 @@ def make_datetime_interval_index(start, stop, step='1d'):
 
 @st.composite
 def non_overlapping_interval_lists(draw, elements=st.datetimes(), min_size=2):
-    elem = draw(st.lists(elements, unique=True, min_size=min_size*2).map(sorted))
+    elem = draw(
+        st.lists(elements, unique=True, min_size=min_size * 2).map(sorted))
     return list(zip(elem[:-1:2], elem[1::2]))
 
 
@@ -56,22 +69,21 @@ def non_overlapping_interval_ranges(draw, elements=st.datetimes(), min_size=2):
     elem = draw(st.lists(elements, unique=True, min_size=min_size).map(sorted))
     return list(zip(elem[:-1], elem[1:]))
 
+
 def pmt_gain_space(datetime_range=datetime.timedelta(days=100)):
-    utcnow=datetime.datetime.utcnow()
-    data = dict(
-        version = ['ONLINE'] + ['v{i}' for i in range(10)],
-        detector = ['tpc', 'neutron_veto', 'muon_veto'],
-        pmt = list(range(100)),
-        time = make_datetime_index(utcnow-datetime_range, utcnow+datetime_range)
-    )
-    
+    utcnow = datetime.datetime.utcnow()
+    data = dict(version=['ONLINE'] + ['v{i}' for i in range(10)],
+                detector=['tpc', 'neutron_veto', 'muon_veto'],
+                pmt=list(range(100)),
+                time=make_datetime_index(utcnow - datetime_range,
+                                         utcnow + datetime_range))
 
 
 class SimpleCorrection(xedocs.BaseCorrectionSchema):
     _NAME = 'simple_correction'
 
     value: float
-    
+
 
 class SomeSampledCorrection(xedocs.TimeSampledCorrection):
     _NAME = 'sampled_correction'
@@ -87,24 +99,26 @@ class SomeTimeIntervalCorrection(xedocs.TimeIntervalCorrection):
 
 @st.composite
 def time_interval_corrections_strategy(draw, **overrides):
-    docs = draw(st.lists(st.builds(SomeTimeIntervalCorrection,
-                    time=datetimes,
-                    created_date=datetimes,
-                    **overrides,
-                    
-                    ),
-                    min_size=1,
-                    unique_by=lambda x: (x.version, x.time.left),
-                    ))
+    docs = draw(
+        st.lists(
+            st.builds(
+                SomeTimeIntervalCorrection,
+                time=datetimes,
+                created_date=datetimes,
+                **overrides,
+            ),
+            min_size=1,
+            unique_by=lambda x: (x.version, x.time.left),
+        ))
 
     last = docs[-1].time.left + datetime.timedelta(days=10)
     times = sorted([doc.time.left for doc in docs]) + [last]
 
-    for doc,left,right in zip(docs, times[:-1], times[1:]):
+    for doc, left, right in zip(docs, times[:-1], times[1:]):
         # very small differences may be hard to test for correctness
-        assume((right-left) > datetime.timedelta(seconds=10))
+        assume((right - left) > datetime.timedelta(seconds=10))
 
-        doc.time = left,right
+        doc.time = left, right
 
     return docs
 
@@ -128,19 +142,19 @@ class TestCorrections(unittest.TestCase):
         db_name = 'test_cmt2'
         db = pymongo.MongoClient(uri)[db_name]
 
-        self.collections = { name: db[name] for name in xedocs.list_schemas()}
+        self.collections = {name: db[name] for name in xedocs.list_schemas()}
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     def tearDown(self):
         pass
-    
 
-    
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
-    @given(st.lists(st.builds(SomeSampledCorrection,
-                            version=st.just('v1'),
-                            value=floats),
-                    min_size=3, unique_by=lambda x: x.time))
+    @given(
+        st.lists(st.builds(SomeSampledCorrection,
+                           version=st.just('v1'),
+                           value=floats),
+                 min_size=3,
+                 unique_by=lambda x: x.time))
     @settings(deadline=None)
     def test_sampled_correction_v1(self, docs: List[SomeSampledCorrection]):
         name = SomeSampledCorrection.default_collection_name()
@@ -154,36 +168,39 @@ class TestCorrections(unittest.TestCase):
         for doc1, doc2 in zip(docs[:-1], docs[1:]):
             # Require minimum 10 second spacing between samples
             # otherwise we get into trouble with rounding
-            assume((doc2.time - doc1.time)>datetime.timedelta(seconds=10))
+            assume((doc2.time - doc1.time) > datetime.timedelta(seconds=10))
 
-        # since values are interpolated in time 
+        # since values are interpolated in time
         prev = 0.
         for doc in docs:
-            if abs(doc.value-prev)<1:
+            if abs(doc.value - prev) < 1:
                 doc.value += 2
             prev = doc.value
             doc.save(datasource)
-            
 
-        df_original = pd.DataFrame([doc.pandas_dict() for doc in docs]).set_index(['version', 'time'])
+        df_original = pd.DataFrame([doc.pandas_dict() for doc in docs
+                                    ]).set_index(['version', 'time'])
 
         for doc1, doc2 in zip(docs[:-1], docs[1:]):
-            dt = doc1.time + (doc2.time - doc1.time)/2
-            doc_interp  = SomeSampledCorrection.find_one(datasource, time=dt)
+            dt = doc1.time + (doc2.time - doc1.time) / 2
+            doc_interp = SomeSampledCorrection.find_one(datasource, time=dt)
 
-            half_value = (doc2.value+doc1.value)/2
-            
+            half_value = (doc2.value + doc1.value) / 2
+
             # avoid any division by small numbers
-            if abs(doc_interp.value) < 1e-9: 
+            if abs(doc_interp.value) < 1e-9:
                 continue
-            
-            error = abs(half_value - doc_interp.value) / abs(doc2.value - doc1.value)
+
+            error = abs(half_value - doc_interp.value) / abs(doc2.value -
+                                                             doc1.value)
 
             self.assertAlmostEqual(error, 0, delta=1e-2)
 
-            new_doc = SomeSampledCorrection(version='v1', time=dt,
-                                            value=2*(half_value+10),
-                                            created_date=doc_interp.created_date)
+            new_doc = SomeSampledCorrection(
+                version='v1',
+                time=dt,
+                value=2 * (half_value + 10),
+                created_date=doc_interp.created_date)
 
             # changing values is not allowed
             with self.assertRaises(UpdateError):
@@ -193,23 +210,25 @@ class TestCorrections(unittest.TestCase):
             new_doc.value = doc_interp.value
             new_doc.save(datasource)
 
-
-
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
-    @given(st.lists(st.builds(SomeSampledCorrection,
-                            version=st.just('ONLINE'),
-                            time=datetimes, value=floats),
-                    min_size=3, unique_by=lambda x: (x.version, x.time)))
+    @given(
+        st.lists(st.builds(SomeSampledCorrection,
+                           version=st.just('ONLINE'),
+                           time=datetimes,
+                           value=floats),
+                 min_size=3,
+                 unique_by=lambda x: (x.version, x.time)))
     @settings(deadline=None)
-    def test_sampled_correction_online(self, docs: List[SomeSampledCorrection]):
+    def test_sampled_correction_online(self,
+                                       docs: List[SomeSampledCorrection]):
         name = SomeSampledCorrection.default_collection_name()
         datasource = self.collections[name]
         datasource.delete_many({})
 
         # we must sort by time before inserting
-        # since values are interpolated in time 
+        # since values are interpolated in time
         docs = sorted(docs, key=lambda x: x.time)
-        
+
         for doc in docs:
             clock = xedocs.settings.clock
 
@@ -218,7 +237,8 @@ class TestCorrections(unittest.TestCase):
 
             # If the time is before the cutoff, should raise an error
             elif not clock.after_cutoff(doc.time):
-                current = SomeSampledCorrection.find(datasource, **doc.index_labels)
+                current = SomeSampledCorrection.find(datasource,
+                                                     **doc.index_labels)
                 error = UpdateError if current else InsertionError
                 with self.assertRaises(error):
                     doc.save(datasource)
@@ -229,43 +249,46 @@ class TestCorrections(unittest.TestCase):
                     found = SomeSampledCorrection.find(datasource, time=now)
                     self.assertLessEqual(1, len(found))
 
-        
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
-    @given(time_interval_corrections_strategy(version=st.just('v1'), value=floats))
+    @given(
+        time_interval_corrections_strategy(version=st.just('v1'),
+                                           value=floats))
     @settings(deadline=None)
-    def test_interval_correction_v1(self, docs: List[SomeTimeIntervalCorrection]):
+    def test_interval_correction_v1(self,
+                                    docs: List[SomeTimeIntervalCorrection]):
         name = SomeTimeIntervalCorrection.default_collection_name()
         datasource = self.collections[name]
         datasource.delete_many({})
 
         clock = xedocs.settings.clock
-       
+
         for doc in docs:
             doc.save(datasource)
-      
-            dt = doc.time.left + (doc.time.right - doc.time.left)/2
-            doc_found = SomeTimeIntervalCorrection.find_one(datasource, time=dt)
+
+            dt = doc.time.left + (doc.time.right - doc.time.left) / 2
+            doc_found = SomeTimeIntervalCorrection.find_one(datasource,
+                                                            time=dt)
             self.assertEqual(doc.value, doc_found.value)
 
         for doc in docs[:-1]:
-            dt = doc.time.left + (doc.time.right - doc.time.left)/2
-            doc_found = SomeTimeIntervalCorrection.find_one(datasource, time=dt)
+            dt = doc.time.left + (doc.time.right - doc.time.left) / 2
+            doc_found = SomeTimeIntervalCorrection.find_one(datasource,
+                                                            time=dt)
             self.assertEqual(doc.value, doc_found.value)
 
             doc_found.value += 1
             if clock.after_cutoff(doc.time.left):
                 doc_found.save(datasource)
-                
+
             else:
                 with self.assertRaises(UpdateError):
-                    doc_found.value += 1 
+                    doc_found.value += 1
                     doc_found.save(datasource)
             doc.save(datasource)
 
-
         last_doc = docs[-1]
         left, right = last_doc.time.left, last_doc.time.right
-        
+
         if not clock.after_cutoff(left) and clock.after_cutoff(right):
             cutoff = clock.cutoff_datetime()
             half_diff = (cutoff - left) / 2

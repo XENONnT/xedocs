@@ -1,7 +1,7 @@
-
 import os
-import rframe
 from warnings import warn
+
+import rframe
 
 CACHE = {}
 
@@ -13,10 +13,10 @@ def api_client(name, token=None, readonly=True):
 
     if token is None:
         token = CACHE.get(cache_key, None)
-    
+
     if token is None:
         token = os.environ.get('XEDOCS_API_TOKEN', None)
-    
+
     if token is None:
         try:
             import xeauth
@@ -31,7 +31,8 @@ def api_client(name, token=None, readonly=True):
         headers['Authorization'] = f"Bearer {token}"
         CACHE[cache_key] = token
 
-    client = rframe.RestClient(f'{API_URL}/{name}',
-                                 headers=headers,)
+    client = rframe.RestClient(
+        f'{API_URL}/{name}',
+        headers=headers,
+    )
     return client
-

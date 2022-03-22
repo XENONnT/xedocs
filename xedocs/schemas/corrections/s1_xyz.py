@@ -8,10 +8,8 @@ The jupyter notebook in this folder is replaced by [this](https://github.com/XEN
 
 '''
 
-
 from .base_references import BaseMap
 
 
 class S1XYZMap(BaseMap):
-    _NAME = "s1_xyz_maps"    
-
+    _NAME = "s1_xyz_maps"

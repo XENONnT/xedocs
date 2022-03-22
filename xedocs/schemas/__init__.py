@@ -1,7 +1,4 @@
-
-from .base_schemas import XeDoc, VersionedXeDoc
-
+from .base_schemas import VersionedXeDoc, XeDoc
 from .bodega import Bodega
-from .fax import FaxConfig
-
 from .corrections import *
+from .fax import FaxConfig

@@ -12,4 +12,3 @@ In addition, notebooks on the field distortion coming from COMSOL simulations ar
 See [overview on the wiki](https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:ftoschi:drift_diffusion_tpc_map_low_field).
 
 '''
-

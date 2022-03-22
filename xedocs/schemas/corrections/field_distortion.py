@@ -9,7 +9,6 @@ See [description in the Team C overview page](https://xe1t-wiki.lngs.infn.it/dok
 
 '''
 
-
 from .base_references import BaseMap
 
 

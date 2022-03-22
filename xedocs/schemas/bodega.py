@@ -1,7 +1,6 @@
-
+import datetime
 
 import rframe
-import datetime
 
 from .base_schemas import XeDoc
 
@@ -12,7 +11,7 @@ class Bodega(XeDoc):
        values.
     '''
     _NAME = 'bodega'
-    
+
     field: str = rframe.Index()
 
     value: float
@@ -20,4 +19,3 @@ class Bodega(XeDoc):
     definition: str
     reference: str
     date: datetime.datetime
-

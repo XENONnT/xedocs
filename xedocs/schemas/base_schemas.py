@@ -1,8 +1,7 @@
-
 import re
-import rframe
-
 from typing import ClassVar
+
+import rframe
 
 
 def camel_to_snake(name):
@@ -22,7 +21,7 @@ class XeDoc(rframe.BaseSchema):
         if cls._NAME:
             if cls._NAME not in cls._XEDOCS:
                 cls._XEDOCS[cls._NAME] = cls
-    
+
     @classmethod
     def help(cls):
         help_str = f'''
@@ -31,6 +30,7 @@ class XeDoc(rframe.BaseSchema):
             Column fields: {list(cls.get_column_fields())}
         '''
         print(help_str)
+
 
 class VersionedXeDoc(XeDoc):
     version: str = rframe.Index()

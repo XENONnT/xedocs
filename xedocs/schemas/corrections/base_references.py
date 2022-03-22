@@ -1,9 +1,7 @@
-
-
-
-import rframe
 import datetime
 from typing import ClassVar, Literal
+
+import rframe
 
 from xedocs import settings
 
@@ -19,7 +17,7 @@ class CorrectionReference(TimeIntervalCorrection):
 
     # arbitrary alias for this reference,
     # this should match the straxen config name
-    alias: str = rframe.Index() 
+    alias: str = rframe.Index()
 
     # the global version
     version: str = rframe.Index()
@@ -42,7 +40,8 @@ class CorrectionReference(TimeIntervalCorrection):
         '''
         labels = dict(self.labels, **overrides)
         if self.correction not in BaseCorrectionSchema._CORRECTIONS:
-            raise KeyError(f'Reference to undefined schema name {self.correction}')
+            raise KeyError(
+                f'Reference to undefined schema name {self.correction}')
         schema = BaseCorrectionSchema._CORRECTIONS[self.correction]
         return schema.find(datasource, **labels)
 
@@ -51,7 +50,7 @@ class CorrectionReference(TimeIntervalCorrection):
         '''Convert reference to a URLConfig URL
         '''
         import straxen
-        
+
         url = f'{self.correction}://{self.attribute}'
         url = straxen.URLConfig.format_url_kwargs(url, **self.labels)
         return url
@@ -90,7 +89,7 @@ class BaseResourceReference(BaseCorrectionSchema):
 class BaseMap(BaseResourceReference):
     _NAME = ''
 
-    kind: Literal['cnn','gcn','mlp'] = rframe.Index()
+    kind: Literal['cnn', 'gcn', 'mlp'] = rframe.Index()
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     value: str

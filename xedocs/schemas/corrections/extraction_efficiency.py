@@ -19,4 +19,3 @@ class RelExtractionEff(TimeIntervalCorrection):
     _NAME = "rel_extraction_effs"
 
     value: float
-

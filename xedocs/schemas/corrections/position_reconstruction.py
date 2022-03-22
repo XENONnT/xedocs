@@ -11,10 +11,11 @@ Mostly following the "OFF PMTs" list [here](https://xe1t-wiki.lngs.infn.it/doku.
 
 '''
 
-
-import rframe
 import datetime
 from typing import Literal
+
+import rframe
+
 from .base_references import BaseResourceReference
 
 
@@ -22,7 +23,7 @@ class PosRecModel(BaseResourceReference):
     _NAME = "posrec_models"
     fmt = 'json'
 
-    kind: Literal['cnn','gcn','mlp'] = rframe.Index()
+    kind: Literal['cnn', 'gcn', 'mlp'] = rframe.Index()
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     value: str

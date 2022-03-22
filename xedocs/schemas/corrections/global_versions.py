@@ -1,11 +1,6 @@
-
-
 import rframe
 
-
 from .base_references import CorrectionReference
-
-
 
 
 class GlobalVersion(CorrectionReference):
@@ -15,10 +10,11 @@ class GlobalVersion(CorrectionReference):
     straxen_version: str = rframe.Index()
 
     @classmethod
-    def get_global_config(cls, version,
-                        datasource=None,
-                        names=None,
-                        extra_labels=None):
+    def get_global_config(cls,
+                          version,
+                          datasource=None,
+                          names=None,
+                          extra_labels=None):
         '''Build a context config from the given global version.
         '''
         import straxen

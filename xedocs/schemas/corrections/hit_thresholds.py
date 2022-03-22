@@ -9,7 +9,6 @@ import rframe
 from .base_corrections import TimeIntervalCorrection, TimeSampledCorrection
 
 
-
 class HitThreshold(TimeIntervalCorrection):
     _NAME = "hit_thresholds"
     detector: str = rframe.Index()
