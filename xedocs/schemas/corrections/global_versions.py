@@ -4,22 +4,18 @@ from .base_references import CorrectionReference
 
 
 class GlobalVersion(CorrectionReference):
-    _NAME = 'global_versions'
+    _NAME = "global_versions"
 
     strax_version: str = rframe.Index()
     straxen_version: str = rframe.Index()
 
     @classmethod
-    def get_global_config(cls,
-                          version,
-                          datasource=None,
-                          names=None,
-                          extra_labels=None):
-        '''Build a context config from the given global version.
-        '''
+    def get_global_config(cls, version, datasource=None, names=None, extra_labels=None):
+        """Build a context config from the given global version."""
         import straxen
+
         if extra_labels is None:
-            extra_labels = dict(run_id='plugin.run_id')
+            extra_labels = dict(run_id="plugin.run_id")
         refs = cls.find(datasource, version=version, alias=names)
         config = {}
         for ref in refs:

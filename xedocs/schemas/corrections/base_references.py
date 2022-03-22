@@ -9,11 +9,12 @@ from .base_corrections import BaseCorrectionSchema, TimeIntervalCorrection
 
 
 class CorrectionReference(TimeIntervalCorrection):
-    '''A CorrectionReference document references one or 
+    """A CorrectionReference document references one or
     more corrections by storing the name and labels required
-    to locate the correction in a datasource     
-    '''
-    _NAME = ''
+    to locate the correction in a datasource
+    """
+
+    _NAME = ""
 
     # arbitrary alias for this reference,
     # this should match the straxen config name
@@ -35,23 +36,21 @@ class CorrectionReference(TimeIntervalCorrection):
     labels: dict
 
     def load(self, datasource=None, **overrides):
-        ''' Load the referenced documents from the
+        """Load the referenced documents from the
         given datasource.
-        '''
+        """
         labels = dict(self.labels, **overrides)
         if self.correction not in BaseCorrectionSchema._CORRECTIONS:
-            raise KeyError(
-                f'Reference to undefined schema name {self.correction}')
+            raise KeyError(f"Reference to undefined schema name {self.correction}")
         schema = BaseCorrectionSchema._CORRECTIONS[self.correction]
         return schema.find(datasource, **labels)
 
     @property
     def url_config(self):
-        '''Convert reference to a URLConfig URL
-        '''
+        """Convert reference to a URLConfig URL"""
         import straxen
 
-        url = f'{self.correction}://{self.attribute}'
+        url = f"{self.correction}://{self.attribute}"
         url = straxen.URLConfig.format_url_kwargs(url, **self.labels)
         return url
 
@@ -61,35 +60,36 @@ class CorrectionReference(TimeIntervalCorrection):
 
 
 class BaseResourceReference(BaseCorrectionSchema):
-    _NAME = ''
+    _NAME = ""
 
-    fmt: ClassVar = 'text'
+    fmt: ClassVar = "text"
 
     value: str
 
     def pre_insert(self, datasource):
-        '''require the existence of the resource
+        """require the existence of the resource
         being referenced prior to inserting a new
         document. This is to avoid typos etc.
-        '''
+        """
         self.load()
         super().pre_insert(datasource)
 
     def load(self, **kwargs):
         import straxen
-        kwargs.setdefault('fmt', self.fmt)
+
+        kwargs.setdefault("fmt", self.fmt)
 
         return straxen.get_resource(self.value, **kwargs)
 
     @property
     def url_config(self):
-        return f'resource://{self.value}?fmt={self.fmt}'
+        return f"resource://{self.value}?fmt={self.fmt}"
 
 
 class BaseMap(BaseResourceReference):
-    _NAME = ''
+    _NAME = ""
 
-    kind: Literal['cnn', 'gcn', 'mlp'] = rframe.Index()
+    kind: Literal["cnn", "gcn", "mlp"] = rframe.Index()
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     value: str

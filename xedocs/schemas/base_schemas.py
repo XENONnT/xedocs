@@ -10,12 +10,12 @@ def camel_to_snake(name):
 
 
 class XeDoc(rframe.BaseSchema):
-    _NAME: ClassVar = ''
+    _NAME: ClassVar = ""
     _XEDOCS = {}
 
     def __init_subclass__(cls) -> None:
 
-        if '_NAME' not in cls.__dict__:
+        if "_NAME" not in cls.__dict__:
             cls._NAME = camel_to_snake(cls.__name__)
 
         if cls._NAME:
@@ -24,11 +24,11 @@ class XeDoc(rframe.BaseSchema):
 
     @classmethod
     def help(cls):
-        help_str = f'''
+        help_str = f"""
             Schema name: {cls._NAME}
             Index fields: {list(cls.get_index_fields())}
             Column fields: {list(cls.get_column_fields())}
-        '''
+        """
         print(help_str)
 
 

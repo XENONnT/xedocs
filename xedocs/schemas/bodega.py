@@ -6,11 +6,12 @@ from .base_schemas import XeDoc
 
 
 class Bodega(XeDoc):
-    '''Detector parameters
-       A collection of non-time dependent detector
-       values.
-    '''
-    _NAME = 'bodega'
+    """Detector parameters
+    A collection of non-time dependent detector
+    values.
+    """
+
+    _NAME = "bodega"
 
     field: str = rframe.Index()
 

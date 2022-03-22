@@ -7,7 +7,7 @@ from .plugin_lineages import PluginLineage
 
 
 class ContextLineage(BaseCorrectionSchema):
-    _NAME = 'context_lineages'
+    _NAME = "context_lineages"
 
     strax: str = rframe.Index()
     straxen: str = rframe.Index()

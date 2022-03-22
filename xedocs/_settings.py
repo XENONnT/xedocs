@@ -3,7 +3,7 @@ import utilix
 
 from .clock import SimpleClock
 
-DEFAULT_DATABASE = 'cmt2'
+DEFAULT_DATABASE = "cmt2"
 
 
 class Settings:
@@ -15,8 +15,7 @@ class Settings:
     datasources = {}
 
     def default_datasource(self, name):
-        return utilix.xent_collection(collection=name,
-                                      database=self.default_database)
+        return utilix.xent_collection(collection=name, database=self.default_database)
 
     def get_datasource_for(self, name):
         if name in self.datasources:
@@ -28,19 +27,19 @@ class Settings:
         if isinstance(run_id, str):
             run_id = int(run_id)
 
-        query = {'number': run_id}
+        query = {"number": run_id}
 
-        doc = rundb.find_one(query, projection={'start': 1, 'end': 1})
+        doc = rundb.find_one(query, projection={"start": 1, "end": 1})
         if not doc:
-            raise KeyError(f'Run {run_id} not found.')
+            raise KeyError(f"Run {run_id} not found.")
 
-        return doc['start'] + (doc['end'] - doc['start']) / 2
+        return doc["start"] + (doc["end"] - doc["start"]) / 2
 
     def extract_time(self, kwargs):
-        if 'time' in kwargs:
-            time = kwargs.pop('time')
-        if 'run_id' in kwargs:
-            time = self.run_id_to_time(kwargs.pop('run_id'))
+        if "time" in kwargs:
+            time = kwargs.pop("time")
+        if "run_id" in kwargs:
+            time = self.run_id_to_time(kwargs.pop("run_id"))
         else:
             return None
         return pd.to_datetime(time)

@@ -21,46 +21,45 @@ def round_datetime(dt):
 
 # enforce datetimes are in the a reasonable range
 # pandas nanosecond resolution has trouble with extreme dates
-datetimes = st.datetimes(min_value=datetime.datetime(2000, 1, 1, 0, 0),
-                         max_value=datetime.datetime(2231, 1, 1, 0,
-                                                     0)).map(round_datetime)
-floats = st.floats(min_value=-1e10,
-                   max_value=1e10,
-                   allow_nan=False,
-                   allow_infinity=False)
+datetimes = st.datetimes(
+    min_value=datetime.datetime(2000, 1, 1, 0, 0),
+    max_value=datetime.datetime(2231, 1, 1, 0, 0),
+).map(round_datetime)
+floats = st.floats(
+    min_value=-1e10, max_value=1e10, allow_nan=False, allow_infinity=False
+)
 
 
 def mongo_uri_not_set():
-    return 'TEST_MONGO_URI' not in os.environ
+    return "TEST_MONGO_URI" not in os.environ
 
 
 def api_server_no_set():
-    return 'TEST_CMT_SERVER_URI' not in os.environ
+    return "TEST_CMT_SERVER_URI" not in os.environ
 
 
-def make_datetime_index(start, stop, step='1d'):
+def make_datetime_index(start, stop, step="1d"):
     if isinstance(start, numbers.Number):
         start = pd.to_datetime(
             start,
-            unit='s',
+            unit="s",
         )
     if isinstance(stop, numbers.Number):
-        stop = pd.to_datetime(stop, unit='s')
+        stop = pd.to_datetime(stop, unit="s")
     return pd.date_range(start, stop, freq=step)
 
 
-def make_datetime_interval_index(start, stop, step='1d'):
+def make_datetime_interval_index(start, stop, step="1d"):
     if isinstance(start, numbers.Number):
-        start = pd.to_datetime(start, unit='s')
+        start = pd.to_datetime(start, unit="s")
     if isinstance(stop, numbers.Number):
-        stop = pd.to_datetime(stop, unit='s')
+        stop = pd.to_datetime(stop, unit="s")
     return pd.interval_range(start, stop, periods=step)
 
 
 @st.composite
 def non_overlapping_interval_lists(draw, elements=st.datetimes(), min_size=2):
-    elem = draw(
-        st.lists(elements, unique=True, min_size=min_size * 2).map(sorted))
+    elem = draw(st.lists(elements, unique=True, min_size=min_size * 2).map(sorted))
     return list(zip(elem[:-1:2], elem[1::2]))
 
 
@@ -72,27 +71,28 @@ def non_overlapping_interval_ranges(draw, elements=st.datetimes(), min_size=2):
 
 def pmt_gain_space(datetime_range=datetime.timedelta(days=100)):
     utcnow = datetime.datetime.utcnow()
-    data = dict(version=['ONLINE'] + ['v{i}' for i in range(10)],
-                detector=['tpc', 'neutron_veto', 'muon_veto'],
-                pmt=list(range(100)),
-                time=make_datetime_index(utcnow - datetime_range,
-                                         utcnow + datetime_range))
+    data = dict(
+        version=["ONLINE"] + ["v{i}" for i in range(10)],
+        detector=["tpc", "neutron_veto", "muon_veto"],
+        pmt=list(range(100)),
+        time=make_datetime_index(utcnow - datetime_range, utcnow + datetime_range),
+    )
 
 
 class SimpleCorrection(xedocs.BaseCorrectionSchema):
-    _NAME = 'simple_correction'
+    _NAME = "simple_correction"
 
     value: float
 
 
 class SomeSampledCorrection(xedocs.TimeSampledCorrection):
-    _NAME = 'sampled_correction'
+    _NAME = "sampled_correction"
 
     value: float
 
 
 class SomeTimeIntervalCorrection(xedocs.TimeIntervalCorrection):
-    _NAME = 'time_interval_correction'
+    _NAME = "time_interval_correction"
 
     value: float
 
@@ -109,7 +109,8 @@ def time_interval_corrections_strategy(draw, **overrides):
             ),
             min_size=1,
             unique_by=lambda x: (x.version, x.time.left),
-        ))
+        )
+    )
 
     last = docs[-1].time.left + datetime.timedelta(days=10)
     times = sorted([doc.time.left for doc in docs]) + [last]
@@ -131,15 +132,16 @@ class TestCorrections(unittest.TestCase):
         TEST_MONGO_URI
 
     """
+
     _run_test = True
 
     def setUp(self):
         # Just to make sure we are running some mongo server, see test-class docstring
-        if 'TEST_MONGO_URI' not in os.environ:
+        if "TEST_MONGO_URI" not in os.environ:
             self._run_test = False
             return
-        uri = os.environ.get('TEST_MONGO_URI')
-        db_name = 'test_cmt2'
+        uri = os.environ.get("TEST_MONGO_URI")
+        db_name = "test_cmt2"
         db = pymongo.MongoClient(uri)[db_name]
 
         self.collections = {name: db[name] for name in xedocs.list_schemas()}
@@ -150,11 +152,12 @@ class TestCorrections(unittest.TestCase):
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     @given(
-        st.lists(st.builds(SomeSampledCorrection,
-                           version=st.just('v1'),
-                           value=floats),
-                 min_size=3,
-                 unique_by=lambda x: x.time))
+        st.lists(
+            st.builds(SomeSampledCorrection, version=st.just("v1"), value=floats),
+            min_size=3,
+            unique_by=lambda x: x.time,
+        )
+    )
     @settings(deadline=None)
     def test_sampled_correction_v1(self, docs: List[SomeSampledCorrection]):
         name = SomeSampledCorrection.default_collection_name()
@@ -171,15 +174,16 @@ class TestCorrections(unittest.TestCase):
             assume((doc2.time - doc1.time) > datetime.timedelta(seconds=10))
 
         # since values are interpolated in time
-        prev = 0.
+        prev = 0.0
         for doc in docs:
             if abs(doc.value - prev) < 1:
                 doc.value += 2
             prev = doc.value
             doc.save(datasource)
 
-        df_original = pd.DataFrame([doc.pandas_dict() for doc in docs
-                                    ]).set_index(['version', 'time'])
+        df_original = pd.DataFrame([doc.pandas_dict() for doc in docs]).set_index(
+            ["version", "time"]
+        )
 
         for doc1, doc2 in zip(docs[:-1], docs[1:]):
             dt = doc1.time + (doc2.time - doc1.time) / 2
@@ -191,16 +195,16 @@ class TestCorrections(unittest.TestCase):
             if abs(doc_interp.value) < 1e-9:
                 continue
 
-            error = abs(half_value - doc_interp.value) / abs(doc2.value -
-                                                             doc1.value)
+            error = abs(half_value - doc_interp.value) / abs(doc2.value - doc1.value)
 
             self.assertAlmostEqual(error, 0, delta=1e-2)
 
             new_doc = SomeSampledCorrection(
-                version='v1',
+                version="v1",
                 time=dt,
                 value=2 * (half_value + 10),
-                created_date=doc_interp.created_date)
+                created_date=doc_interp.created_date,
+            )
 
             # changing values is not allowed
             with self.assertRaises(UpdateError):
@@ -212,15 +216,19 @@ class TestCorrections(unittest.TestCase):
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     @given(
-        st.lists(st.builds(SomeSampledCorrection,
-                           version=st.just('ONLINE'),
-                           time=datetimes,
-                           value=floats),
-                 min_size=3,
-                 unique_by=lambda x: (x.version, x.time)))
+        st.lists(
+            st.builds(
+                SomeSampledCorrection,
+                version=st.just("ONLINE"),
+                time=datetimes,
+                value=floats,
+            ),
+            min_size=3,
+            unique_by=lambda x: (x.version, x.time),
+        )
+    )
     @settings(deadline=None)
-    def test_sampled_correction_online(self,
-                                       docs: List[SomeSampledCorrection]):
+    def test_sampled_correction_online(self, docs: List[SomeSampledCorrection]):
         name = SomeSampledCorrection.default_collection_name()
         datasource = self.collections[name]
         datasource.delete_many({})
@@ -237,8 +245,7 @@ class TestCorrections(unittest.TestCase):
 
             # If the time is before the cutoff, should raise an error
             elif not clock.after_cutoff(doc.time):
-                current = SomeSampledCorrection.find(datasource,
-                                                     **doc.index_labels)
+                current = SomeSampledCorrection.find(datasource, **doc.index_labels)
                 error = UpdateError if current else InsertionError
                 with self.assertRaises(error):
                     doc.save(datasource)
@@ -250,12 +257,9 @@ class TestCorrections(unittest.TestCase):
                     self.assertLessEqual(1, len(found))
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
-    @given(
-        time_interval_corrections_strategy(version=st.just('v1'),
-                                           value=floats))
+    @given(time_interval_corrections_strategy(version=st.just("v1"), value=floats))
     @settings(deadline=None)
-    def test_interval_correction_v1(self,
-                                    docs: List[SomeTimeIntervalCorrection]):
+    def test_interval_correction_v1(self, docs: List[SomeTimeIntervalCorrection]):
         name = SomeTimeIntervalCorrection.default_collection_name()
         datasource = self.collections[name]
         datasource.delete_many({})
@@ -266,14 +270,12 @@ class TestCorrections(unittest.TestCase):
             doc.save(datasource)
 
             dt = doc.time.left + (doc.time.right - doc.time.left) / 2
-            doc_found = SomeTimeIntervalCorrection.find_one(datasource,
-                                                            time=dt)
+            doc_found = SomeTimeIntervalCorrection.find_one(datasource, time=dt)
             self.assertEqual(doc.value, doc_found.value)
 
         for doc in docs[:-1]:
             dt = doc.time.left + (doc.time.right - doc.time.left) / 2
-            doc_found = SomeTimeIntervalCorrection.find_one(datasource,
-                                                            time=dt)
+            doc_found = SomeTimeIntervalCorrection.find_one(datasource, time=dt)
             self.assertEqual(doc.value, doc_found.value)
 
             doc_found.value += 1

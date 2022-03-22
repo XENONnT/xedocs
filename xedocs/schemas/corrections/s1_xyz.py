@@ -1,4 +1,4 @@
-'''
+"""
 # S1 (x,y,z) correction
 S1 signals in LXeTPC has a large position dependence across the whole volume. In order to make a precise energy reconstruction, we need a “correction” map to overcome its spatial dependence, as the case for S2.
 
@@ -6,7 +6,7 @@ See [description in the Team C overview page](https://xe1t-wiki.lngs.infn.it/dok
 
 The jupyter notebook in this folder is replaced by [this](https://github.com/XENONnT/nton/blob/master/nton/analyses/corrections/s1correction.py) script in the nton file
 
-'''
+"""
 
 from .base_references import BaseMap
 

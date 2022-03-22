@@ -6,7 +6,7 @@ from .base_corrections import BaseCorrectionSchema
 
 
 class PluginLineage(BaseCorrectionSchema):
-    _NAME = 'plugin_lineages'
+    _NAME = "plugin_lineages"
 
     class Config:
         smart_union = True
@@ -19,13 +19,12 @@ class PluginLineage(BaseCorrectionSchema):
     depends_on: Dict[str, str]
 
     @classmethod
-    def from_context(cls, context, data_type, version='ONLINE', run_id='0'):
+    def from_context(cls, context, data_type, version="ONLINE", run_id="0"):
         key = context.key_for(run_id, data_type)
         lineage = dict(key.lineage)
         plugin, plugin_version, config = lineage.pop(data_type)
         depends_on = {
-            dtype: context.key_for(run_id, dtype).lineage_hash
-            for dtype in lineage
+            dtype: context.key_for(run_id, dtype).lineage_hash for dtype in lineage
         }
         plugin_config = cls(
             version=version,
@@ -46,8 +45,7 @@ class PluginLineage(BaseCorrectionSchema):
             configs[doc.lineage_hash] = dict(doc.config)
         for doc in docs:
             missing_deps = [
-                lhash for lhash in doc.depends_on.values()
-                if lhash not in configs
+                lhash for lhash in doc.depends_on.values() if lhash not in configs
             ]
             if not missing_deps:
                 continue
@@ -57,8 +55,9 @@ class PluginLineage(BaseCorrectionSchema):
         for config in configs.values():
             for k, v in config.items():
                 if k in combined and v != combined[k]:
-                    raise RuntimeError('Under-constrained search, '
-                                       'results in inconsistent config.')
+                    raise RuntimeError(
+                        "Under-constrained search, " "results in inconsistent config."
+                    )
                 combined[k] = v
         return combined
 

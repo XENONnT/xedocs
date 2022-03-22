@@ -19,7 +19,7 @@ class SimpleClock:
             now = datetime.datetime.now()
         return self.normalize_tz(now)
 
-    def cutoff_datetime(self, buffer=0.):
+    def cutoff_datetime(self, buffer=0.0):
         offset = datetime.timedelta(seconds=self.cutoff_offset + buffer)
         return self.current_datetime() + offset
 
@@ -31,7 +31,7 @@ class SimpleClock:
         dt = dt.replace(microsecond=int(dt.microsecond / 1000) * 1000)
         return dt
 
-    def after_cutoff(self, dt, buffer=0.):
+    def after_cutoff(self, dt, buffer=0.0):
         cutoff = self.cutoff_datetime(buffer)
         dt = self.normalize_tz(dt)
         return dt > cutoff

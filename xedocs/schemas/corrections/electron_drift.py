@@ -1,4 +1,4 @@
-'''
+"""
 Electron Drift Velocity and Drift Time at Gate
 
 The Understanding the shape of S2s is a prerequisite for calibrating the trigger, processor, and the S2 width cut. Drift time and velocity are important parameters needed for the event z-reconstruction and to understand the S2 shape.
@@ -9,7 +9,7 @@ the proper z coordinate, as well as to remove events happening above the gate.
 See note on drift velocity, diffusion constant, and drift time at the gate
     https://xe1t-wiki.lngs.infn.it/doku.php?id=dandrea:diffusionstudywithkrdata
 
-'''
+"""
 
 import rframe
 

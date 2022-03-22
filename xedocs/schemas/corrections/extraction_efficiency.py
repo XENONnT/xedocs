@@ -1,4 +1,4 @@
-'''
+"""
 # S2(x,y) correction codes
 **Jianyu Long (jylong@uchicago.edu)**
 
@@ -10,7 +10,7 @@ Time dependence of Extraction Efficiency generated from Kr83m calibration data a
 - V0 is just for qualitative purpose and Straxen algorithm test
 - The json file contains two meaningful fields: `timestamps` and `correction`: `timestamps` are simply starting time for all available runs; `correction` are the associated correction coefficients. 
 
-'''
+"""
 
 from .base_corrections import TimeIntervalCorrection
 

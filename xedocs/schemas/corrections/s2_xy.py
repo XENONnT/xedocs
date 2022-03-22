@@ -1,4 +1,4 @@
-'''
+"""
 # S2(x,y) correction codes
 **Jianyu Long (jylong@uchicago.edu)**
 
@@ -17,7 +17,7 @@ See [description in the Team C overview page](https://xe1t-wiki.lngs.infn.it/dok
 - To use, you must have an output from straxen/event_info about electron lifetime correction coefficient (it is used in .do_elifetime_correct)
 
 
-'''
+"""
 
 from .base_references import BaseMap
 

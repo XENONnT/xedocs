@@ -1,4 +1,4 @@
-'''
+"""
 # Position reconstruction with NNs or Likelihoods
 Inspired by impressive process in AI industry, we performed deep-learning based approach for position reconstruction. It so far is the fastest reconstruction algorithm, and is less sensitive to the imperfect input pattern. We have a working version of neural network for XENONnT already, but we need someone to optimize it when simulation/data is updated.
 
@@ -9,7 +9,7 @@ See description in the Team C overview page [here](https://xe1t-wiki.lngs.infn.i
 Mostly following the "OFF PMTs" list [here](https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:pmt:gains:pmtsoff)
 
 
-'''
+"""
 
 import datetime
 from typing import Literal
@@ -21,9 +21,9 @@ from .base_references import BaseResourceReference
 
 class PosRecModel(BaseResourceReference):
     _NAME = "posrec_models"
-    fmt = 'json'
+    fmt = "json"
 
-    kind: Literal['cnn', 'gcn', 'mlp'] = rframe.Index()
+    kind: Literal["cnn", "gcn", "mlp"] = rframe.Index()
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     value: str

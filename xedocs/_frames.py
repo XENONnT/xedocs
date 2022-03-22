@@ -20,21 +20,23 @@ class SchemaFrames:
     def default(cls, **kwargs):
         try:
             import admix
+
             return cls.from_utilix(**kwargs)
         except:
             return cls.from_mongodb(**kwargs)
 
     @classmethod
-    def from_mongodb(cls, url='localhost', db='cmt2', **kwargs):
+    def from_mongodb(cls, url="localhost", db="cmt2", **kwargs):
         import pymongo
+
         db = pymongo.MongoClient(url, **kwargs)[db]
         return cls(db)
 
     @classmethod
-    def from_utilix(cls, experiment='xent', db='cmt2'):
-        coll = utilix.rundb._collection(collection='dummy',
-                                        experiment=experiment,
-                                        database=db)
+    def from_utilix(cls, experiment="xent", db="cmt2"):
+        coll = utilix.rundb._collection(
+            collection="dummy", experiment=experiment, database=db
+        )
         db = coll.database
         return cls(db)
 
@@ -66,7 +68,7 @@ class SchemaFrames:
         return super().__dir__() + list(self.schemas)
 
     def __getattr__(self, name):
-        if name != 'schemas' and name in self.schemas:
+        if name != "schemas" and name in self.schemas:
             return self.get_df(name)
         return super().__getattribute__(name)
 
@@ -83,10 +85,10 @@ class SchemaFrames:
 def run_id_to_time(run_id):
     run_id = int(run_id)
     runsdb = utilix.rundb.xent_collection()
-    rundoc = runsdb.find_one({'number': run_id}, {'start': 1})
+    rundoc = runsdb.find_one({"number": run_id}, {"start": 1})
     if rundoc is None:
-        raise ValueError(f'run_id = {run_id} not found')
-    time = rundoc['start']
+        raise ValueError(f"run_id = {run_id} not found")
+    time = rundoc["start"]
     return time.replace(tzinfo=pytz.utc)
 
 
