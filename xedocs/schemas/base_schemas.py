@@ -31,3 +31,6 @@ class XeDoc(rframe.BaseSchema):
             Column fields: {list(cls.get_column_fields())}
         '''
         print(help_str)
+
+class VersionedXeDoc(XeDoc):
+    version: str = rframe.Index()
