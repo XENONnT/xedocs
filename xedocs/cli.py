@@ -1,5 +1,6 @@
 """Console script for xedocs."""
 import sys
+import time
 import xedocs
 import click
 import logging
@@ -7,6 +8,8 @@ import logging
 from rich.logging import RichHandler
 from rich.console import Console
 from rich.table import Table
+from rich.live import Live
+
 
 logging.basicConfig(
     level="NOTSET",
@@ -43,8 +46,7 @@ def cli_find(ctx, name: str):
                     f'Available schemas: {xedocs.list_schemas()}'
         )
         exit(0)
-    with console.status(f"[bold green]Looking for {name} documents that match your query...") as status:
-        docs = xedocs.find(name, **kwargs)
+    
     query_str = ", ".join([f'{k}={v}' for k,v in kwargs.items()])
 
     table = Table(title=f"{name.title()} query {query_str}")
@@ -58,12 +60,16 @@ def cli_find(ctx, name: str):
         table.add_column(field.title(), justify="center")
         field_order.append(field)
 
-    for doc in docs:
-        data = doc.jsonable()
-        row = [str(data[field]) for field in field_order]
-        table.add_row(*row)
+    with console.status(f"[bold green]Looking for {name} documents that match your query...") as status:
+        docs = schema.find_iter(**kwargs)
 
-    console.print(table)
+    with Live(table, refresh_per_second=4):
+
+        for doc in docs:
+            data = doc.jsonable()
+            row = [str(data[field]) for field in field_order]
+            table.add_row(*row)
+            time.sleep(0.1)
 
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover

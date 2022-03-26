@@ -23,7 +23,7 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 
 import xedocs
-import sphinx_material
+# import sphinx_material
 
 # -- General configuration ---------------------------------------------
 
@@ -89,9 +89,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-extensions.append("sphinx_material")
-html_theme_path = sphinx_material.html_theme_path()
-html_context = sphinx_material.get_html_context()
+
 html_theme = "sphinx_material"
 # Material theme options (see theme.conf for more information)
 html_theme_options = {
@@ -101,12 +99,12 @@ html_theme_options = {
     # 'google_analytics_account': 'UA-XXXXX',
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
-    "base_url": "https://project.github.io/jmosbacher",
+    "base_url": "https://project.github.io/XENONnT",
     # Set the color and the accent color
-    "color_primary": "green",
-    "color_accent": "light-green",
+    "color_primary": "blue-grey",
+    "color_accent": "blue",
     # Set the repo location to get a badge with stats
-    "repo_url": "https://github.com/jmosbacher/xedocs/",
+    "repo_url": "https://github.com/XENONnT/xedocs/",
     "repo_name": "xedocs",
     # Visible levels of the global TOC; -1 means unlimited
     "globaltoc_depth": 3,

@@ -45,8 +45,8 @@ hypothesis = "^6.39.4"
 xedocs = 'xedocs.cli:main'
 
 [build-system]
-requires = ["poetry>=0.12", "setuptools"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.8", "setuptools"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.dephell.main]
 versioning = "semver"
