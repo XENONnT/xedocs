@@ -1,0 +1,6 @@
+rframe
+pandas
+numpydoc
+sphinx
+sphinx-material
+nbsphinx
