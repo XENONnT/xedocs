@@ -1,4 +1,5 @@
-rframe
+xedocs
+utilix
 pandas
 numpydoc
 sphinx
