@@ -1,12 +1,16 @@
 import pandas as pd
 import utilix
 
+from pydantic import BaseSettings
+
 from .clock import SimpleClock
 
 DEFAULT_DATABASE = "cmt2"
 
 
-class Settings:
+class Settings(BaseSettings):
+    class Config:
+        env_prefix = 'XEDOCS_'
 
     default_database: str = DEFAULT_DATABASE
 

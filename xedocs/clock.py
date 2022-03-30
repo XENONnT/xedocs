@@ -35,3 +35,23 @@ class SimpleClock:
         cutoff = self.cutoff_datetime(buffer)
         dt = self.normalize_tz(dt)
         return dt > cutoff
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        if not hasattr(v, 'after_cutoff'):
+            raise TypeError('Clock must implement `after_cutoff`')
+
+        if not hasattr(v, 'cutoff_datetime'):
+            raise TypeError('Clock must implement `cutoff_datetime`')
+
+        if not hasattr(v, 'current_datetime'):
+            raise TypeError('Clock must implement `current_datetime`')
+
+        if not hasattr(v, 'normalize_tz'):
+            raise TypeError('Clock must implement `normalize_tz`')
+
+        return v
