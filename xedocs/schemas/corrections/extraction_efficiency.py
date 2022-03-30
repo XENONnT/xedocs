@@ -16,6 +16,6 @@ from .base_corrections import TimeIntervalCorrection
 
 
 class RelExtractionEff(TimeIntervalCorrection):
-    _NAME = "rel_extraction_effs"
+    _ALIAS = "rel_extraction_effs"
 
     value: float

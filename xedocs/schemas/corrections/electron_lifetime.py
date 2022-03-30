@@ -12,5 +12,5 @@ from .base_corrections import TimeIntervalCorrection
 
 
 class ElectronLifetime(TimeIntervalCorrection):
-    _NAME = "electron_lifetimes"
+    _ALIAS = "electron_lifetimes"
     value: float

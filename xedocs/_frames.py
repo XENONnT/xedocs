@@ -1,16 +1,19 @@
-from typing import Any
+from typing import Any, Dict
 
 import pytz
 import rframe
 import utilix
+
+from rframe import RemoteFrame
 
 from .schemas import XeDoc
 from ._settings import settings
 
 
 class SchemaFrames:
+    _cache: Dict[str,RemoteFrame] = {}
     db: Any
-
+    
     def __init__(self, db=None):
         self.db = db
 
@@ -46,20 +49,22 @@ class SchemaFrames:
     def schema_names(self):
         return list(self.schemas)
 
-    def get_df(self, name):
-        schema = self.schemas[name]
-        if self.db is None:
-            datasource = settings.get_datasource_for(name)
-        else:
-            datasource = self.db[name]
-        return rframe.RemoteFrame(schema, datasource)
-
+    def get_rf(self, name):
+        if name not in self._cache:
+            schema = self.schemas[name]
+            if self.db is None:
+                datasource = settings.get_datasource_for(name)
+            else:
+                datasource = self.db[name]
+            self._cache[name] = schema.rframe(datasource)
+        return self._cache[name]
+        
     def __getitem__(self, key):
         if isinstance(key, tuple) and key[0] in self.schemas:
-            return self.get_df(key[0])[key[1:]]
+            return self.get_rf(key[0])[key[1:]]
 
         if key in self.schemas:
-            return self.get_df(key)
+            return self.get_rf(key)
         raise KeyError(key)
 
     def __dir__(self):
@@ -67,17 +72,17 @@ class SchemaFrames:
 
     def __getattr__(self, name):
         if name != "schemas" and name in self.schemas:
-            return self.get_df(name)
+            return self.get_rf(name)
         return super().__getattribute__(name)
 
     def sel(self, schema_name, *args, **kwargs):
-        return self.get_df(schema_name).sel(*args, **kwargs)
+        return self.get_rf(schema_name).sel(*args, **kwargs)
 
     def set(self, schema_name, *args, **kwargs):
-        return self.get_df(schema_name).set(*args, **kwargs)
+        return self.get_rf(schema_name).set(*args, **kwargs)
 
     def insert(self, schema_name, records):
-        return self.get_df(schema_name).insert(records=records)
+        return self.get_rf(schema_name).insert(records=records)
 
 
 def run_id_to_time(run_id):

@@ -6,7 +6,7 @@ from ._settings import settings
 from .schemas import XeDoc
 
 
-def find(schema, datasource=None, **kwargs):
+def find(schema, datasource=None, **labels):
     if isinstance(schema, str):
         schema = find_schema(schema)
     if not issubclass(schema, XeDoc):
@@ -14,9 +14,19 @@ def find(schema, datasource=None, **kwargs):
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
     """Find a document in a datasource."""
-    labels, extra = schema.extract_labels(**kwargs)
+    # labels, extra = schema.extract_labels(**kwargs)
     return schema.find(datasource, **labels)
 
+
+def find_df(schema, datasource=None, **labels):
+    if isinstance(schema, str):
+        schema = find_schema(schema)
+    if not issubclass(schema, XeDoc):
+        raise TypeError(
+            "Schema must be a subclass of XeDoc or the name of a known schema."
+        )
+    """Find a document in a datasource."""
+    return schema.find_df(datasource, **labels)
 
 def find_one(schema, datasource=None, **kwargs):
     if isinstance(schema, str):

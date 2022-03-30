@@ -17,10 +17,10 @@ from .base_corrections import TimeIntervalCorrection, TimeSampledCorrection
 
 
 class ElectronDriftVelocity(TimeIntervalCorrection):
-    _NAME = "electron_drift_velocities"
+    _ALIAS = "electron_drift_velocities"
     value: float
 
 
 class DriftTimeGate(TimeIntervalCorrection):
-    _NAME = "electron_drift_time_gates"
+    _ALIAS = "electron_drift_time_gates"
     value: float

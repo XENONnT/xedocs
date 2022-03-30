@@ -168,16 +168,16 @@ When subclassing a Correction class, you must give it a unique ``name`` attibute
     - TimeSampledCorrection - indexed by version and time, where time is a datetime
     - TimeIntervalCorrection - indexed by version and time, where time is a interval of datetimes
 
-Any subclass of ``BaseCorrectionSchema`` will automatically become available in the ``xedocs.cframes`` namespace
+Any subclass of ``BaseCorrectionSchema`` will automatically become available in the ``xedocs.frames`` namespace
 
 .. code-block:: python
 
-    rdfs = xedocs.cframes.pmt_gains
+    rdfs = xedocs.frames.pmt_gains
 
     # specific remote dataframes can be accessed via dict-like access or attribute access by their name
-    rf = xedocs.cframes.pmt_gains
+    rf = xedocs.frames.pmt_gains
     # or
-    rf = xedocs.cframes['pmt_gains']
+    rf = xedocs.frames['pmt_gains']
 
     df = rf.sel(version=..., detector=..., time=...)
 
@@ -219,9 +219,9 @@ Examples:
     fdc_map = ref.load()
 
 
-The Corrections server
-----------------------
-There is also a corrections server that can be used as a datasource for corrections.
+The Corrections API Server
+--------------------------
+There is also a corrections API server that can be used as a datasource for corrections.
 To use it you will need an http client initializaed with the correction URL and an access token header.
 
 .. code-block:: python
@@ -245,17 +245,15 @@ You can install xeauth by running `pip install xeauth`
 
     import xedocs
 
-    datasources = xedocs.api_client('pmt_gains')
+    datasource = xedocs.api_client('pmt_gains', readonly=True)
     # The script will attempt to open a browser for authentication
     # if the broswer does not open automatically, follow the link printed out.
-    # Once you are authenticated as a xenon member, an access token will be
-    # retrieved automatically.
+    # Once you are authenticated as a xenon member, a readonly access token will be
+    # retrieved automatically. If you change readonly to False, a token
+    #with write permissions will be retrieved.
 
-    gains_datasource = datasources.pmt_gains
-    # or
-    gains_datasource = datasources['pmt_gains']
 
-    gain_docs = xedocs.PmtGains.find(gains_datasource, pmt=1, version='v3')
+    gain_docs = xedocs.PmtGains.find(datasource, pmt=1, version='v3')
 
 
 Inserting Corrections
@@ -283,7 +281,7 @@ When using the server to write values you must request a token with write permis
     # If you have to correction roles defined (correction expert), you can request a token with
     # extended scope i.e. write:all. This token will allow you to write to all correction collections
     # If you do not have the proper permissions, you will just get back the default token scope of read:all
-    datasources = xedocs.cmt_api_client('pmt_gains', readonly=False)
+    datasource = xedocs.api_client('pmt_gains', readonly=False)
 
     doc = xedocs.PmtGains(pmt=1, version='v3', value=1, ...)
     doc.save(datasource)
@@ -298,5 +296,3 @@ You can change which datasource is used by default (for the current session) for
     from xedocs import settings
 
     settings.datasources['pmt_gains'] = MY_DEFAULT_DATASOURCE
-
-

@@ -20,7 +20,7 @@ from .base_references import BaseResourceReference
 
 
 class PosRecModel(BaseResourceReference):
-    _NAME = "posrec_models"
+    _ALIAS = "posrec_models"
     fmt = "json"
 
     kind: Literal["cnn", "gcn", "mlp"] = rframe.Index()

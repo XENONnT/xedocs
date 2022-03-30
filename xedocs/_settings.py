@@ -24,6 +24,7 @@ class Settings:
 
     def run_id_to_time(self, run_id):
         rundb = utilix.xent_collection()
+
         if isinstance(run_id, str):
             run_id = int(run_id)
 
@@ -33,6 +34,7 @@ class Settings:
         if not doc:
             raise KeyError(f"Run {run_id} not found.")
 
+        # use center time of run
         return doc["start"] + (doc["end"] - doc["start"]) / 2
 
     def extract_time(self, kwargs):

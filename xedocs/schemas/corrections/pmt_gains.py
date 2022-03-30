@@ -6,7 +6,7 @@ from .base_corrections import TimeSampledCorrection
 
 
 class PmtGain(TimeSampledCorrection):
-    _NAME = "pmt_gains"
+    _ALIAS = "pmt_gains"
 
     # Here we use a simple indexer (matches on exact value)
     # to define the pmt field

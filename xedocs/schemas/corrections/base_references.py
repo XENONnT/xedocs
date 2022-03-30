@@ -14,7 +14,7 @@ class CorrectionReference(TimeIntervalCorrection):
     to locate the correction in a datasource
     """
 
-    _NAME = ""
+    _ALIAS = ""
 
     # arbitrary alias for this reference,
     # this should match the straxen config name
@@ -59,8 +59,8 @@ class CorrectionReference(TimeIntervalCorrection):
         return {self.name: self.url_config}
 
 
-class BaseResourceReference(BaseCorrectionSchema):
-    _NAME = ""
+class BaseResourceReference(TimeIntervalCorrection):
+    _ALIAS = ""
 
     fmt: ClassVar = "text"
 
@@ -87,7 +87,7 @@ class BaseResourceReference(BaseCorrectionSchema):
 
 
 class BaseMap(BaseResourceReference):
-    _NAME = ""
+    _ALIAS = ""
 
     kind: Literal["cnn", "gcn", "mlp"] = rframe.Index()
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()

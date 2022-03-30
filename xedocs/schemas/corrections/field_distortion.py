@@ -13,5 +13,5 @@ from .base_references import BaseMap
 
 
 class FdcMap(BaseMap):
-    _NAME = "fdc_maps"
+    _ALIAS = "fdc_maps"
     fmt = "json.gz"

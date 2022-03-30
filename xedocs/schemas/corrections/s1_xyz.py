@@ -12,4 +12,4 @@ from .base_references import BaseMap
 
 
 class S1XYZMap(BaseMap):
-    _NAME = "s1_xyz_maps"
+    _ALIAS = "s1_xyz_maps"

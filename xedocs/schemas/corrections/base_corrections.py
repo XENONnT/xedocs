@@ -8,7 +8,7 @@ import rframe
 
 from ..._settings import settings
 
-from ..base_schemas import XeDoc
+from ..base_schemas import VersionedXeDoc
 
 
 def camel_to_snake(name):
@@ -16,28 +16,26 @@ def camel_to_snake(name):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
-class BaseCorrectionSchema(XeDoc):
+class BaseCorrectionSchema(VersionedXeDoc):
     """Base class for all correction schemas.
     This class ensures:
-        - the _NAME attribute is always unique
+        - the _ALIAS attribute is always unique
         - schema includes a version index
         - changing already set values is disallowed
 
     """
 
-    _NAME: ClassVar = ""
+    _ALIAS: ClassVar = ""
     _CORRECTIONS = {}
 
-    version: str = rframe.Index()
 
     created_date: datetime.datetime = datetime.datetime.utcnow()
     comments: str = ""
 
     def __init_subclass__(cls) -> None:
 
-        if cls._NAME:
-            if cls._NAME not in cls._CORRECTIONS:
-                cls._CORRECTIONS[cls._NAME] = cls
+        if cls._ALIAS in cls.__dict__ and cls._ALIAS not in cls._CORRECTIONS:
+            cls._CORRECTIONS[cls._ALIAS] = cls
 
         super().__init_subclass__()
 
@@ -71,7 +69,7 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
     class Config:
         allow_population_by_field_name = True
         
-    _NAME = ""
+    _ALIAS = ""
 
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
 
@@ -132,6 +130,21 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
         # Only allow changes to the interval, not the values
         assert self.same_values(new), f"Values already set for {self.index_labels}."
 
+    @classmethod
+    def validity_intervals(cls, datasource=None, **labels):
+        """Returns a list of intervals that are valid for the given labels"""
+        ivs = cls.unique(datasource, fields='time', **labels)
+        ivs = sorted(ivs)
+        if not ivs:
+            return []
+        merged = ivs[:1]
+        for iv in ivs[1:]:
+            
+            if iv.left == merged[-1].right:
+                merged[-1] = merged[-1].clone(right=iv.right)
+            else:
+                merged.append(iv)
+        return merged
 
 def can_extrapolate(doc):
     # only extrapolate ONLINE versions
@@ -161,11 +174,11 @@ class TimeSampledCorrection(BaseCorrectionSchema):
     class Config:
         allow_population_by_field_name = True
         
-    _NAME = ""
+    _ALIAS = ""
 
     time: datetime.datetime = rframe.InterpolatingIndex(extrapolate=can_extrapolate,
                                                         alias='run_id')
-
+    
     @validator('time', pre=True)
     def run_id_to_time(cls, v):
         """Convert run id to time"""
@@ -212,3 +225,13 @@ class TimeSampledCorrection(BaseCorrectionSchema):
             if existing:
                 new_doc = existing[0]
                 new_doc.save(datasource)
+
+    @classmethod
+    def validity_intervals(cls, datasource=None, **labels):
+        left = cls.min(datasource, fields='time', **labels)
+        right = cls.max(datasource, fields='time', **labels)
+        if left is None or right is None:
+            return []
+        if 'version' not in labels or labels['version'] == 'ONLINE':
+            right = max(settings.clock.cutoff_datetime(), right)
+        return [rframe.Interval[datetime.datetime](left=left, right=right)]

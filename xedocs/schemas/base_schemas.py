@@ -10,33 +10,34 @@ def camel_to_snake(name):
 
 
 class XeDoc(rframe.BaseSchema):
-    _NAME: ClassVar = ""
+    _ALIAS: ClassVar = ""
     _XEDOCS = {}
 
     def __init_subclass__(cls) -> None:
 
-        if "_NAME" not in cls.__dict__:
-            cls._NAME = camel_to_snake(cls.__name__)
+        if "_ALIAS" not in cls.__dict__:
+            cls._ALIAS = camel_to_snake(cls.__name__)
 
-        if cls._NAME:
-            if cls._NAME not in cls._XEDOCS:
-                cls._XEDOCS[cls._NAME] = cls
+        if cls._ALIAS and cls._ALIAS not in cls._XEDOCS:
+            cls._XEDOCS[cls._ALIAS] = cls
+            
     @classmethod
     def default_datasource(cls):
         """This method is called when a query method is
         called and no datasource is passed.
         """
-        return settings.get_datasource_for(cls._NAME)
+        return settings.get_datasource_for(cls._ALIAS)
 
     @classmethod
     def default_collection_name(cls):
-        return cls._NAME
+        return cls._ALIAS
 
     @classmethod
     def help(cls):
         help_str = f"""
-            Schema name: {cls._NAME}
-            Index fields: {list(cls.get_index_fields())}
+            Schema name:   {cls.__name__}
+            Alias:         {cls._ALIAS}
+            Index fields:  {list(cls.get_index_fields())}
             Column fields: {list(cls.get_column_fields())}
         """
         print(help_str)

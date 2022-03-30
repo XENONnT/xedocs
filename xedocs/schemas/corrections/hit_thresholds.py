@@ -10,7 +10,7 @@ from .base_corrections import TimeIntervalCorrection, TimeSampledCorrection
 
 
 class HitThreshold(TimeIntervalCorrection):
-    _NAME = "hit_thresholds"
+    _ALIAS = "hit_thresholds"
     detector: str = rframe.Index()
     pmt: int = rframe.Index()
 

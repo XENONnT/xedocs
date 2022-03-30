@@ -23,4 +23,4 @@ from .base_references import BaseMap
 
 
 class S2XYMap(BaseMap):
-    _NAME = "s2_xy_maps"
+    _ALIAS = "s2_xy_maps"
