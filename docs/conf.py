@@ -92,9 +92,13 @@ todo_include_todos = False
 
 html_theme = "sphinx_material"
 # Material theme options (see theme.conf for more information)
+html_sidebars = {
+    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
+}
+
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
-    "nav_title": "xedocs",
+    "nav_title": "XeDocs",
     # Set you GA account ID to enable tracking
     # 'google_analytics_account': 'UA-XXXXX',
     # Specify a base_url used to generate sitemap.xml. If not
@@ -108,8 +112,10 @@ html_theme_options = {
     "repo_name": "xedocs",
     # Visible levels of the global TOC; -1 means unlimited
     "globaltoc_depth": 3,
+
     # If False, expand all TOC entries
-    "globaltoc_collapse": False,
+    "globaltoc_collapse": True,
+
     # If True, show hidden TOC entries
     "globaltoc_includehidden": False,
 }
