@@ -5,21 +5,41 @@ from pydantic import BaseSettings
 
 from .clock import SimpleClock
 
-DEFAULT_DATABASE = "cmt2"
-
-
 class Settings(BaseSettings):
     class Config:
         env_prefix = 'XEDOCS_'
 
-    default_database: str = DEFAULT_DATABASE
+    DEFAULT_DATABASE: str = "cmt2"
+
+    API_URL: str = 'http://api.xedocs.yossisprojects.com'
+    API_AUDIENCE: str = 'https://api.cmt.xenonnt.org'
+    API_WRITE: bool = False
+    API_TOKEN: str = None
+    API_USERNAME: str = None
+    API_PASSWORD: str = None
 
     clock = SimpleClock()
 
     datasources = {}
 
     def default_datasource(self, name):
-        return utilix.xent_collection(collection=name, database=self.default_database)
+        if utilix.uconfig is not None:
+            return utilix.xent_collection(collection=name,
+                                          database=self.DEFAULT_DATABASE)
+
+        import xedocs
+        token = self.API_TOKEN
+
+        if token is None:
+            readonly = not self.API_WRITE
+            token = xedocs.api_token(self.API_USERNAME,
+                                            self.API_PASSWORD,
+                                            readonly)
+            self.API_TOKEN = token
+
+        url = self.API_URL.rstrip('/') + '/' + name
+        return xedocs.api_client(url, token)
+
 
     def get_datasource_for(self, name):
         if name in self.datasources:

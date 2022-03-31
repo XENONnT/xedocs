@@ -9,7 +9,7 @@ Overriding default database
 
     from xedocs import settings
 
-    settings.default_database = 'some_database'
+    settings.DEFAULT_DATABASE = 'some_database'
 
 
 Overriding default datasources
