@@ -1,13 +1,18 @@
 Welcome to xedocs's documentation!
-======================================
+==================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   readme
+   introduction
    installation
-   usage
+   basic_usage
+   advanced_usage
+   corrections
+   api_server
+   settings
+   cli
    modules
    contributing
    authors
