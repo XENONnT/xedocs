@@ -1,6 +1,8 @@
 ===========================================
 XeDocs - AKA Corrections Managment Tool 2.0
 ===========================================
+xedocs is meant to replace cmt and bodega as well as helping tracking all shared documents especially if
+they need to be versioned.
 
 Basic Usage
 -----------

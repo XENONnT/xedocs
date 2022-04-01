@@ -19,9 +19,10 @@ def camel_to_snake(name):
 class BaseCorrectionSchema(VersionedXeDoc):
     """Base class for all correction schemas.
     This class ensures:
-        - the _ALIAS attribute is always unique
-        - schema includes a version index
-        - changing already set values is disallowed
+
+    - the _ALIAS attribute is always unique
+    - schema includes a version index
+    - changing already set values is disallowed
 
     """
 
@@ -58,11 +59,13 @@ class BaseCorrectionSchema(VersionedXeDoc):
 
 class TimeIntervalCorrection(BaseCorrectionSchema):
     """Base class for time-interval corrections
-        - Adds an Interval index of type datetime
-        - Enforces rules on updating intervals:
-          Can only change the right side of an interval
-          if right side is None and the new right side is
-          after the cutoff time (default is 2 hours after current time).
+
+    - Adds an Interval index of type datetime
+    - Enforces rules on updating intervals:
+    Can only change the right side of an interval
+    if right side is None and the new right side is
+    after the cutoff time (default is 2 hours after current time).
+
     The cutoff is set to prevent values changing after already being used
     for processing data.
     """
@@ -159,8 +162,10 @@ def can_extrapolate(doc):
 
 class TimeSampledCorrection(BaseCorrectionSchema):
     """Base class for time-sampled corrections
-        - Adds an interpolating index of type datetime
-        - Enforces rules on inserting new data points
+
+    - Adds an interpolating index of type datetime
+    - Enforces rules on inserting new data points
+
     Since extrapolation is allowed for ONLINE versions
     Inserting new points before the cutoff is disallowed
     This is to prevent setting values for times already

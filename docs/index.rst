@@ -13,7 +13,7 @@ Welcome to xedocs's documentation!
    api_server
    settings
    cli
-   modules
+   schemas
    contributing
    authors
    history

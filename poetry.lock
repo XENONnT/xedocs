@@ -42,6 +42,23 @@ tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)"
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "cloudpickle"]
 
 [[package]]
+name = "autodoc-pydantic"
+version = "1.6.1"
+description = "Seamlessly integrate pydantic models in your Sphinx documentation."
+category = "dev"
+optional = false
+python-versions = ">=3.6.1,<4.0.0"
+
+[package.dependencies]
+pydantic = ">=1.5"
+Sphinx = ">=3.4"
+
+[package.extras]
+docs = ["sphinx-rtd-theme (>=1.0,<2.0)", "sphinx-tabs (==3.2)", "sphinx-copybutton (>=0.4,<0.5)", "sphinxcontrib-mermaid (==0.7.1)"]
+dev = ["sphinx-rtd-theme (>=1.0,<2.0)", "sphinx-tabs (==3.2)", "sphinx-copybutton (>=0.4,<0.5)", "sphinxcontrib-mermaid (==0.7.1)", "pytest (>=6,<7)", "coverage (>=5,<6)", "flake8 (>=3,<4)", "tox (>=3,<4)"]
+test = ["pytest (>=6,<7)", "coverage (>=5,<6)"]
+
+[[package]]
 name = "babel"
 version = "2.9.1"
 description = "Internationalization utilities"
@@ -1390,7 +1407,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "5117d9677d1d8b79d86f0f2c32cc09071676053bfab35faf891149a28360c3e4"
+content-hash = "d87ab4ac1271e7c5c4798bffa21bde094b032e2355720d6d06607454f8cbbe84"
 
 [metadata.files]
 alabaster = [
@@ -1408,6 +1425,10 @@ atomicwrites = [
 attrs = [
     {file = "attrs-21.4.0-py2.py3-none-any.whl", hash = "sha256:2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"},
     {file = "attrs-21.4.0.tar.gz", hash = "sha256:626ba8234211db98e869df76230a137c4c40a12d72445c45d5f5b716f076e2fd"},
+]
+autodoc-pydantic = [
+    {file = "autodoc_pydantic-1.6.1-py3-none-any.whl", hash = "sha256:da885bf969f2f30d2a95e224386807ed4bf313649c449d6caa74637fddb83a17"},
+    {file = "autodoc_pydantic-1.6.1.tar.gz", hash = "sha256:ef84151a083d0d55f84b4fe211bcafb542df856f632a5ed7b4168fe508acdffa"},
 ]
 babel = [
     {file = "Babel-2.9.1-py2.py3-none-any.whl", hash = "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9"},
