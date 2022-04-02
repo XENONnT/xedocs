@@ -45,3 +45,6 @@ class XeDoc(rframe.BaseSchema):
 
 class VersionedXeDoc(XeDoc):
     version: str = rframe.Index()
+
+    def pre_delete(self, datasource):
+        raise IndexError('Versioned documents are append-only.')
