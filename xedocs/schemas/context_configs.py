@@ -7,7 +7,7 @@ from .plugin_lineages import PluginLineage
 
 
 class ContextLineage(VersionedXeDoc):
-    _NAME = "context_lineages"
+    _ALIAS = "context_lineages"
 
     strax: str = rframe.Index()
     straxen: str = rframe.Index()

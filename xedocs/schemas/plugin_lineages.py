@@ -6,14 +6,14 @@ from .base_schemas import VersionedXeDoc
 
 
 class PluginLineage(VersionedXeDoc):
-    _NAME = "plugin_lineages"
+    _ALIAS = "plugin_lineages"
 
     class Config:
         smart_union = True
 
     data_type: str = rframe.Index()
     lineage_hash: str = rframe.Index()
-    plugin_name: str = rframe.Index()
+    plugin_ALIAS: str = rframe.Index()
 
     config: Dict[str, Union[tuple, Any]]
     depends_on: Dict[str, str]

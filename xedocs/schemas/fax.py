@@ -8,7 +8,7 @@ from .base_schemas import VersionedXeDoc
 class FaxConfig(VersionedXeDoc):
     """fax configuration values for WFSim"""
 
-    _NAME = "fax_configs"
+    _ALIAS = "fax_configs"
 
     class Config:
         smart_union = True

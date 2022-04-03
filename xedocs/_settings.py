@@ -57,8 +57,8 @@ class Settings(BaseSettings):
             return self.datasources[name]
         return self.default_datasource(name)
 
-    def run_id_to_time(self, run_id):
-        if not uconfig:
+    def run_doc(self, run_id, fields=("start", "end")):
+        if uconfig is None:
             raise KeyError(f"Rundb not configured.")
         
         rundb = xent_collection()
@@ -68,12 +68,21 @@ class Settings(BaseSettings):
 
         query = {"number": run_id}
 
-        doc = rundb.find_one(query, projection={"start": 1, "end": 1})
+        doc = rundb.find_one(query, projection={f: 1 for f in fields})
         if not doc:
             raise KeyError(f"Run {run_id} not found.")
 
+        return doc
+
+    def run_id_to_time(self, run_id):
+        doc = self.run_doc(run_id)
         # use center time of run
         return doc["start"] + (doc["end"] - doc["start"]) / 2
+
+    def run_id_to_interval(self, run_id):
+        doc = self.run_doc(run_id)
+        # use center time of run
+        return doc["start"] , doc["end"]
 
     def extract_time(self, kwargs):
         if "time" in kwargs:

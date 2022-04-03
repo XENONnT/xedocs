@@ -11,7 +11,7 @@ class Bodega(VersionedXeDoc):
     values.
     """
 
-    _NAME = "bodega"
+    _ALIAS = "bodega"
 
     field: str = rframe.Index()
 

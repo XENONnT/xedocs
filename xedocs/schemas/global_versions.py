@@ -4,7 +4,7 @@ from .base_schemas import VersionedXeDoc
 
 
 class GlobalVersion(VersionedXeDoc):
-    _NAME = "global_versions"
+    _ALIAS = "global_versions"
 
     strax_version: str = rframe.Index()
     straxen_version: str = rframe.Index()
