@@ -19,10 +19,16 @@
 #
 import os
 import sys
+import xedocs
+
+from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(".."))
 
-import xedocs
+CONF_PY = Path(__file__)
+HERE = CONF_PY.parent
+ROOT = HERE.parent
+
 # import sphinx_material
 
 # -- General configuration ---------------------------------------------
@@ -39,6 +45,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinxcontrib.autodoc_pydantic",
     'jupyterlite_sphinx',
+    "sphinxext.rediraffe",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -98,6 +105,13 @@ html_sidebars = {
     "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
 }
 
+html_context = {
+    "github_user": "jmosbacher",
+    "github_repo": "xedocs",
+    "github_version": "master",
+    "doc_path": "docs",
+}
+
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
     "nav_title": "XeDocs",
@@ -127,7 +141,10 @@ jupyterlite_config = "jupyterlite_config.json"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_static_path = [
+    "_static",
+    "lite",
+    ]
 
 
 # -- Options for HTMLHelp output ---------------------------------------
