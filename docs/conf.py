@@ -41,6 +41,7 @@ ROOT = HERE.parent
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinxcontrib.autodoc_pydantic",
@@ -101,6 +102,7 @@ todo_include_todos = False
 
 html_theme = "sphinx_material"
 # Material theme options (see theme.conf for more information)
+
 html_sidebars = {
     "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
 }
