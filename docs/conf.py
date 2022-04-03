@@ -38,6 +38,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinxcontrib.autodoc_pydantic",
+    'jupyterlite_sphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -121,6 +122,7 @@ html_theme_options = {
     "globaltoc_includehidden": False,
 }
 
+jupyterlite_config = "jupyterlite_config.json"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -17,6 +17,7 @@ Welcome to xedocs's documentation!
    contributing
    authors
    history
+   playground
 
 Indices and tables
 ==================
