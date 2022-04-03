@@ -1,5 +1,15 @@
+from ast import Import
 import pandas as pd
-import utilix
+
+try:
+    import utilix
+    uconfig = utilix.uconfig
+    from utilix import xent_collection
+
+except ImportError:
+    uconfig = None
+    def xent_collection(**kwargs):
+        raise RuntimeError('utilix not configured')
 
 from pydantic import BaseSettings
 
@@ -23,9 +33,10 @@ class Settings(BaseSettings):
     datasources = {}
 
     def default_datasource(self, name):
-        if utilix.uconfig is not None:
-            return utilix.xent_collection(collection=name,
-                                          database=self.DEFAULT_DATABASE)
+
+        if uconfig is not None:
+            return xent_collection(collection=name,
+                                    database=self.DEFAULT_DATABASE)
 
         import xedocs
         token = self.API_TOKEN
@@ -47,7 +58,10 @@ class Settings(BaseSettings):
         return self.default_datasource(name)
 
     def run_id_to_time(self, run_id):
-        rundb = utilix.xent_collection()
+        if not uconfig:
+            raise KeyError(f"Rundb not configured.")
+        
+        rundb = xent_collection()
 
         if isinstance(run_id, str):
             run_id = int(run_id)

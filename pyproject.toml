@@ -21,9 +21,8 @@ packages = [
 python = ">=3.8,<3.11"
 click = "*"
 rframe = "^0.1.11"
-utilix = "^0.6.7"
 rich = "^12.0.1"
-pandas = "^1.4.1"
+pandas = "*"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
