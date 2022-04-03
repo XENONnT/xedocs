@@ -5,3 +5,4 @@ numpydoc
 sphinx
 sphinx-material
 nbsphinx
+autodoc-pydantic
