@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     DEFAULT_DATABASE: str = "cmt2"
 
-    API_URL: str = 'http://api.xedocs.yossisprojects.com'
+    API_URL: str = 'https://api.xedocs.yossisprojects.com'
     API_AUDIENCE: str = 'https://api.cmt.xenonnt.org'
     API_WRITE: bool = False
     API_TOKEN: str = None
@@ -33,8 +33,8 @@ class Settings(BaseSettings):
         if token is None:
             readonly = not self.API_WRITE
             token = xedocs.api_token(self.API_USERNAME,
-                                            self.API_PASSWORD,
-                                            readonly)
+                                     self.API_PASSWORD,
+                                     readonly)
             self.API_TOKEN = token
 
         url = self.API_URL.rstrip('/') + '/' + name

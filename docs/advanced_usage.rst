@@ -44,7 +44,8 @@ indexed by the experiment, detector and version
 
             # add any extra logic/checks to perform here 
 
-Database Queried
+
+Database Queries
 ----------------
 
 Once we have a schema, we can use it to build database queries on any of the supported data backends
@@ -58,7 +59,7 @@ Once we have a schema, we can use it to build database queries on any of the sup
     # or 
     db = pd.read_csv("pandas_dataframe.csv")
 
-    doc = ExampleSchema.find(db, experiment=..., detector=..., version=...)
+    doc = ExampleSchema.find(datasource=db, experiment=..., detector=..., version=...)
 
 The RemoteFrame
 ---------------
@@ -122,19 +123,3 @@ The interval index also supports passing a tuple/slice/begin,end keywords to que
     df = rf.sel(version=version, time=(time1,time2))
     df = rf.loc[version, time1:time2]
     df = rf.get(version=version, begin=time1, end=time2)
-
-
-Finding a document
-------------------
-
-Schemas will query the mongodb cmt2 database by default, if no explicit datasource is given.
-
-.. code-block:: python
-    
-    drift_velocity = xedocs.Bodega.find_one(field='drift_velocity', version='v1')
-    
-    # Returns a Bodega object with attributes value, description etc.
-    drift_velocity.value
-
-    all_v1_documents = xedocs.Bodega.find(version='v1')
-

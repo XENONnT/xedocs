@@ -44,17 +44,42 @@ Read data from the default data source
     pmt1_gain = doc.value
 
 
-Read data from alternative data sources
+You can also query documents directly from the scham class, 
+Schemas will query the mongodb cmt2 database by default, if no explicit datasource is given.
+
+.. code-block:: python
+    
+    drift_velocity = xedocs.Bodega.find_one(field='drift_velocity', version='v1')
+    
+    # Returns a Bodega object with attributes value, description etc.
+    drift_velocity.value
+
+    all_v1_documents = xedocs.Bodega.find(version='v1')
+
+
+
+Read data from alternative data sources specified by path, 
+e.g csv files which will be loaded by pandas.
 
 .. code-block:: python
 
     import xedocs
     
-    g1_doc = xedocs.find_one('bodega', datasource='/path/to/file.json', version='v1', field='g1')
+    g1_doc = xedocs.find_one('bodega', datasource='/path/to/file.csv', version='v1', field='g1')
     g1_value = g1_doc.value
     g1_error = g1_doc.uncertainty
 
 The path can also be a github URL or any other URL supported by fsspec. 
+
+.. code-block:: python
+
+    import xedocs
+    
+    g1_doc = xedocs.find_one('bodega',
+                             datasource='github://org:repo@/path/to/file.csv', 
+                             version='v1', 
+                             field='g1')
+
 
 Supported data sources
 
