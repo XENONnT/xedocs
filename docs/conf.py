@@ -114,6 +114,13 @@ html_context = {
     "doc_path": "docs",
 }
 
+rediraffe_redirects = {
+    "try/index": "lite/index",
+    "try/lab/index": "lite/lab/index",
+    "try/retro/index": "lite/retro/tree/index",
+    "try/repl/index": "lite/repl/index",
+}
+
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
     "nav_title": "XeDocs",
