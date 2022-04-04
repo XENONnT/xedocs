@@ -34,7 +34,7 @@ def mongo_uri_not_set():
     return "TEST_MONGO_URI" not in os.environ
 
 
-def api_server_no_set():
+def api_server_not_set():
     return "TEST_CMT_SERVER_URI" not in os.environ
 
 

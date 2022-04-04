@@ -21,6 +21,8 @@ import os
 import sys
 import xedocs
 
+from sphinx.application import Sphinx
+
 from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(".."))
@@ -150,10 +152,7 @@ jupyterlite_config = "jupyterlite_config.json"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = [
-    "_static",
-    "lite",
-    ]
+html_static_path = ["_static",]
 
 
 # -- Options for HTMLHelp output ---------------------------------------
@@ -210,3 +209,17 @@ texinfo_documents = [
         "Miscellaneous",
     ),
 ]
+
+
+# def copy_notebooks(app: Sphinx, error):
+#     """Copy notebooks to the _static directory."""
+#     import shutil
+#     import glob
+#     print("Copying notebooks to lite folder")
+#     notebooks = glob.glob("../*.ipynb")
+#     for notebook in notebooks:
+#         shutil.copy(notebook, "docs/_build/lite/lab")
+#     print(f"copied {notebooks}")
+
+# def setup(app):
+#     app.connect("build-finished", copy_notebooks)
