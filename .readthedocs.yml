@@ -16,7 +16,3 @@ build:
 
 conda:
   environment: docs/environment.yml
-
-# python:
-#    install:
-#    - requirements: docs/requirements.txt
