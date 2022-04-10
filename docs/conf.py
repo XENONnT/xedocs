@@ -149,6 +149,13 @@ html_theme_options = {
 
     # If True, show hidden TOC entries
     "globaltoc_includehidden": False,
+    "nav_links": [
+            {
+            'title': 'rframe',
+            'href': "https://rframe.readthedocs.io",
+            'internal': False,
+            }
+        ]
 }
 
 jupyterlite_config = "jupyterlite_config.json"
