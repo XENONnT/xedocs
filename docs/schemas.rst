@@ -1,5 +1,5 @@
-Defined schemas
-===============
+Schema Definitions
+==================
 
 .. automodule:: xedocs.schemas
     :members:

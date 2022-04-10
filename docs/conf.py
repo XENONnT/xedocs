@@ -116,22 +116,26 @@ html_context = {
     "doc_path": "docs",
 }
 
-rediraffe_redirects = {
-    "try/index": "lite/index",
-    "try/lab/index": "lite/lab/index",
-    "try/retro/index": "lite/retro/tree/index",
-    "try/repl/index": "lite/repl/index",
-}
+# rediraffe_redirects = {
+#     "try/index": "lite/index",
+#     "try/lab/index": "lite/lab/index",
+#     "try/retro/index": "lite/retro/tree/index",
+#     "try/repl/index": "lite/repl/index",
+# }
+
+html_logo = '_static/xenonlogo.png'
+html_favicon = '_static/favicon.ico'
 
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
-    "nav_title": "XeDocs",
+    "nav_title": "XeDocs - XENON shared documents",
     # Set you GA account ID to enable tracking
     # 'google_analytics_account': 'UA-XXXXX',
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
     "base_url": "https://project.github.io/XENONnT",
     # Set the color and the accent color
+    "theme_color" : "000000",
     "color_primary": "blue-grey",
     "color_accent": "blue",
     # Set the repo location to get a badge with stats

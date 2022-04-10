@@ -1,6 +1,34 @@
+Defining schemas
+================
+
+Xenon shared documents are defined using a schema that inherits from xedocs.XeDoc or one of its subclasses:
+
+.. list-table:: Xedoc classes
+    :widths: 25 25 50
+    :header-rows: 1
+
+    * - Class
+      - Base classes
+      - Used for
+    * - XeDoc
+      - rframe.BaseSchema
+      - General documents/metadata.
+    * - VersionedXeDoc
+      - XeDoc
+      - Versioned documents.
+    * - BaseCorrectionSchema
+      - VersionedXeDoc
+      - Constant corrections.
+    * - TimeSampledCorrection
+      - BaseCorrectionSchema
+      - Time dependent corrections where time dependence is sampled and linearly interpolated between samples.
+    * - TimeIntervalCorrection
+      - BaseCorrectionSchema
+      - Time dependent corrections where time dependence is interval based.
+
 
 Corrections
-===========
+-----------
 
 Correction definitions should subclass the ``xedocs.BaseCorrectionSchema`` or 
 one of its subclasses and added via PR to xedocs so that they can be used in processing. 
