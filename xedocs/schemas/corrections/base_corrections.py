@@ -30,7 +30,7 @@ class BaseCorrectionSchema(VersionedXeDoc):
     _CORRECTIONS = {}
 
 
-    created_date: datetime.datetime = datetime.datetime.utcnow()
+    created_date: datetime.datetime = settings.clock.current_datetime()
     comments: str = ""
 
     def __init_subclass__(cls) -> None:
