@@ -32,30 +32,40 @@ class Settings(BaseSettings):
 
     datasources = {}
 
-    def default_datasource(self, name):
-
-        if uconfig is not None:
-            return xent_collection(collection=name,
-                                    database=self.DEFAULT_DATABASE)
-
+    @property
+    def api_token(self):
         import xedocs
-        token = self.API_TOKEN
 
-        if token is None:
+        if self.API_TOKEN is None:
             readonly = not self.API_WRITE
             token = xedocs.api_token(self.API_USERNAME,
                                      self.API_PASSWORD,
                                      readonly)
             self.API_TOKEN = token
 
-        url = self.API_URL.rstrip('/') + '/' + name
-        return xedocs.api_client(url, token)
+        return self.API_TOKEN
+
+    def default_datasource(self, schema):
+
+        if uconfig is not None:
+            database = schema.default_database_name()
+            collection = schema.default_collection_name()
+
+            return xent_collection(collection=collection,
+                                   database=database)
+
+        import xedocs
+
+        url = self.API_URL.rstrip('/') + '/' + schema._ALIAS
+
+        return xedocs.api_client(url, self.api_token)
 
 
-    def get_datasource_for(self, name):
-        if name in self.datasources:
-            return self.datasources[name]
-        return self.default_datasource(name)
+    def get_datasource_for(self, schema):
+        if schema._ALIAS in self.datasources:
+            return self.datasources[schema._ALIAS]
+        
+        return self.default_datasource(schema)
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:
@@ -76,18 +86,18 @@ class Settings(BaseSettings):
 
     def run_id_to_time(self, run_id):
         doc = self.run_doc(run_id)
+
         # use center time of run
         return doc["start"] + (doc["end"] - doc["start"]) / 2
 
     def run_id_to_interval(self, run_id):
         doc = self.run_doc(run_id)
-        # use center time of run
         return doc["start"] , doc["end"]
 
     def extract_time(self, kwargs):
         if "time" in kwargs:
             time = kwargs.pop("time")
-        if "run_id" in kwargs:
+        elif "run_id" in kwargs:
             time = self.run_id_to_time(kwargs.pop("run_id"))
         else:
             return None

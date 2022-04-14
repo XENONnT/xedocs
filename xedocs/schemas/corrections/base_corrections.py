@@ -40,6 +40,9 @@ class BaseCorrectionSchema(VersionedXeDoc):
 
         super().__init_subclass__()
 
+    @classmethod
+    def default_database_name(cls):
+        return 'cmt2'
 
     def pre_update(self, datasource, new):
         """This method is called if the `new` document is

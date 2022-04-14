@@ -26,7 +26,11 @@ class XeDoc(rframe.BaseSchema):
         """This method is called when a query method is
         called and no datasource is passed.
         """
-        return settings.get_datasource_for(cls._ALIAS)
+        return settings.get_datasource_for(cls)
+
+    @classmethod
+    def default_database_name(cls):
+        return 'cmt2'
 
     @classmethod
     def default_collection_name(cls):

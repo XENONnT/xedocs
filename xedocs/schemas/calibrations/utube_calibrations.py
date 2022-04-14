@@ -1,6 +1,6 @@
 
 import datetime
-from typing import Literal
+from typing import List, Literal
 
 import rframe
 from pydantic import validator
@@ -11,7 +11,9 @@ from ..._settings import settings
 class UtubeCalibation(XeDoc):
     """Calibrations performed inside the utube
     """
-    
+    class Config:
+        allow_population_by_field_name = True
+
     _ALIAS = "utube_calibrations"
 
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
