@@ -74,3 +74,55 @@ Examples:
 
     # will return the map being referenced.
     fdc_map = ref.load()
+
+Calibrations
+------------
+
+The calibration collections hold information about calibrations that were performed. 
+All calibration schemas should inherit from ``xedocs.BaseCalibrationSchema`` or one of its subclasses.
+
+The base schema includes a number of shared indices and fields. 
+It also includes a validation method for the time field that allows you to set 
+the time interval by passing the run_id field which will pull the time interval from the run database.
+
+.. code-block:: python
+
+    class BaseCalibation(XeDoc):
+        """Base class for calibration metadata
+        """
+
+        class Config:
+            allow_population_by_field_name = True
+
+        time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
+        source: str = rframe.Index()
+
+        operator: str
+        comments: str
+
+        @validator('time', pre=True)
+        def run_id_to_time(cls, v):
+            """Convert run id to time"""
+            if isinstance(v, (str, int)):
+                try:
+                    v = settings.run_id_to_interval(v)
+                except:
+                    pass
+            return v
+
+
+Example: Utube calibrations
+
+
+.. code-block:: python
+
+    class UtubeCalibation(BaseCalibation):
+        """Calibrations performed inside the utube
+        """
+
+        _ALIAS = "utube_calibrations"
+
+        tube: Literal['top','bottom'] = rframe.Index()
+        direction: Literal['cw','ccw'] = rframe.Index()
+
+        depth_cm: float
