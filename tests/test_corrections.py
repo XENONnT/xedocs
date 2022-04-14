@@ -1,3 +1,4 @@
+import time
 import datetime
 import numbers
 import os
@@ -240,17 +241,20 @@ class TestCorrections(unittest.TestCase):
         for doc in docs:
             clock = xedocs.settings.clock
 
-            if clock.after_cutoff(doc.time, buffer=5):
+            if clock.after_cutoff(doc.time, buffer=2):
                 doc.save(datasource)
 
             # If the time is before the cutoff, should raise an error
             elif not clock.after_cutoff(doc.time):
-                current = SomeSampledCorrection.find(datasource, **doc.index_labels)
-                error = UpdateError if current else InsertionError
-                with self.assertRaises(error):
+                current = SomeSampledCorrection.find_one(datasource, **doc.index_labels)
+                if current and current.value == doc.value:
                     doc.save(datasource)
-                # insert data manually for testing
-                datasource.insert_one(doc.dict())
+                else:
+                    error = UpdateError if current else InsertionError
+                    with self.assertRaises(error):
+                        doc.save(datasource)
+                    # insert data manually for testing
+                    datasource.insert_one(doc.dict())
                 if not clock.after_cutoff(doc.time, buffer=-5):
                     now = clock.current_datetime()
                     found = SomeSampledCorrection.find(datasource, time=now)

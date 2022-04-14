@@ -220,12 +220,13 @@ class TimeSampledCorrection(BaseCorrectionSchema):
             assert clock.after_cutoff(
                 self.time
             ), f"Can only insert online \
-                                                    values after {cutoff}."
+                values after {cutoff}."
 
             new_index = self.index_labels
             new_index["time"] = clock.cutoff_datetime(buffer=1)
 
             existing = self.find(datasource, **new_index)
+            
             # If cutoff time is already set, the values may have been
             # used already for processing. We add a sample at the
             # cutoff time to force interpolation and extrapolation
