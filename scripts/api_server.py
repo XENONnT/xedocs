@@ -70,13 +70,13 @@ for name, schema in schemas.items():
     router = rframe.SchemaRouter(
         schema,
         collection,
-        prefix=f"{api_version}/{name}",
+        prefix=f"/{api_version}/{name}",
         can_read=Depends(verfiy_read_auth),
         can_write=Depends(verfiy_write_auth),
     )
     app.include_router(router)
 
 # Root endpoint serves list of schema names
-@app.get("/", response_model=List[str])
+@app.get(f"/{api_version}", response_model=List[str])
 def list_schemas():
     return list(schemas)
