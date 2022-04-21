@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     DEFAULT_DATABASE: str = "cmt2"
 
     API_URL: str = 'https://api.xedocs.yossisprojects.com'
+    API_VERSION: str = 'v1'
     API_AUDIENCE: str = 'https://api.cmt.xenonnt.org'
     API_WRITE: bool = False
     API_TOKEN: str = None
@@ -56,7 +57,7 @@ class Settings(BaseSettings):
 
         import xedocs
 
-        url = self.API_URL.rstrip('/') + '/' + schema._ALIAS
+        url = '/'.join([self.API_URL.rstrip('/'), self.API_VERSION, schema._ALIAS ])
 
         return xedocs.api_client(url, self.api_token)
 
