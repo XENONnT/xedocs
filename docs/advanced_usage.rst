@@ -10,6 +10,9 @@ Lets say we want to store a collection of versioned documents
 indexed by the experiment, detector and version
 
 .. code-block:: python
+    import rframe
+    from typing import Literal
+
 
     class ExampleSchema(rframe.BaseSchema):
         name = 'simple_dataframe'
@@ -55,7 +58,7 @@ Once we have a schema, we can use it to build database queries on any of the sup
     import pymongo
     import pandas as pd
 
-    db = pymongo.MongoClient()['cmt2']
+    db = pymongo.MongoClient()['cmt2']['simple_dataframe']
     # or 
     db = pd.read_csv("pandas_dataframe.csv")
 
