@@ -15,7 +15,7 @@ indexed by the experiment, detector and version
 
 
     class ExampleSchema(rframe.BaseSchema):
-        name = 'simple_dataframe'
+        _ALIAS = 'simple_dataframe'
 
         # The simplest index, matches on exact value. 
         # This is how we define a versioned document without 
