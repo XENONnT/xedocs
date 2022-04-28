@@ -33,12 +33,11 @@ class SchemaFrames:
 
     def get_rf(self, name):
         if name not in self._cache:
-            schema = self.schemas[name]
-            if self.db is None:
-                datasource = settings.get_datasource_for(name)
-            else:
-                datasource = self.db[name]
-            self._cache[name] = schema.rframe(datasource)
+            import xedocs
+
+            schema = xedocs.find_schema(name)
+            self._cache[name] = schema.rframe()
+            
         return self._cache[name]
         
     def __getitem__(self, key):
