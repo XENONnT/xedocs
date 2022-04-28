@@ -46,6 +46,13 @@ class Settings(BaseSettings):
 
         return self.API_TOKEN
 
+    def api_client(self, schema):
+        import xedocs
+
+        url = '/'.join([self.API_URL.rstrip('/'), self.API_VERSION, schema._ALIAS ])
+
+        return xedocs.api_client(url, self.api_token)
+
     def default_datasource(self, schema):
 
         if uconfig is not None:
@@ -54,13 +61,7 @@ class Settings(BaseSettings):
 
             return xent_collection(collection=collection,
                                    database=database)
-
-        import xedocs
-
-        url = '/'.join([self.API_URL.rstrip('/'), self.API_VERSION, schema._ALIAS ])
-
-        return xedocs.api_client(url, self.api_token)
-
+        return self.api_client(schema)
 
     def get_datasource_for(self, schema):
         if schema._ALIAS in self.datasources:

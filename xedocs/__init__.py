@@ -10,4 +10,3 @@ from . import schemas
 from .schemas import *
 from .utils import *
 from .xedocs import *
-from .api import api_client, api_token
