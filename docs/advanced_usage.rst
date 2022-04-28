@@ -51,18 +51,42 @@ indexed by the experiment, detector and version
 Database Queries
 ----------------
 
-Once we have a schema, we can use it to build database queries on any of the supported data backends
+Once we have a schema, we can use it to query any of the supported data backends
+This allows for a consistent interface to data stored in any backend.
 
 .. code-block:: python
 
     import pymongo
-    import pandas as pd
+    
 
     db = pymongo.MongoClient()['cmt2']['simple_dataframe']
+
     # or 
     db = pd.read_csv("pandas_dataframe.csv")
 
-    doc = ExampleSchema.find(datasource=db, experiment=..., detector=..., version=...)
+    docs = ExampleSchema.find(datasource=db, experiment=..., detector=..., version=...)
+
+    # or
+    doc = ExampleSchema.find_one(datasource=db, experiment=..., detector=..., version=...)
+
+
+Inserting data
+--------------
+A schema can also help you insert new data into a data source, e.g. a mogodb collection.
+
+.. code-block:: python
+
+    import pymongo
+
+    db = pymongo.MongoClient()['cmt2']['simple_dataframe']
+
+    doc = ExampleSchema(experiment=..., detector=..., version=..., value=..., ...)
+
+    doc.save(db) # this will insert the document into the collection
+
+The details of how to insert data into are handled by the framework so that you can use
+the same code independent of the data source.
+
 
 The RemoteFrame
 ---------------
