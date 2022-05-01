@@ -30,7 +30,7 @@ class XeDoc(rframe.BaseSchema):
 
     @classmethod
     def default_database_name(cls):
-        return 'cmt2'
+        return 'xedocs'
 
     @classmethod
     def default_collection_name(cls):

@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = 'XEDOCS_'
 
-    DEFAULT_DATABASE: str = "cmt2"
+    DEFAULT_DATABASE: str = "xedocs"
 
     API_URL: str = 'https://api.xedocs.yossisprojects.com'
     API_VERSION: str = 'v1'
@@ -57,6 +57,8 @@ class Settings(BaseSettings):
 
         if uconfig is not None:
             database = schema.default_database_name()
+            if database is None:
+                database = self.DEFAULT_DATABASE
             collection = schema.default_collection_name()
 
             return xent_collection(collection=collection,
