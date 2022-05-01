@@ -14,7 +14,7 @@ class PmtGain(TimeSampledCorrection):
     # selections on the pmt number. Since this is a index field
     # versioning will be indepentent for each pmt
 
-    detector: Literal["tpc", "nveto", "muveto"] = rframe.Index()
+    detector: Literal["tpc", "neutron_veto", "muon_veto"] = rframe.Index()
     pmt: int = rframe.Index()
 
     value: float
