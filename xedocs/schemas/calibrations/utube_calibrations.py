@@ -3,10 +3,10 @@ from typing import Literal
 
 import rframe
 
-from .base_calibrations import BaseCalibation
+from .base_calibrations import BaseCalibration
 
 
-class UtubeCalibation(BaseCalibation):
+class UtubeCalibation(BaseCalibration):
     """Calibrations performed inside the utube
     """
 

@@ -48,6 +48,8 @@ class XeDoc(rframe.BaseSchema):
 
 
 class VersionedXeDoc(XeDoc):
+    _ALIAS = ""
+    
     version: str = rframe.Index()
 
     def pre_delete(self, datasource):

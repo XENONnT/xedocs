@@ -8,9 +8,10 @@ from ..base_schemas import XeDoc
 from ..._settings import settings
 
 
-class BaseCalibation(XeDoc):
+class BaseCalibration(XeDoc):
     """Base class for calibration metadata
     """
+    _ALIAS = ""
 
     class Config:
         allow_population_by_field_name = True
@@ -30,3 +31,13 @@ class BaseCalibation(XeDoc):
             except:
                 pass
         return v
+
+
+class InternalCalibration(BaseCalibration):
+    """Internal diffused Calibrations
+    """
+
+    _ALIAS = ""
+
+    valve_opened: datetime.datetime
+    valve_closed: datetime.datetime
