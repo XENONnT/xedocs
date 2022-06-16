@@ -3,10 +3,19 @@ import datetime
 
 import rframe
 from pydantic import validator
+from typing import Literal
 
 from ..base_schemas import XeDoc
 from ..._settings import settings
 
+SOURCE_TYPE = Literal['ambe',
+ 'ar-37',
+ 'kr-83m',
+ 'led',
+ 'noise',
+ 'none',
+ 'rn-220',
+ 'th-232',]
 
 class BaseCalibration(XeDoc):
     """Base class for calibration metadata
@@ -17,7 +26,7 @@ class BaseCalibration(XeDoc):
         allow_population_by_field_name = True
 
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
-    source: str = rframe.Index()
+    source: SOURCE_TYPE
 
     operator: str
     comments: str
@@ -33,11 +42,3 @@ class BaseCalibration(XeDoc):
         return v
 
 
-class InternalCalibration(BaseCalibration):
-    """Internal diffused Calibrations
-    """
-
-    _ALIAS = ""
-
-    valve_opened: datetime.datetime
-    valve_closed: datetime.datetime
