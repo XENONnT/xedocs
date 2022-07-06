@@ -12,10 +12,10 @@ Time dependence of Extraction Efficiency generated from Kr83m calibration data a
 
 """
 
-from .base_corrections import TimeIntervalCorrection
+from .base_corrections import TimeSampledCorrection
 
 
-class RelExtractionEff(TimeIntervalCorrection):
+class RelExtractionEff(TimeSampledCorrection):
     _ALIAS = "rel_extraction_effs"
 
     value: float

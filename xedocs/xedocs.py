@@ -1,6 +1,7 @@
 """Main module."""
 
-from typing import ClassVar
+from typing import ClassVar, Union
+import pandas as pd
 
 from ._settings import settings
 from .schemas import XeDoc
@@ -39,7 +40,22 @@ def find_one(schema, datasource=None, **kwargs):
     labels, extra = schema.extract_labels(**kwargs)
     return schema.find_one(datasource, **labels)
 
+def insert_docs(schema: str, docs: Union[list,dict,pd.DataFrame], datasource=None):
+    if isinstance(docs, pd.DataFrame):
+        docs = docs.to_dict(orient='records')
+    if not isinstance(docs, list):
+        docs = [docs]
+    if isinstance(schema, str):
+        schema = find_schema(schema)
 
+    inserted = []
+    for data in docs:
+        doc = schema(**data)
+        doc.save(datasource)
+        inserted.append(doc)
+
+    return inserted
+    
 def list_schemas():
     return list(XeDoc._XEDOCS)
 

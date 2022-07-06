@@ -8,9 +8,9 @@ See [description in the Team C overview page](https://xe1t-wiki.lngs.infn.it/dok
 
 """
 
-from .base_corrections import TimeIntervalCorrection
+from .base_corrections import TimeSampledCorrection
 
 
-class ElectronLifetime(TimeIntervalCorrection):
+class ElectronLifetime(TimeSampledCorrection):
     _ALIAS = "electron_lifetimes"
     value: float

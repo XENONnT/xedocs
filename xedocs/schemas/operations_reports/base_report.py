@@ -3,22 +3,13 @@ import datetime
 import pydantic
 import rframe
 from pydantic import validator
-from typing import Literal
 
 from ..base_schemas import XeDoc
 from ..._settings import settings
 
-SOURCE_TYPE = Literal['ambe',
- 'ar-37',
- 'kr-83m',
- 'led',
- 'noise',
- 'none',
- 'rn-220',
- 'th-232',]
 
-class BaseCalibration(XeDoc):
-    """Base class for calibration metadata
+class BaseOperationsReport(XeDoc):
+    """Base class for operations report metadata
     """
     _ALIAS = ""
 
@@ -26,7 +17,6 @@ class BaseCalibration(XeDoc):
         allow_population_by_field_name = True
 
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
-    source: SOURCE_TYPE
 
     operator: str = pydantic.Field(min_length=1, max_length=60)
     comments: str

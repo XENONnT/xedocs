@@ -17,7 +17,7 @@ class FaxConfig(VersionedXeDoc):
     experiment: Literal["1t", "nt", "nt_design"] = rframe.Index(default="nt")
     detector: Literal["tpc", "muon_veto", "neutron_veto"] = rframe.Index(default="tpc")
     science_run: str = rframe.Index()
-    version: str = rframe.Index(default="nt")
+    version: str = rframe.Index(default="v1")
 
     value: Union[int, float, bool, str, list, dict]
     resource: str

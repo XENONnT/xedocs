@@ -6,7 +6,7 @@ import rframe
 from .base_calibrations import BaseCalibration
 
 
-class UtubeCalibation(BaseCalibration):
+class UtubeCalibration(BaseCalibration):
     """Calibrations performed inside the utube
     """
 

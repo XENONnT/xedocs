@@ -12,6 +12,9 @@ def camel_to_snake(name):
 class XeDoc(rframe.BaseSchema):
     _ALIAS: ClassVar = ""
     _XEDOCS = {}
+    
+    class Config:
+        allow_population_by_field_name = True
 
     def __init_subclass__(cls) -> None:
 

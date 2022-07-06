@@ -13,14 +13,14 @@ See note on drift velocity, diffusion constant, and drift time at the gate
 
 import rframe
 
-from .base_corrections import TimeIntervalCorrection, TimeSampledCorrection
+from .base_corrections import TimeSampledCorrection
 
 
-class ElectronDriftVelocity(TimeIntervalCorrection):
+class ElectronDriftVelocity(TimeSampledCorrection):
     _ALIAS = "electron_drift_velocities"
     value: float
 
 
-class DriftTimeGate(TimeIntervalCorrection):
+class DriftTimeGate(TimeSampledCorrection):
     _ALIAS = "electron_drift_time_gates"
     value: float

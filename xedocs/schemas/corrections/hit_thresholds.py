@@ -6,10 +6,10 @@
 
 import rframe
 
-from .base_corrections import TimeIntervalCorrection, TimeSampledCorrection
+from .base_corrections import TimeSampledCorrection
 
 
-class HitThreshold(TimeIntervalCorrection):
+class HitThreshold(TimeSampledCorrection):
     _ALIAS = "hit_thresholds"
     detector: str = rframe.Index()
     pmt: int = rframe.Index()
