@@ -2,7 +2,7 @@
 
 __author__ = """Yossi Mosbacher"""
 __email__ = "joe.mosbacher@gmail.com"
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 from ast import Import
 from ._settings import settings
