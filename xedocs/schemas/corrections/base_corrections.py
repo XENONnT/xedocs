@@ -55,6 +55,8 @@ class BaseCorrectionSchema(VersionedXeDoc):
             index = ", ".join([f"{k}={v}" for k, v in self.index_labels.items()])
             raise IndexError(f"Values already set for {index}")
 
+    def pre_delete(self, datasource, **kwargs):
+        raise RuntimeError('Corrections are append only.')
 
 class TimeIntervalCorrection(BaseCorrectionSchema):
     """Base class for time-interval corrections
