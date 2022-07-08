@@ -129,7 +129,6 @@ def json_serializable(value: pd.Interval):
 def json_serializable(value: rframe.Interval):
     return (value.left, value.right)
 
-
 @dispatch
 def json_serializable(value: list):
     return [json_serializable(v) for v in value]

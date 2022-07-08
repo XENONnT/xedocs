@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
         if self.API_TOKEN is None:
             readonly = not self.API_WRITE
-            token = xedocs.api_token(self.API_USERNAME,
+            token = xedocs.api.api_token(self.API_USERNAME,
                                      self.API_PASSWORD,
                                      readonly)
             self.API_TOKEN = token
@@ -51,7 +51,7 @@ class Settings(BaseSettings):
 
         url = '/'.join([self.API_URL.rstrip('/'), self.API_VERSION, schema._ALIAS ])
 
-        return xedocs.api_client(url, self.api_token)
+        return xedocs.api.api_client(url, self.api_token)
 
     def default_datasource(self, schema):
 

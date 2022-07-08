@@ -42,7 +42,7 @@ def find_one(schema, datasource=None, **kwargs):
 
 def insert_docs(schema: str, docs: Union[list,dict,pd.DataFrame], datasource=None):
     if isinstance(docs, pd.DataFrame):
-        docs = docs.to_dict(orient='records')
+        docs = docs.reset_index().to_dict(orient='records')
     if not isinstance(docs, list):
         docs = [docs]
     if isinstance(schema, str):
@@ -55,7 +55,7 @@ def insert_docs(schema: str, docs: Union[list,dict,pd.DataFrame], datasource=Non
         inserted.append(doc)
 
     return inserted
-    
+
 def list_schemas():
     return list(XeDoc._XEDOCS)
 
@@ -66,9 +66,12 @@ def all_schemas():
 
 def find_schema(name):
     schema = XeDoc._XEDOCS.get(name, None)
-    if schema is None:
-        raise KeyError(f"Correction with name {name} not found.")
-    return schema
+    if schema is not None:
+        return schema
+    for schema in XeDoc._XEDOCS.values():
+        if schema.__name__ == name:
+            return schema
+    raise KeyError(f"Correction with name {name} not found.")
 
 
 def help(schema):

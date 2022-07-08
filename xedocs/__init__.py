@@ -11,6 +11,7 @@ from . import schemas
 from .schemas import *
 from .utils import *
 from .xedocs import *
+from . import api
 
 try:
     from . import panel_editor
