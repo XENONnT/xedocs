@@ -225,7 +225,7 @@ class TestCorrections(unittest.TestCase):
                 value=floats,
             ),
             min_size=3,
-            unique_by=lambda x: (x.version, str(x.time)),
+            unique_by=lambda x: str(x.time),
         )
     )
     @settings(deadline=None)
