@@ -154,7 +154,9 @@ class TestCorrections(unittest.TestCase):
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     @given(
         st.lists(
-            st.builds(SomeSampledCorrection, version=st.just("v1"), value=floats),
+            st.builds(SomeSampledCorrection,
+                 version=st.just("v1"),
+                 value=floats),
             min_size=3,
             unique_by=lambda x: x.time,
         )
@@ -247,11 +249,12 @@ class TestCorrections(unittest.TestCase):
             # If the time is before the cutoff, should raise an error
             elif not clock.after_cutoff(doc.time):
                 current = SomeSampledCorrection.find_one(datasource, **doc.index_labels)
-                if current and current.value == doc.value:
+                if current and current.same_values(doc):
                     doc.save(datasource)
                 else:
                     error = UpdateError if current else InsertionError
                     with self.assertRaises(error):
+
                         doc.save(datasource)
                     # insert data manually for testing
                     datasource.insert_one(doc.dict())

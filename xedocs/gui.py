@@ -629,18 +629,18 @@ class ModelTableEditor(param.Parameterized):
         skip = self.page*self.page_size
         self.docs = self.model.find(**self.query, _skip=skip, _limit=self.page_size)
         docs = [json_serializable(doc.index_labels) for doc in self.docs]
-        df = pd.DataFrame(docs)
-        
+        df = pd.DataFrame(docs, columns=list(self.model.get_index_fields()))
+
         table = pn.widgets.Tabulator(df,
                                      name="Data (Click to edit)",
                                      disabled=True,
                                      row_content=self.value_editor,
-                                     sizing_mode='stretch_width', width=1000,
+                                     sizing_mode='stretch_both', width=1000,
                                      embed_content=False,
-                                     show_index=False, height=1200)
+                                     show_index=False,min_height=500)
 
         return pn.Column(self.param.page, 
-                    table, sizing_mode='stretch_width', height=1200, width=1000, scroll=False,)
+                    table, sizing_mode='stretch_width', width=1000, scroll=False,)
     
     @pn.depends('query')
     def controls_panel(self):
