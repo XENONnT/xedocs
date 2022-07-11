@@ -8,11 +8,20 @@ import pydantic
 import numpy as np
 import pandas as pd
 import panel as pn
-from typing import Dict, List, Any, Literal, _LiteralGenericAlias
+from typing import ( Dict, List, Any, Literal, Type,
+        _LiteralGenericAlias, ClassVar, Optional )
 from pydantic import ValidationError, BaseModel
 from functools import singledispatch, _find_impl
 from plum import dispatch, NotFoundLookupError
 from numbers import Integral, Number, Rational
+
+import param
+
+from panel.layout import (
+    Column, Divider, ListPanel, Row,
+)
+
+from panel.widgets import CompositeWidget
 
 ListInput = type('ListInput', (pn.widgets.LiteralInput, ), {'type': list})
 DictInput = type('DictInput', (pn.widgets.LiteralInput, ), {'type': dict})
@@ -21,13 +30,37 @@ TupleInput = type('TupleInput', (pn.widgets.LiteralInput, ), {'type': tuple})
 
 @dispatch
 def get_widget(value: Integral, field: Any, **kwargs):
+    if type(field.outer_type_) == _LiteralGenericAlias:
+        options = list(field.outer_type_.__args__)
+        if value not in options:
+            values = options[0]
+        return pn.widgets.Select(value=value, options=options,
+                                 **kwargs)
+
     start = getattr(field.field_info, 'gt', None)
+    if start is not None:
+        start += 1
+    else:
+        start = getattr(field.field_info, 'ge')
+
     end = getattr(field.field_info, 'lt', None)
+    if end is not None:
+        end -= 1
+    else:
+        end = getattr(field.field_info, 'le', None)
+
     return pn.widgets.IntInput(value=value, start=start,
                                end=end, **kwargs)
 
 @dispatch
 def get_widget(value: Number, field: Any, **kwargs):
+    if type(field.outer_type_) == _LiteralGenericAlias:
+        options = list(field.outer_type_.__args__)
+        if value not in options:
+            values = options[0]
+        return pn.widgets.Select(value=value, options=options,
+                                 **kwargs)
+
     start = getattr(field.field_info, 'gt', None)
     end = getattr(field.field_info, 'lt', None)
     return pn.widgets.NumberInput(value=value, start=start,
@@ -41,10 +74,21 @@ def get_widget(value: bool, field: Any, **kwargs):
 
 @dispatch
 def get_widget(value: str, field: Any, **kwargs):
+    if type(field.outer_type_) == _LiteralGenericAlias:
+        options = list(field.outer_type_.__args__)
+        if value not in options:
+            values = options[0]
+        return pn.widgets.Select(value=value, options=options,
+                                 **kwargs)
     max_len = field.field_info.max_length
-    if max_len is not None and max_len < 100:
-        return pn.widgets.TextInput(value=value, **kwargs)
-    return pn.widgets.input.TextAreaInput(value=value, **kwargs)
+    
+    if max_len is None:
+        return pn.widgets.input.TextAreaInput(value=value, **kwargs)
+
+    elif max_len < 100:
+        return pn.widgets.TextInput(value=value, max_length=max_len, **kwargs)
+
+    return pn.widgets.input.TextAreaInput(value=value, max_length=max_len, **kwargs)
 
 @dispatch
 def get_widget(value: List, field: Any, **kwargs):
@@ -72,13 +116,36 @@ def get_widget(value: datetime.datetime, field: Any, **kwargs):
 def get_widget(value: rframe.TimeInterval, field: Any, **kwargs):
     start = getattr(field.field_info, 'gt', None)
     end = getattr(field.field_info, 'lt', None)
+
+    if isinstance(value, rframe.TimeInterval):
+        value = value.left, value.right
+
+    if isinstance(value, dict):
+        value = value['left'], value['right']
+
     return pn.widgets.DatetimeRangePicker(value=value,
                                           start=start, end=end, **kwargs)
 
 @dispatch
 def get_widget(value: rframe.IntegerInterval, field: Any, **kwargs):
     start = getattr(field.field_info, 'gt', None)
+    if start is not None:
+        start += 1
+    else:
+        start = getattr(field.field_info, 'ge')
+
     end = getattr(field.field_info, 'lt', None)
+    if end is not None:
+        end -= 1
+    else:
+        end = getattr(field.field_info, 'le', None)
+
+    if isinstance(value, rframe.IntegerInterval):
+        value = value.left, value.right
+
+    if isinstance(value, dict):
+        value = value['left'], value['right']
+
     return pn.widgets.IntRangeSlider(value=value,
                                      start=start, end=end, **kwargs)
 
@@ -91,34 +158,6 @@ def get_widget(value: Any, field: Any, **kwargs):
         return pn.widgets.Select(value=value, options=options,
                                  **kwargs)
     return pn.widgets.LiteralInput(value=value, **kwargs)
-
-
-def pydantic_editor(model, hidden=(), widget_kwargs={}):
-    widgets = {}
-    
-    def validate(event):
-        if not event:
-            return
-        data = {k: widgets[k].value for k in widgets}
-        try:
-            model.validate(data)
-            for k,v in data.items():
-                setattr(model, k, v)
-        except:
-            if event:
-                event.obj.value = event.old
-            raise ValueError("Failed pydantic validation")
-
-    for name, field in model.__fields__.items():
-        
-        value = getattr(model, name, None)
-        try:
-            widget = get_widget.invoke(field.outer_type_, field.__class__)(value, field, **widget_kwargs)
-        except (NotFoundLookupError, NotImplementedError):
-            widget = get_widget(value, field, **widget_kwargs)
-        widget.param.watch(validate, 'value')
-        widgets[name] = widget
-    return pn.Column(*[w for name, w in widgets.items() if name not in hidden])
 
 
 @dispatch
@@ -157,7 +196,11 @@ class pydantic_widgets(param.ParameterizedFunction):
     callback = param.Callable(default=None)
     
     def __call__(self, **params):
+        
         p = param.ParamOverrides(self, params)
+
+        if isinstance(p.model, pydantic.BaseModel):
+            self.defaults = {f: getattr(p.model, f, None) for f in p.model.__fields__}
         
         if p.use_model_aliases:
             default_aliases = {field.name: field.alias.capitalize() for name in p.model.__fields__.values()}
@@ -171,11 +214,17 @@ class pydantic_widgets(param.ParameterizedFunction):
             field = p.model.__fields__[field_name]
             
             value = p.defaults.get(field_name, None)
+
             if value is None:
                 value = field.default
+            
             value = json_serializable(value)
+
             try:
-                widget = get_widget.invoke(field.outer_type_, field.__class__)(value, field, name=alias, **p.widget_kwargs)
+                widget_builder = get_widget.invoke(field.outer_type_,
+                                           field.__class__)
+                widget = widget_builder(value, field, name=alias, **p.widget_kwargs)
+
             except (NotFoundLookupError, NotImplementedError):
                 widget = get_widget(value, field, name=alias, **p.widget_kwargs)
             if p.callback is not None:
@@ -184,7 +233,160 @@ class pydantic_widgets(param.ParameterizedFunction):
         return widgets
     
 
-class ModelEditor(param.Parameterized):
+
+class ModelEditor(CompositeWidget):
+    _composite_type: ClassVar[Type[ListPanel]] = pn.Column
+    
+    _widgets = param.Dict()
+    
+    extra_widgets = param.List([])
+    
+    class_ = param.ClassSelector(pydantic.BaseModel, is_instance=False)
+    
+    fields = param.List()
+    
+    value = param.ClassSelector(pydantic.BaseModel)
+    
+    
+    
+    def __init__(self, **params):
+        
+        super().__init__(**params)
+        self._update_value()
+        self.param.watch(self._update_value, 'value')
+    
+    @property
+    def widgets(self):
+        fields = self.fields if self.fields else list(self._widgets)
+        return [self._widgets[field] for field in fields]
+        
+    def _update_value(self, event: param.Event = None):
+        value = event.new if event else self.value
+        
+        if value is None and self.class_ is not None:
+            self._widgets = pydantic_widgets(model=self.class_, callback=self._validate_field)
+            self._composite[:] = self.widgets + self.extra_widgets
+            return
+        
+        if isinstance(value, pydantic.BaseModel):
+            self.class_ = type(value)
+            self._widgets = pydantic_widgets(model=value, callback=self._validate_field)
+            self._composite[:] = self.widgets + self.extra_widgets
+            data = {}
+   
+        elif isinstance(value, dict):
+            data = value
+        else:
+            raise ValueError
+        
+        for k,v in data.items():
+            self._widgets[k].value = v
+
+    def _validate_field(self, event: param.Event):
+    
+        if not event:
+            return
+        
+        if self.value is None:
+            if self.class_ is not None:
+                try:
+                    data = {k: w.value for k,w in self._widgets.items()}
+                    self.value = self.class_(**data)
+                except:
+                    pass
+            return
+        
+        for name, widget in self._widgets.items():
+            if event.obj == widget:
+                break
+        else:
+            return
+                
+        field = self.value.__fields__[name]
+        data = {k: w.value for k,w in self._widgets.items()}
+        
+        val = data.pop(name, None)
+        val, error = field.validate(val, data, loc=name)
+        if error:
+            event.obj.value = event.old
+            raise ValidationError([error], type(self.value))
+            
+        if self.value is not None:
+            setattr(self.value, name, val)
+            
+class ModelEditorCard(ModelEditor):
+    _composite_type: ClassVar[Type[ListPanel]] = pn.Card
+    
+    def __init__(self, **params):
+        super().__init__(**params)
+        self._composite.header = self.name
+        self.link(self._composite, name='header')
+    
+      
+class ModelListEditor(CompositeWidget):
+    _composite_type: ClassVar[Type[ListPanel]] = Column
+    
+    _new_editor = param.Parameter()
+    
+    class_ = param.ClassSelector(pydantic.BaseModel, is_instance=False)
+    
+    value = param.List(default=[], class_=pydantic.BaseModel)
+    
+    def __init__(self, **params):
+        super().__init__(**params)
+        self._update_value()
+        self.param.watch(self._update_value, 'value')
+    
+    def _update_value(self, event: param.Event = None):
+        value = event.new if event else self.value
+        self._composite[:] = [f'## {self.name}']
+        
+        if value is not None:
+            for i,doc in enumerate(self.value):
+                remove_button = pn.widgets.Button(name="Delete", button_type='danger')
+                remove_button.on_click(self._remove_cb(i))
+                editor = ModelEditorCard(value=doc, name=str(i), 
+                                     extra_widgets=[remove_button])
+                self._composite.append(editor)
+            
+        if self.class_ is not None:
+            append_button = pn.widgets.Button(name='➕')
+            append_button.on_click(self._append_cb)
+            self._new_editor = ModelEditorCard(class_=self.class_,
+                                           name="➕",
+                                           extra_widgets=[append_button])
+            self._new_editor._composite.collapsed = True
+            self._composite.append(self._new_editor)
+            
+        self._composite.append(pn.layout.Divider())
+        
+    def _append_cb(self, event: param.Event):
+        if self._new_editor.value is not None:
+            self.value = self.value + [self._new_editor.value]
+    
+    def _remove_cb(self, i):
+        def cb(event: param.Event):
+            if len(self.value)>i:
+                new = list(self.value)
+                new.pop(i)
+                self.value = new
+        return cb
+    
+@dispatch(precedence=1)
+def get_widget(value: pydantic.BaseModel, field: Any, **kwargs):
+    if field is None:
+        return ModelEditor(value=value, **kwargs)
+    
+    return ModelEditorCard(value=value, class_=field.outer_type_, **kwargs)
+
+@dispatch(precedence=1)
+def get_widget(value: List[pydantic.BaseModel], field: Any, **kwargs):
+    if value is None:
+        value = []
+    return ModelListEditor(value=value, class_=field.type_, **kwargs)
+
+
+class XeDocEditor(param.Parameterized):
     model = param.ClassSelector(pydantic.BaseModel, is_instance=False)
     datasource = param.Parameter(default=None)
     pre_save = param.HookList()
@@ -382,7 +584,7 @@ class ModelTableEditor(param.Parameterized):
     docs = param.List(class_=pydantic.BaseModel)
     
     query_editor = param.ClassSelector(QueryEditor)
-    model_editor = param.ClassSelector(ModelEditor)
+    model_editor = param.ClassSelector(XeDocEditor)
     query = param.Dict({})
     page = param.Integer(0, bounds=(0, 1))
     page_size = param.Integer(15)
@@ -416,7 +618,7 @@ class ModelTableEditor(param.Parameterized):
         doc = self.docs[row.name]
         
         columns = list(doc.get_column_fields())
-        editor = ModelEditor(model=doc)
+        editor = XeDocEditor(model=doc)
         editor.post_delete.append(self.trigger_refresh_cb)
         return editor.panel(names=columns, allow_delete=True)
         
@@ -427,7 +629,6 @@ class ModelTableEditor(param.Parameterized):
         skip = self.page*self.page_size
         self.docs = self.model.find(**self.query, _skip=skip, _limit=self.page_size)
         docs = [json_serializable(doc.index_labels) for doc in self.docs]
-        # docs.append({k: None for k in self.model.get_index_fields()})
         df = pd.DataFrame(docs)
         
         table = pn.widgets.Tabulator(df,
@@ -460,7 +661,7 @@ class ModelTableEditor(param.Parameterized):
         find_button.on_click(self.filter_callback)
 
         columns = list(self.model.get_index_fields()) + list(self.model.get_column_fields())
-        editor = ModelEditor(model=self.model)
+        editor = XeDocEditor(model=self.model)
         editor.post_save.append(self.trigger_refresh_cb)
         
         return pn.Column(

@@ -1,6 +1,6 @@
 import datetime
 from typing import ClassVar, Literal
-
+from pydantic import constr
 import rframe
 
 from xedocs import settings
@@ -18,19 +18,19 @@ class CorrectionReference(TimeIntervalCorrection):
 
     # arbitrary alias for this reference,
     # this should match the straxen config name
-    alias: str = rframe.Index()
+    alias: str = rframe.Index(max_length=50)
 
     # the global version
-    version: str = rframe.Index()
+    version: str = rframe.Index(max_length=20)
 
     # validity interval of the document
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     # Name of the correction being referenced
-    correction: str
+    correction: constr(max_length=50)
 
     # The attribute in the correction being referenced e.g `value`
-    attribute: str
+    attribute: constr(max_length=50)
 
     # The index labels being referenced, eg pmt=[1,2,3], version='v3' etc.
     labels: dict
@@ -89,7 +89,7 @@ class BaseResourceReference(TimeIntervalCorrection):
 class BaseMap(BaseResourceReference):
     _ALIAS = ""
 
-    kind: Literal["cnn", "gcn", "mlp"] = rframe.Index()
+    algorithm: Literal["cnn", "gcn", "mlp"] = rframe.Index()
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     value: str

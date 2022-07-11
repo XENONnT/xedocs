@@ -1,6 +1,7 @@
+import rframe
 import datetime
 
-import rframe
+from pydantic import HttpUrl
 
 from .base_schemas import VersionedXeDoc
 
@@ -13,10 +14,10 @@ class Bodega(VersionedXeDoc):
 
     _ALIAS = "bodega"
 
-    field: str = rframe.Index()
+    field: str = rframe.Index(max_length=50)
 
     value: float
     uncertainty: float
     definition: str
-    reference: str
+    reference: HttpUrl = ''
     date: datetime.datetime

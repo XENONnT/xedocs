@@ -2,7 +2,7 @@
 
 __author__ = """Yossi Mosbacher"""
 __email__ = "joe.mosbacher@gmail.com"
-__version__ = "0.1.7"
+__version__ = "0.1.6"
 
 from ast import Import
 from ._settings import settings
@@ -14,6 +14,6 @@ from .xedocs import *
 from . import api
 
 try:
-    from . import panel_editor
+    from . import gui
 except ImportError:
     pass

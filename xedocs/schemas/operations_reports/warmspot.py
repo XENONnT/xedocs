@@ -4,6 +4,10 @@ from typing import Literal, List
 from .base_report import BaseOperationsReport
 
 
+class WarmPmt(pydantic.BaseModel):
+    pmt: int = pydantic.Field(lt=494, ge=0)
+    avg_rate_kbps: float
+
 
 class WarmspotReport(BaseOperationsReport):
     """Warmspot report
@@ -11,5 +15,4 @@ class WarmspotReport(BaseOperationsReport):
 
     _ALIAS = "warmspot_reports"
     
-    intensity: int = pydantic.Field(lt=11, gt=0)
-    pmts: List[int]
+    pmts: List[WarmPmt]

@@ -1,4 +1,5 @@
 import datetime
+from pydantic import conint
 from typing import Literal
 from .base_calibrations import BaseCalibration
 
@@ -13,5 +14,6 @@ class DiffusedCalibration(BaseCalibration):
 
     source: DIFFUSED_SOURCE_TYPE
 
+    nv_ticks: conint(ge=0)
     valve_opened: datetime.datetime
     valve_closed: datetime.datetime

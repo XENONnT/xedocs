@@ -15,6 +15,6 @@ class PmtGain(TimeSampledCorrection):
     # versioning will be indepentent for each pmt
 
     detector: Literal["tpc", "neutron_veto", "muon_veto"] = rframe.Index()
-    pmt: int = rframe.Index()
+    pmt: int = rframe.Index(ge=0)
 
     value: float

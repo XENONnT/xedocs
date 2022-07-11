@@ -26,10 +26,12 @@ class BaseCalibration(XeDoc):
         allow_population_by_field_name = True
 
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
-    source: SOURCE_TYPE
+    source_id: str = rframe.Index(min_length=1, max_length=60)
+
+    source_type: SOURCE_TYPE
 
     operator: str = pydantic.Field(min_length=1, max_length=60)
-    comments: str
+    comments: str = ''
 
     @validator('time', pre=True)
     def run_id_to_time(cls, v):
@@ -40,5 +42,3 @@ class BaseCalibration(XeDoc):
             except:
                 pass
         return v
-
-
