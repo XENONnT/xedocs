@@ -1126,7 +1126,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-panel"
-version = "0.1.2"
+version = "0.1.3"
 description = "Top-level package for pydantic-panel."
 category = "main"
 optional = false
