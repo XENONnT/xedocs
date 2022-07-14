@@ -274,7 +274,7 @@ class ModelTableEditor(pn.viewable.Viewer):
         # params['query_editor'] = QueryEditor(model=params['model'], allow_query=False)
         super().__init__(**params)
         self.param.watch(self._update_docs, ['class_', 'page', 'query', 'refresh_table'])
-        
+
     def filter_callback(self, event):
         query = self.query_editor.value
         if self.query != query:
@@ -399,7 +399,7 @@ class XedocsEditor(pn.viewable.Viewer):
     @pn.depends('schema_name')
     def model_panel(self):
         schema = xedocs.find_schema(self.schema_name)
-        self.editor = ModelTableEditor(model=schema)
+        self.editor = ModelTableEditor(class_=schema)
         return self.editor
 
     def __panel__(self):
