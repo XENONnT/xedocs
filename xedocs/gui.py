@@ -1,118 +1,28 @@
 import math
-import param
-import rframe
 import xedocs
+import rframe
 import datetime
 import pydantic
+
 
 import numpy as np
 import pandas as pd
 import panel as pn
-from typing import ( Dict, List, Any, Literal, Type,
-        _LiteralGenericAlias, ClassVar, Optional )
-from pydantic import ValidationError, BaseModel
-from functools import singledispatch, _find_impl
-from plum import dispatch, NotFoundLookupError
-from numbers import Integral, Number, Rational
 
 import param
 
-from panel.layout import (
-    Column, Divider, ListPanel, Row,
-)
+from typing import Any, ClassVar, List, Type
 
 from panel.widgets import CompositeWidget
 
-ListInput = type('ListInput', (pn.widgets.LiteralInput, ), {'type': list})
-DictInput = type('DictInput', (pn.widgets.LiteralInput, ), {'type': dict})
-TupleInput = type('TupleInput', (pn.widgets.LiteralInput, ), {'type': tuple})
+from pydantic_panel import (get_widget, 
+                            json_serializable, 
+                            PydanticModelEditor)
+
+from .schemas import XeDoc
 
 
-@dispatch
-def get_widget(value: Integral, field: Any, **kwargs):
-    if type(field.outer_type_) == _LiteralGenericAlias:
-        options = list(field.outer_type_.__args__)
-        if value not in options:
-            values = options[0]
-        return pn.widgets.Select(value=value, options=options,
-                                 **kwargs)
-
-    start = getattr(field.field_info, 'gt', None)
-    if start is not None:
-        start += 1
-    else:
-        start = getattr(field.field_info, 'ge')
-
-    end = getattr(field.field_info, 'lt', None)
-    if end is not None:
-        end -= 1
-    else:
-        end = getattr(field.field_info, 'le', None)
-
-    return pn.widgets.IntInput(value=value, start=start,
-                               end=end, **kwargs)
-
-@dispatch
-def get_widget(value: Number, field: Any, **kwargs):
-    if type(field.outer_type_) == _LiteralGenericAlias:
-        options = list(field.outer_type_.__args__)
-        if value not in options:
-            values = options[0]
-        return pn.widgets.Select(value=value, options=options,
-                                 **kwargs)
-
-    start = getattr(field.field_info, 'gt', None)
-    end = getattr(field.field_info, 'lt', None)
-    return pn.widgets.NumberInput(value=value, start=start,
-                                  end=end, **kwargs)
-
-@dispatch
-def get_widget(value: bool, field: Any, **kwargs):
-    if value is None:
-        value = False
-    return pn.widgets.Checkbox(value=value, **kwargs)
-
-@dispatch
-def get_widget(value: str, field: Any, **kwargs):
-    if type(field.outer_type_) == _LiteralGenericAlias:
-        options = list(field.outer_type_.__args__)
-        if value not in options:
-            values = options[0]
-        return pn.widgets.Select(value=value, options=options,
-                                 **kwargs)
-    max_len = field.field_info.max_length
-    
-    if max_len is None:
-        return pn.widgets.input.TextAreaInput(value=value, **kwargs)
-
-    elif max_len < 100:
-        return pn.widgets.TextInput(value=value, max_length=max_len, **kwargs)
-
-    return pn.widgets.input.TextAreaInput(value=value, max_length=max_len, **kwargs)
-
-@dispatch
-def get_widget(value: List, field: Any, **kwargs):
-    return ListInput(value=value, **kwargs)
-
-@dispatch
-def get_widget(value: Dict, field: Any, **kwargs):
-    return DictInput(value=value, **kwargs)
-
-@dispatch
-def get_widget(value: tuple, field: Any, **kwargs):
-    return TupleInput(value=value, **kwargs)
-
-@dispatch
-def get_widget(value: np.ndarray, field: Any, **kwargs):
-    return pn.widgets.ArrayInput(value=value, **kwargs)
-
-@dispatch
-def get_widget(value: datetime.datetime, field: Any, **kwargs):
-    start = getattr(field.field_info, 'gt', None)
-    end = getattr(field.field_info, 'lt', None)
-    return pn.widgets.DatetimePicker(value=value, start=start, end=end, **kwargs)
-
-@dispatch
+@get_widget.dispatch(precedence=1)
 def get_widget(value: rframe.TimeInterval, field: Any, **kwargs):
     start = getattr(field.field_info, 'gt', None)
     end = getattr(field.field_info, 'lt', None)
@@ -126,7 +36,7 @@ def get_widget(value: rframe.TimeInterval, field: Any, **kwargs):
     return pn.widgets.DatetimeRangePicker(value=value,
                                           start=start, end=end, **kwargs)
 
-@dispatch
+@get_widget.dispatch(precedence=1)
 def get_widget(value: rframe.IntegerInterval, field: Any, **kwargs):
     start = getattr(field.field_info, 'gt', None)
     if start is not None:
@@ -149,317 +59,62 @@ def get_widget(value: rframe.IntegerInterval, field: Any, **kwargs):
     return pn.widgets.IntRangeSlider(value=value,
                                      start=start, end=end, **kwargs)
 
-@dispatch
-def get_widget(value: Any, field: Any, **kwargs):
-    if type(field.outer_type_) == _LiteralGenericAlias:
-        options = list(field.outer_type_.__args__)
-        if value not in options:
-            values = options[0]
-        return pn.widgets.Select(value=value, options=options,
-                                 **kwargs)
-    return pn.widgets.LiteralInput(value=value, **kwargs)
 
-
-@dispatch
-def json_serializable(value: pd.Interval):
-    return (value.left, value.right)
-
-@dispatch
+@json_serializable.dispatch(precedence=1)
 def json_serializable(value: rframe.Interval):
     return (value.left, value.right)
 
-@dispatch
-def json_serializable(value: list):
-    return [json_serializable(v) for v in value]
 
-@dispatch
-def json_serializable(value: tuple):
-    return tuple(json_serializable(v) for v in value)
+class XeDocEditor(PydanticModelEditor):
 
-@dispatch
-def json_serializable(value: dict):
-    return {json_serializable(k): json_serializable(v) for k,v in value.items()}
+    _trigger_recreate = ['class_', 'extra_widgets', 
+                         'allow_save', 'allow_delete']
 
-@dispatch
-def json_serializable(value: Any):
-    return value
-
-
-class pydantic_widgets(param.ParameterizedFunction):
-    model = param.ClassSelector(pydantic.BaseModel, is_instance=False)
-    
-    aliases = param.Dict({})
-    
-    widget_kwargs = param.Dict({})
-    defaults = param.Dict({})
-    use_model_aliases = param.Boolean(False)
-    callback = param.Callable(default=None)
-    
-    def __call__(self, **params):
-        
-        p = param.ParamOverrides(self, params)
-
-        if isinstance(p.model, pydantic.BaseModel):
-            self.defaults = {f: getattr(p.model, f, None) for f in p.model.__fields__}
-        
-        if p.use_model_aliases:
-            default_aliases = {field.name: field.alias.capitalize() for name in p.model.__fields__.values()}
-        else:
-            default_aliases = {name: name.replace('_', ' ').capitalize() for name in p.model.__fields__}
-        
-        aliases = params.get('aliases', default_aliases)
-        
-        widgets = {}
-        for field_name, alias  in aliases.items():
-            field = p.model.__fields__[field_name]
-            
-            value = p.defaults.get(field_name, None)
-
-            if value is None:
-                value = field.default
-            
-            value = json_serializable(value)
-
-            try:
-                widget_builder = get_widget.invoke(field.outer_type_,
-                                           field.__class__)
-                widget = widget_builder(value, field, name=alias, **p.widget_kwargs)
-
-            except (NotFoundLookupError, NotImplementedError):
-                widget = get_widget(value, field, name=alias, **p.widget_kwargs)
-            if p.callback is not None:
-                widget.param.watch(p.callback, 'value')
-            widgets[field_name] = widget
-        return widgets
-    
-
-
-class ModelEditor(CompositeWidget):
-    _composite_type: ClassVar[Type[ListPanel]] = pn.Column
-    
-    _widgets = param.Dict()
-    
-    extra_widgets = param.List([])
-    
-    class_ = param.ClassSelector(pydantic.BaseModel, is_instance=False)
-    
-    fields = param.List()
-    
-    value = param.ClassSelector(pydantic.BaseModel)
-    
-    
-    
-    def __init__(self, **params):
-        
-        super().__init__(**params)
-        self._update_value()
-        self.param.watch(self._update_value, 'value')
-    
-    @property
-    def widgets(self):
-        fields = self.fields if self.fields else list(self._widgets)
-        return [self._widgets[field] for field in fields]
-        
-    def _update_value(self, event: param.Event = None):
-        value = event.new if event else self.value
-        
-        if value is None and self.class_ is not None:
-            self._widgets = pydantic_widgets(model=self.class_, callback=self._validate_field)
-            self._composite[:] = self.widgets + self.extra_widgets
-            return
-        
-        if isinstance(value, pydantic.BaseModel):
-            self.class_ = type(value)
-            self._widgets = pydantic_widgets(model=value, callback=self._validate_field)
-            self._composite[:] = self.widgets + self.extra_widgets
-            data = {}
-   
-        elif isinstance(value, dict):
-            data = value
-        else:
-            raise ValueError
-        
-        for k,v in data.items():
-            self._widgets[k].value = v
-
-    def _validate_field(self, event: param.Event):
-    
-        if not event:
-            return
-        
-        if self.value is None:
-            if self.class_ is not None:
-                try:
-                    data = {k: w.value for k,w in self._widgets.items()}
-                    self.value = self.class_(**data)
-                except:
-                    pass
-            return
-        
-        for name, widget in self._widgets.items():
-            if event.obj == widget:
-                break
-        else:
-            return
-                
-        field = self.value.__fields__[name]
-        data = {k: w.value for k,w in self._widgets.items()}
-        
-        val = data.pop(name, None)
-        val, error = field.validate(val, data, loc=name)
-        if error:
-            event.obj.value = event.old
-            raise ValidationError([error], type(self.value))
-            
-        if self.value is not None:
-            setattr(self.value, name, val)
-            
-class ModelEditorCard(ModelEditor):
-    _composite_type: ClassVar[Type[ListPanel]] = pn.Card
-    
-    def __init__(self, **params):
-        super().__init__(**params)
-        self._composite.header = self.name
-        self.link(self._composite, name='header')
-    
-      
-class ModelListEditor(CompositeWidget):
-    _composite_type: ClassVar[Type[ListPanel]] = Column
-    
-    _new_editor = param.Parameter()
-    
-    class_ = param.ClassSelector(pydantic.BaseModel, is_instance=False)
-    
-    value = param.List(default=[], class_=pydantic.BaseModel)
-    
-    def __init__(self, **params):
-        super().__init__(**params)
-        self._update_value()
-        self.param.watch(self._update_value, 'value')
-    
-    def _update_value(self, event: param.Event = None):
-        value = event.new if event else self.value
-        self._composite[:] = [f'## {self.name}']
-        
-        if value is not None:
-            for i,doc in enumerate(self.value):
-                remove_button = pn.widgets.Button(name="Delete", button_type='danger')
-                remove_button.on_click(self._remove_cb(i))
-                editor = ModelEditorCard(value=doc, name=str(i), 
-                                     extra_widgets=[remove_button])
-                self._composite.append(editor)
-            
-        if self.class_ is not None:
-            append_button = pn.widgets.Button(name='➕')
-            append_button.on_click(self._append_cb)
-            self._new_editor = ModelEditorCard(class_=self.class_,
-                                           name="➕",
-                                           extra_widgets=[append_button])
-            self._new_editor._composite.collapsed = True
-            self._composite.append(self._new_editor)
-            
-        self._composite.append(pn.layout.Divider())
-        
-    def _append_cb(self, event: param.Event):
-        if self._new_editor.value is not None:
-            self.value = self.value + [self._new_editor.value]
-    
-    def _remove_cb(self, i):
-        def cb(event: param.Event):
-            if len(self.value)>i:
-                new = list(self.value)
-                new.pop(i)
-                self.value = new
-        return cb
-    
-@dispatch(precedence=1)
-def get_widget(value: pydantic.BaseModel, field: Any, **kwargs):
-    if field is None:
-        return ModelEditor(value=value, **kwargs)
-    
-    return ModelEditorCard(value=value, class_=field.outer_type_, **kwargs)
-
-@dispatch(precedence=1)
-def get_widget(value: List[pydantic.BaseModel], field: Any, **kwargs):
-    if value is None:
-        value = []
-    return ModelListEditor(value=value, class_=field.type_, **kwargs)
-
-
-class XeDocEditor(param.Parameterized):
-    model = param.ClassSelector(pydantic.BaseModel, is_instance=False)
     datasource = param.Parameter(default=None)
-    pre_save = param.HookList()
-    post_save = param.HookList()
-    pre_delete = param.HookList()
-    post_delete = param.HookList()
+
+    pre_save = param.HookList([])
+    post_save = param.HookList([])
+    pre_delete = param.HookList([])
+    post_delete = param.HookList([])
+
     deleted = param.Boolean(False)
-    busy = param.Boolean(False)
-    aliases = param.Dict()
+
+    allow_save = param.Boolean(True)
+
+    allow_delete = param.Boolean(True)
     
-    _widgets = param.Dict()
+    add_debugger = param.Boolean(True)
     
-    def __init__(self, use_model_aliases=False, **params): 
-        model = params['model']
-        defaults = params.pop('defaults', {})
-        
-        if isinstance(model, pydantic.BaseModel):
-            for name in model.__fields__:
-                val = getattr(model, name)
-                defaults[name] = json_serializable(val)
-            params['model'] = model.__class__
-            
-        fields = list(model.get_index_fields()) + list(model.get_column_fields())
-        
-        if use_model_aliases:
-            default_aliases = {name: fields[name].alias.capitalize() for name in fields}
-        else:
-            default_aliases = {name: name.replace('_', ' ').capitalize() for name in fields}
-        
-        params['aliases'] = params.get('aliases', default_aliases)
-        
+    def __init__(self, **params):
+        if params.get('fields') is None:
+            schema = params.get('class_') or params.get('value')
+            index_fields = list(schema.get_index_fields())
+            column_fields = list(schema.get_column_fields())
+            params['fields'] = index_fields + column_fields
+
         super().__init__(**params)
-        self._widgets = pydantic_widgets(defaults=defaults,
-                                         callback=self._validate, **params)
+        self.param.class_.class_ = XeDoc
+        self.param.value.class_ = XeDoc
     
-    @property
-    def data(self):
-        return {k: v.value for k,v in self._widgets.items()}
-    
-    @property
-    def value(self):
-        return self.model(**self.data)
-    
+    def _update_save_button(self, target, event):
+        target.disabled = event.new is None
+
     @property
     def can_delete(self):
+        if self.deleted:
+            return False
         try:
             self.value.pre_delete(self.datasource)
         except:
             return False
         return True
     
-    def alias_to_field(self, alias):
-        for field, field_alias in self.aliases.items():
-            if alias == field_alias:
-                return field
-    
-    def _validate(self, event):
-        if not event:
-            return
-        name = event.obj.name
-        field_name = self.alias_to_field(name)
-        field = self.model.__fields__[field_name]
-        data = self.data
-        val = data.pop(field_name, None)
-        val, error = field.validate(val, data, loc=name)
-        if error:
-            event.obj.value = event.old
-            raise ValidationError([error])
-
     def _save_clicked(self, event):
+        if self.value is None:
+            return
+
         event.obj.name = 'Saving...'
-        event.obj.panel.loading = True
-        
+        self.loading = True
         try:
             doc = self.value
             for cb in self.pre_save:
@@ -470,19 +125,19 @@ class XeDocEditor(param.Parameterized):
             for cb in self.post_save:
                 cb(doc)
         finally:
+            self.loading = False
             event.obj.name = 'Save'
-            event.obj.panel.loading = False
-        
+
     def _delete_clicked(self, event):
         if event.obj.name == 'Delete':
             event.obj.name = 'Confirm?'
             return
         
         event.obj.name = 'Deleting...'
-        event.obj.panel.loading = True
+        self.loading = True
         try:
             doc = self.value
-            
+
             for cb in self.pre_delete:
                 cb(doc)
                 
@@ -492,112 +147,138 @@ class XeDocEditor(param.Parameterized):
             for cb in self.post_delete:
                 cb(doc)
         finally:
+            self.loading = False
             event.obj.name = 'Deleted.'
-            event.obj.panel.loading = False
-        
-    def panel(self, names=None, allow_save=True, allow_delete=True):
-        if names is None:
-            names = list(self._widgets)
-        widgets = pn.Column(*[self._widgets[name] for name in names])
-        
-        if allow_save:
-            save_button = pn.widgets.Button(name='Save 💾', button_type='success')
-            save_button.on_click(self._save_clicked)
-            save_button.panel = widgets
-            widgets.append(save_button)
             
-        if allow_delete and self.can_delete:
+    def _add_buttons(self):
+        
+        if self.allow_save:
+            save_button = pn.widgets.Button(name='Save 💾',
+                                            button_type='success',
+                                            disabled=self.value is None)
+            self.link(save_button,
+                      callbacks={'value': self._update_save_button})
+            save_button.on_click(self._save_clicked)
+            self._composite.append(save_button)
+            
+        if self.allow_delete and self.can_delete:
             delete_button = pn.widgets.Button(name='Delete 🗑️', button_type='danger')
             delete_button.on_click(self._delete_clicked)
-            delete_button.panel = widgets
-            widgets.append(delete_button)
-            
-        # panel = pn.Column(*widgets, sizing_mode='stretch_height', loading_indicator=True)
-        return widgets
+            self._composite.append(delete_button)
 
-class QueryEditor(param.Parameterized):
-    model = param.ClassSelector(pydantic.BaseModel, is_instance=False)
-    datasource = param.Parameter(default=None)
-    
-    aliases = param.Dict()
-    
-    widget_kwargs = param.Dict({})
-    
-    _widgets = param.Dict()
-    
-    docs = param.List(class_=pydantic.BaseModel)
-    
-    def __init__(self, use_model_aliases=False, **params):
-        model = params['model']
-        defaults = params.pop('defaults', {})
-        
-        if isinstance(params['model'], pydantic.BaseModel):
-            for name in params['model'].__fields__:
-                val = getattr(params['model'], name)
-                defaults[name] = json_serializable(val)
-                
-        fields = model.get_index_fields()
-        
-        if use_model_aliases:
-            default_aliases = {name: fields[name].alias.capitalize() for name in fields}
-        else:
-            default_aliases = {name: name.replace('_', ' ').capitalize() for name in fields}
-        
-        params['aliases'] = params.get('aliases', default_aliases)
-        
-        super().__init__(**params)
-        
-        self._make_widgets(**defaults)
-    
-    @property
-    def query(self):
-        return {k: v.value for k,v in self._widgets.items()}
-    
-    def _make_widgets(self, **defaults):
-        widgets = {}
-        for field_name, alias  in self.aliases.items():
-            field = self.model.__fields__[field_name]
+        if self.add_debugger:
+            debugger = pn.widgets.Debugger(name='Debugger', width_policy='max')
+            self._composite.append(debugger)
+
+    def _recreate_widgets(self, *events):
+        super()._recreate_widgets(*events)
+        self._add_buttons()
+
+
+@get_widget.dispatch(precedence=1)
+def get_widget(value: XeDoc, field: Any, **kwargs):
+    return XeDocEditor(value=value, name=field.name, **kwargs)
+
+
+class QueryEditor(CompositeWidget):
+
+    _composite_type = pn.Column
+
+    _trigger_recreate:  ClassVar[List] = ['class_', 'extra_widgets', 'fields']
+
+    class_ = param.ClassSelector(XeDoc, is_instance=False)
+
+    value = param.Dict({})
             
-            value = defaults.get(field_name, None)
-            if value is None:
-                value = field.default
-            value = json_serializable(value)
-            widgets[field_name] = pn.widgets.LiteralInput(value=value, name=alias, **self.widget_kwargs)
-        self._widgets = widgets
+    _widgets = param.Dict({})
+
+    fields = param.List()
+
+    extra_widgets = param.List([])
+
+    by_alias = param.Boolean(False)
     
-    def _find_clicked(self, event):
-        self.docs = self.model.find(self.datasource, **self.query)
+    def __init__(self, **params):
+        super().__init__(**params)
+        self._update_layout()
+        self.param.watch(self._update_layout,
+                         self._trigger_recreate)
+
+    def _widget_for(self, field_name):
+        field = self.class_.__fields__[field_name]
+            
+        value = self.value.get(field_name, None)
+
+        if value is None:
+            value = field.default
+
+        value = json_serializable(value)
+
+        alias = field.alias if self.by_alias else field_name
+
+        alias = alias.replace('_', ' ').capitalize()
+        widget = pn.widgets.LiteralInput(value=value,
+                                            name=alias,)
+        widget.param.watch(self._validate_field, 'value')
+        return widget
+
+    def _make_widgets(self):
+        fields = self.fields or list(self.class_.get_index_fields())
+        self._widgets = {field_name: self._widget_for(field_name)
+                         for field_name  in fields}
+
+    def _update_layout(self, *events):
+        if self.class_ is None:
+            return
         
-    def panel(self, names=None, allow_query=True):
-        if names is None:
-            names = list(self._widgets)
-        widgets = [self._widgets[name] for name in names]
-        if allow_query:
-            query_button = pn.widgets.Button(name='🔍 Find', button_type='success')
-            query_button.on_click(self._find_clicked)
-            widgets.append(query_button)
-        return pn.Column(*widgets)
-        
-        
-class ModelTableEditor(param.Parameterized):
-    model = param.ClassSelector(pydantic.BaseModel, is_instance=False)
+        self._make_widgets()
+
+        self._composite[:] = list(self._widgets.values())
+
+        for w in self.extra_widgets:
+            self._composite.append(w)
+
+    def _validate_field(self, event):
+
+        for name, widget in self._widgets.items():
+            if event.obj == widget:
+                break
+        else:
+            return
+
+        index = self.class_.index_for(name)
+        label = index.validate_label(event.new)
+
+        self.value[name] = label
+
+        self.param.trigger('value')
+
+
+class ModelTableEditor(pn.viewable.Viewer):
+    class_ = param.ClassSelector(pydantic.BaseModel, is_instance=False)
+
     docs = param.List(class_=pydantic.BaseModel)
     
+
     query_editor = param.ClassSelector(QueryEditor)
     model_editor = param.ClassSelector(XeDocEditor)
+
     query = param.Dict({})
+
     page = param.Integer(0, bounds=(0, 1))
     page_size = param.Integer(15)
     
     refresh_table = param.Event()
     
     def __init__(self, **params):
-        params['query_editor'] = QueryEditor(model=params['model'])
+        # params['query_editor'] = QueryEditor(model=params['model'], allow_query=False)
         super().__init__(**params)
-    
+        self.param.watch(self._update_docs, ['class_', 'page', 'query', 'refresh_table'])
+        
     def filter_callback(self, event):
-        if self.query != self.query_editor.query:
-            self.query = self.query_editor.query                
+        query = self.query_editor.value
+        if self.query != query:
+            self.query = query                
             self.page = 0
         self.refresh_table = True
         
@@ -610,26 +291,33 @@ class ModelTableEditor(param.Parameterized):
     def decrement_page(self, event):
         self.page -= 1
 
-    def value_editor(self, row):
+    def _update_docs(self, *events):
+        skip = self.page*self.page_size
+        self.docs = self.class_.find(**self.query, 
+                                     _skip=skip, 
+                                     _limit=self.page_size)
 
+    def value_editor(self, row):
         if len(self.docs)<=row.name:
             return pn.Column()
-        
         doc = self.docs[row.name]
-        
+
         columns = list(doc.get_column_fields())
-        editor = XeDocEditor(model=doc)
+
+        editor = XeDocEditor(value=doc,
+                             class_=self.class_, 
+                             fields=columns,
+                             allow_delete=True,
+                             show_debugger=False)
+
         editor.post_delete.append(self.trigger_refresh_cb)
-        return editor.panel(names=columns, allow_delete=True)
-        
-    @pn.depends('page', 'refresh_table')
+
+        return pn.Column(editor)
+
+    @pn.depends('refresh_table', 'docs')
     def table_panel(self):
-        if self.page<0:
-            self.page = 0
-        skip = self.page*self.page_size
-        self.docs = self.model.find(**self.query, _skip=skip, _limit=self.page_size)
         docs = [json_serializable(doc.index_labels) for doc in self.docs]
-        df = pd.DataFrame(docs, columns=list(self.model.get_index_fields()))
+        df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
 
         table = pn.widgets.Tabulator(df,
                                      name="Data (Click to edit)",
@@ -637,14 +325,14 @@ class ModelTableEditor(param.Parameterized):
                                      row_content=self.value_editor,
                                      sizing_mode='stretch_both', width=1000,
                                      embed_content=False,
-                                     show_index=False,min_height=500)
-
+                                     show_index=False,
+                                     min_height=500)
         return pn.Column(self.param.page, 
                     table, sizing_mode='stretch_width', width=1000, scroll=False,)
     
-    @pn.depends('query')
+    @pn.depends('class_', 'query', 'page_size')
     def controls_panel(self):
-        end = math.ceil(self.model.compile_query(**self.query).count()/self.page_size)
+        end = math.ceil(self.class_.compile_query(**self.query).count()/self.page_size)
         if not end:
             end = 1
         self.param.page.bounds = (0, end)
@@ -657,32 +345,39 @@ class ModelTableEditor(param.Parameterized):
 
         buttons = pn.Row(dec_page, inc_page, align='center', max_width=250)
 
-        find_button = pn.widgets.Button(name='Apply Filter 🔍', button_type='primary', align='center')
+        find_button = pn.widgets.Button(name='Query 🔍',
+                                        button_type='primary', 
+                                        align='center')
         find_button.on_click(self.filter_callback)
 
-        columns = list(self.model.get_index_fields()) + list(self.model.get_column_fields())
-        editor = XeDocEditor(model=self.model)
-        editor.post_save.append(self.trigger_refresh_cb)
+        self.query_editor = QueryEditor(class_=self.class_)
         
+        self.model_editor = XeDocEditor(class_=self.class_, allow_delete=False)
+
+        self.model_editor.post_save.append(self.trigger_refresh_cb)
+
+        add_new = pn.Card(self.model_editor, 
+                          name='insert_new', 
+                          header='➕', 
+                          collapsed=True)
+
         return pn.Column(
                         '##Filter documents \n(Valid JSON or python literals)',
-                        self.query_editor.panel(allow_query=False),
+                        self.query_editor,
                         find_button,
                         buttons,
                         pn.layout.Divider(),
-                        '##New document', 
-                        editor.panel(names=columns, allow_delete=False),
+                        add_new,
                         )
     
-    def panel(self, allow_insert=False):
-       
+    def __panel__(self):
         return pn.Row(self.controls_panel,
                       self.table_panel,
                       scroll=False,
                       width=1000, sizing_mode='stretch_width')
 
     
-class XedocsEditor(param.Parameterized):
+class XedocsEditor(pn.viewable.Viewer):
     schema_name = param.Selector(objects=xedocs.list_schemas())
     
     editor = param.ClassSelector(ModelTableEditor)
@@ -705,8 +400,8 @@ class XedocsEditor(param.Parameterized):
     def model_panel(self):
         schema = xedocs.find_schema(self.schema_name)
         self.editor = ModelTableEditor(model=schema)
-        return self.editor.panel()
+        return self.editor
 
-    def panel(self):
-        return pn.Column(self.controls_panel(), self.model_panel,)
+    def __panel__(self):
+        return pn.Column(self.model_panel)
 
