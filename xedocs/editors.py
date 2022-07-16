@@ -403,5 +403,5 @@ class XedocsEditor(pn.viewable.Viewer):
         return self.editor
 
     def __panel__(self):
-        return pn.Column(self.model_panel)
+        return pn.Column(self.param.schema_name, self.model_panel)
 

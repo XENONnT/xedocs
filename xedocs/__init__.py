@@ -14,6 +14,7 @@ from .xedocs import *
 from . import api
 
 try:
-    from . import gui
+    from . import editors
+    gui = editors.XedocsEditor()
 except ImportError:
     pass

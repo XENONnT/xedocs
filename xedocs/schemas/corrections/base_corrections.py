@@ -1,7 +1,7 @@
 import datetime
 import re
-from typing import ClassVar
-from pydantic import validator
+from typing import ClassVar, List
+from pydantic import validator, BaseModel
 
 import pandas as pd
 import rframe
@@ -14,6 +14,11 @@ from ..base_schemas import VersionedXeDoc
 def camel_to_snake(name):
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
+
+class Review(BaseModel):
+    reviewer: str
+    approved: bool
+    comments: str
 
 
 class BaseCorrectionSchema(VersionedXeDoc):
@@ -32,6 +37,7 @@ class BaseCorrectionSchema(VersionedXeDoc):
 
     created_date: datetime.datetime = settings.clock.current_datetime()
     comments: str = ""
+    reviews: List[Review] = []
 
     def __init_subclass__(cls) -> None:
 
