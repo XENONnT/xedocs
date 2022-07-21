@@ -2,7 +2,7 @@
 import datetime
 
 import rframe
-from pydantic import validator, BaseModel, constr, HttpUrl
+from pydantic import validator, BaseModel, constr
 from typing import Literal, List
 
 from ..base_schemas import XeDoc
@@ -18,9 +18,10 @@ class ActivityMeasurement(BaseModel):
 
 class CalibrationSource(XeDoc):
     _ALIAS = 'calibration_sources'
+    _CATEGORY = "calibration"
     
     source_id: str = rframe.Index(max_length=50)
     lngs_id: constr(max_length=30) 
     kind: constr(max_length=50)
-    ref: HttpUrl
+    ref: str
     activity_measurements: List[ActivityMeasurement]

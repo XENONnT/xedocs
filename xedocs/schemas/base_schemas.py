@@ -11,6 +11,8 @@ def camel_to_snake(name):
 
 class XeDoc(rframe.BaseSchema):
     _ALIAS: ClassVar = ""
+    _CATEGORY: ClassVar = "general"
+
     _XEDOCS = {}
     
     class Config:

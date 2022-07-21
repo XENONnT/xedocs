@@ -1,7 +1,10 @@
 """Main module."""
 
-from typing import ClassVar, Union
 import pandas as pd
+
+from collections import defaultdict
+from typing import ClassVar, Union
+
 
 from ._settings import settings
 from .schemas import XeDoc
@@ -59,10 +62,14 @@ def insert_docs(schema: str, docs: Union[list,dict,pd.DataFrame], datasource=Non
 def list_schemas():
     return list(XeDoc._XEDOCS)
 
-
 def all_schemas():
     return dict(XeDoc._XEDOCS)
 
+def schemas_by_category():
+    d = defaultdict(dict)
+    for name, schema in all_schemas().items():
+        d[schema._CATEGORY][name] = schema 
+    return d
 
 def find_schema(name):
     schema = XeDoc._XEDOCS.get(name, None)

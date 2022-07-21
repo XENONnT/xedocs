@@ -1,7 +1,7 @@
 import datetime
 import re
 from typing import ClassVar, List
-from pydantic import validator, BaseModel
+from pydantic import validator, BaseModel, Field
 
 import pandas as pd
 import rframe
@@ -16,9 +16,9 @@ def camel_to_snake(name):
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 class Review(BaseModel):
-    reviewer: str
-    approved: bool
-    comments: str
+    reviewer: str = Field(max_length=80)
+    approved: bool = False
+    comments: str = ''
 
 
 class BaseCorrectionSchema(VersionedXeDoc):
@@ -32,6 +32,7 @@ class BaseCorrectionSchema(VersionedXeDoc):
     """
 
     _ALIAS: ClassVar = ""
+    _CATEGORY = "corrections"
     _CORRECTIONS = {}
 
 
@@ -140,6 +141,14 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
         # Only allow changes to the interval, not the values
         assert self.same_values(new), f"Values already set for {self.index_labels}."
 
+    def pre_delete(self, datasource, **kwargs):
+        if settings.clock.after_cutoff(self.time.left):
+            # We allow deletion of future values for all versions
+            # if they are completely in the future 
+            return
+        # all other cases, deletion is forbiden.
+        raise RuntimeError('Corrections are append only.')
+
     @classmethod
     def validity_intervals(cls, datasource=None, **labels):
         """Returns a list of intervals that are valid for the given labels"""
@@ -206,6 +215,21 @@ class TimeSampledCorrection(BaseCorrectionSchema):
         labels["time"] = settings.extract_time(labels)
         return super().url_protocol(attr, **labels)
 
+    def freeze_values(self, datasource):
+
+        new_index = self.index_labels
+        new_index["time"] = settings.clock.cutoff_datetime(buffer=1)
+
+        existing = self.find(datasource, **new_index)
+        
+        # If values for the cutoff time are already set, the values may have been
+        # used for processing. We add a sample at the
+        # cutoff time to force interpolation and extrapolation
+        # to match from the last existing sample until the cutoff.
+        if existing:
+            new_doc = existing[0]
+            new_doc.save(datasource)
+
     def pre_insert(self, datasource):
         # Inserting ONLINE versions can affect the past
         # since extrapolation until the current time is allowed
@@ -226,18 +250,22 @@ class TimeSampledCorrection(BaseCorrectionSchema):
             ), f"Can only insert online \
                 values after {cutoff}."
 
-            new_index = self.index_labels
-            new_index["time"] = clock.cutoff_datetime(buffer=1)
+            self.freeze_values(datasource)
 
-            existing = self.find(datasource, **new_index)
-            
-            # If cutoff time is already set, the values may have been
-            # used already for processing. We add a sample at the
-            # cutoff time to force interpolation and extrapolation
-            # to match from the last existing sample until the cutoff.
-            if existing:
-                new_doc = existing[0]
-                new_doc.save(datasource)
+    def pre_delete(self, datasource, **kwargs):
+        cutoff = settings.clock.cutoff_datetime(buffer=60)
+
+        assert settings.clock.after_cutoff(
+            self.time
+            ), f"Can only delete \
+                values after {cutoff}." 
+
+        if self.version == 'ONLINE': 
+            # deleting ONLINE values can affect interpolation of
+            # older values so we need to freeze the values up
+            # until the current time. 
+            self.freeze_values(datasource)
+       
 
     @classmethod
     def validity_intervals(cls, datasource=None, **labels):

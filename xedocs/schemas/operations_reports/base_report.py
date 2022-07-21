@@ -12,6 +12,7 @@ class BaseOperationsReport(XeDoc):
     """Base class for operations report metadata
     """
     _ALIAS = ""
+    _CATEGORY = "operations"
 
     class Config:
         allow_population_by_field_name = True

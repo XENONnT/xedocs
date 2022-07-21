@@ -3,6 +3,9 @@
 __author__ = """Yossi Mosbacher"""
 __email__ = "joe.mosbacher@gmail.com"
 __version__ = "0.1.9"
+import logging
+
+logger = logging.getLogger(__name__)
 
 from ast import Import
 from ._settings import settings
@@ -14,7 +17,7 @@ from .xedocs import *
 from . import api
 
 try:
-    from . import editors
-    gui = editors.XedocsEditor()
+    from . import widgets
+    gui = widgets.XedocsEditor()
 except ImportError:
-    pass
+    logger.warning('Could not import editors, GUI not available.')
