@@ -3,7 +3,7 @@ import xedocs
 import rframe
 import datetime
 import pydantic
-
+import logging
 
 import numpy as np
 import pandas as pd
@@ -38,8 +38,8 @@ from concurrent.futures import ThreadPoolExecutor
 from .schemas import XeDoc
 
 
-executor = ThreadPoolExecutor(max_workers=2)  # pylint: disable=consider-using-with
-
+executor = ThreadPoolExecutor(max_workers=5)  # pylint: disable=consider-using-with
+logger = logging.getLogger(__name__)
 
 @json_serializable.dispatch(precedence=1)
 def json_serializable(value: rframe.Interval):
@@ -272,6 +272,7 @@ class XeDocEditor(PydanticModelEditor):
                 cb(doc)
         except Exception as e:
             self.deletion_error = str(e)
+            logger.error(str(e))
         finally:
             self.loading = False
 
@@ -438,7 +439,7 @@ class XeDocListEditor(CompositeWidget):
             return
         assert all([isinstance(doc, self.class_) 
                     for doc in self.value]), f"Value must be a list of {self.class_} instances"
-                    
+
         docs = [json_serializable(doc.index_labels)
                 for doc in self.value]
         df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
@@ -579,12 +580,14 @@ class ModelTableEditor(pn.viewable.Viewer):
             
     def _get_page(self):
         skip = self.page*self.page_size
+        docs = []
         try:
             docs = self.class_.find(**self.query, 
                                      _skip=skip, 
                                      _limit=self.page_size)
-        except:
-            docs = []
+        except Exception as e:
+            logger.error(str(e))
+            
         return docs
 
     def _update_docs(self, *events):
@@ -711,9 +714,9 @@ class XedocsEditor(pn.viewable.Viewer):
             schemas_by_category[category] = schema_dict
 
         self._schemas_by_category = schemas_by_category
-        
-        super().__init__(**params)
         self.param.category.objects = list(schemas_by_category)
+        super().__init__(**params)
+        
 
 
     @param.depends('category', watch=True, on_init=True)
@@ -729,6 +732,8 @@ class XedocsEditor(pn.viewable.Viewer):
 
     @param.depends('collection', watch=True, on_init=True)
     def _selection_changed(self):
+        if self.collection is None:
+            return
         self.editor = ModelTableEditor(class_=self.collection)
 
     @pn.depends('selection_layout')
