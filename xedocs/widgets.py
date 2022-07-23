@@ -21,7 +21,7 @@ from panel.layout import ListPanel, Column
 from panel.io.server import unlocked
 from tornado.ioloop import IOLoop
 
-from pydantic_panel import (get_widget, 
+from pydantic_panel import (infer_widget, 
                             json_serializable, 
                             PydanticModelEditor)
 from pydantic_panel.dispatchers import clean_kwargs
@@ -39,6 +39,12 @@ from .schemas import XeDoc
 
 
 executor = ThreadPoolExecutor(max_workers=2)  # pylint: disable=consider-using-with
+
+
+@json_serializable.dispatch(precedence=1)
+def json_serializable(value: rframe.Interval):
+    return value.left, value.right
+
 
 class TimeIntervalEditor(DatetimeRangePicker):
     value = param.ClassSelector(rframe.TimeInterval, default=None)
@@ -60,8 +66,8 @@ class TimeIntervalEditor(DatetimeRangePicker):
     def _update_value_bounds(self):
         pass
 
-@get_widget.dispatch(precedence=2)
-def get_widget(value: rframe.TimeInterval, field: Any, **kwargs):
+@infer_widget.dispatch(precedence=2)
+def infer_widget(value: rframe.TimeInterval, field: Any, **kwargs):
     kwargs = clean_kwargs(TimeIntervalEditor, kwargs)
     return TimeIntervalEditor(value=value, **kwargs)
 
@@ -118,8 +124,8 @@ class IntegerIntervalEditor(EditableRangeSlider):
             )
             
 
-@get_widget.dispatch(precedence=2)
-def get_widget(value: rframe.IntegerInterval, field: Any, **kwargs):
+@infer_widget.dispatch(precedence=2)
+def infer_widget(value: rframe.IntegerInterval, field: Any, **kwargs):
     start = None
     end = None
 
@@ -150,7 +156,9 @@ class XeDocEditor(PydanticModelEditor):
     pre_delete = param.HookList([])
     post_delete = param.HookList([])
 
+    delete_requested = param.Boolean(False)
     deleted = param.Boolean(False)
+    deletion_error = param.String('')
 
     allow_save = param.Boolean(True)
 
@@ -200,12 +208,56 @@ class XeDocEditor(PydanticModelEditor):
             self.loading = False
             event.obj.name = 'Save'
 
-    def _delete_clicked(self, event):
-        if event.obj.name == 'Delete':
-            event.obj.name = 'Confirm?'
-            return
-        
-        event.obj.name = 'Deleting...'
+    @pn.depends('deleted', 'delete_requested')
+    def delete_button(self):
+        if self.deleted:
+            return pn.widgets.Button(name='Deleted.', 
+                                     disabled=True)
+
+        if self.delete_requested:
+            cancel = pn.widgets.Button(name='❌ Cancel', 
+                                     )
+
+            def cancel_cb(event):
+                self.delete_requested = False
+            cancel.on_click(cancel_cb)
+
+            confirm = pn.widgets.Button(name='⚠️ Confirm? This cannot be undone. ⚠️', 
+                                        button_type='danger', 
+                                        width_policy='max')
+
+            def confirm_cb(event):
+                confirm.disabled = True
+                try:
+                    self.delete()
+                finally:
+                    confirm.disabled = False
+            confirm.on_click(confirm_cb)
+
+            return pn.Column(cancel, confirm)
+
+        delete = pn.widgets.Button(name='Delete 🗑️', 
+                                   button_type='danger', 
+                                   width_policy='max')
+
+        def delete_cb(event):
+            self.delete_requested = True
+
+        delete.on_click(delete_cb)
+
+        if self.deletion_error:
+            error_message = pn.pane.Alert(self.deletion_error, alert_type='danger')
+            acknowledge = pn.widgets.Button(name='✔️ OK', 
+                                     )
+            def ack_cb(event):
+                self.deletion_error = ''
+            acknowledge.on_click(ack_cb)
+
+            return pn.Column(error_message, acknowledge)
+
+        return delete
+
+    def delete(self):
         self.loading = True
         try:
             doc = self.value
@@ -218,10 +270,11 @@ class XeDocEditor(PydanticModelEditor):
             
             for cb in self.post_delete:
                 cb(doc)
+        except Exception as e:
+            self.deletion_error = str(e)
         finally:
             self.loading = False
-            event.obj.name = 'Deleted.'
-            
+
     def _add_buttons(self):
         
         if self.allow_save:
@@ -234,9 +287,7 @@ class XeDocEditor(PydanticModelEditor):
             self._composite.append(save_button)
             
         if self.allow_delete and self.can_delete:
-            delete_button = pn.widgets.Button(name='Delete 🗑️', button_type='danger')
-            delete_button.on_click(self._delete_clicked)
-            self._composite.append(delete_button)
+            self._composite.append(self.delete_button)
 
         if self.add_debugger:
             debugger = pn.widgets.Debugger(name='Debugger', width_policy='max')
@@ -247,8 +298,8 @@ class XeDocEditor(PydanticModelEditor):
         self._add_buttons()
 
 
-@get_widget.dispatch(precedence=2)
-def get_widget(value: XeDoc, field: Any, **kwargs):
+@infer_widget.dispatch(precedence=2)
+def infer_widget(value: XeDoc, field: Any, **kwargs):
     if field is not None:
         kwargs['name'] = kwargs.pop('name', field.name)
     kwargs = clean_kwargs(XeDocEditor, kwargs)
@@ -333,26 +384,70 @@ class XeDocListEditor(CompositeWidget):
 
     _composite_type: ClassVar[Type[ListPanel]] = Column
 
-    _updating_item = param.Boolean(False)
-
-    row_size = param.Integer(50)
-
-    datasource = param.Parameter(default=None)
-
+    row_size = param.Integer(30)
+    column_size = param.Integer(100)
     class_ = param.ClassSelector(XeDoc, is_instance=False)
-
+    
     value = param.List(default=[], class_=XeDoc)
+    
+    table_widget = param.Parameter(default=None)
 
     def __init__(self, **params):
         super().__init__(**params)
-
         if self.class_ is None and self.value:
             self.class_ = self.value[0].__class__
-
-        self._update_widgets()
-        self.param.watch(self._update_widgets, "class_")
-        self.param.watch(self._update_table, "value")
-
+        self._composite[:] = [pn.panel(self.table_view)]
+        
+    @param.depends('class_', watch=True, on_init=True)
+    def _class_changed(self):
+        docs = [json_serializable(doc.index_labels)
+                for doc in self.value]
+        
+        if self.class_ is not None:
+            df = pd.DataFrame(docs, 
+                              columns=list(self.class_.get_index_fields()))
+            nwidgets = len(self.class_.get_column_fields()) + 2
+            ncols = len(self.class_.get_index_fields()) + 2
+            
+        else:
+            df = pd.DataFrame()
+            nwidgets =  2
+            ncols = 3
+            
+        nrows = max(len(self.value), nwidgets) + 1
+        
+        
+        self.table_widget = pn.widgets.Tabulator(df,
+                                     name="Data (Click to edit)",
+                                     disabled=True,
+                                     row_content=self._value_editor,
+                                     sizing_mode='stretch_both',
+                                     min_height=nrows*self.row_size,
+                                     min_width=ncols*self.column_size,
+                                     width_policy='max',
+                                     height_policy='max',
+                                     embed_content=False,
+                                     show_index=False,
+                                     )
+        
+        
+        
+    @param.depends('value', watch=True)
+    def _update_table(self):
+        if self.table_widget is None:
+            return
+        
+        docs = [json_serializable(doc.index_labels)
+                for doc in self.value]
+        df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
+        self.table_widget.value = df
+    
+    @pn.depends('table_widget')
+    def table_view(self):
+        if self.table_widget is None:
+            return pn.Column()
+        return pn.Column(self.table_widget)
+    
     def _value_editor(self, row):
         if len(self.value)<=row.name:
             return pn.Column()
@@ -362,11 +457,10 @@ class XeDocListEditor(CompositeWidget):
         columns = list(doc.get_column_fields())
 
         editor = XeDocEditor(value=doc,
-                             datasource=self.datasource,
                              class_=self.class_,
                              fields=columns,
                              allow_delete=True,
-                             show_debugger=False)
+                             )
         def cb(event):
             if event.new:
                 self.value.pop(row.name, None)
@@ -376,62 +470,14 @@ class XeDocListEditor(CompositeWidget):
 
         return pn.Column(editor)
 
-    def _update_table(self, *events):
-        docs = [json_serializable(doc.index_labels)
-                for doc in self.value]
-        df = pd.DataFrame(docs,
-                          columns=list(self.class_.get_index_fields()))
-        self.table.value = df
+@infer_widget.dispatch(precedence=2)
+def infer_widget(value: List[XeDoc] , field, **kwargs):
+    if field is not None:
+        kwargs['class_'] = kwargs.pop('class_', field.type_)
 
-    def _make_table(self):
-        docs = [json_serializable(doc.index_labels)
-                for doc in self.value]
-        if self.class_:
-            df = pd.DataFrame(docs, 
-                              columns=list(self.class_.get_index_fields()))
-        else:
-            df = pd.DataFrame()
+    kwargs = clean_kwargs(XeDocListEditor, kwargs)
 
-        nrows = max(len(self.value),
-                    len(self.class_.get_column_fields()) + 1)
-        nrows += 1
-        return pn.widgets.Tabulator(df,
-                                     name="Data (Click to edit)",
-                                     disabled=True,
-                                     row_content=self._value_editor,
-                                     sizing_mode='stretch_both',
-                                     min_height=nrows*self.row_size,
-                                     width_policy='max',
-                                     height_policy='max',
-                                     embed_content=False,
-                                     show_index=False,
-                                     
-                                     )
-
-    def make_newdoc_widget(self):
-        model_editor = XeDocEditor(class_=self.class_, 
-                                   allow_delete=False)
-        def cb(event):
-            if isinstance(event.new, self.class_):
-                self.value.append(event.new)
-                self.param.trigger('value')
-            
-        model_editor.param.watch(cb, 'value')
-
-        return model_editor
-
-    def _update_widgets(self, *events):
-        self.table = self._make_table()
-        self.newdoc = self.make_newdoc_widget()
-        newdoc = pn.Card(self.newdoc, 
-                    name='insert_new', 
-                    header='➕', 
-                    collapsed=True,
-                    width_policy='max',
-                    sizing_mode='stretch_width')
-                    
-        self._composite[:] = [newdoc, self.table]
-
+    return XeDocListEditor(value=value, **kwargs)
 
 class ModelTableEditor(pn.viewable.Viewer):
     
@@ -449,10 +495,58 @@ class ModelTableEditor(pn.viewable.Viewer):
     page_size = param.Integer(15)
     
     refresh_table = param.Event()
+    table = param.Parameter()
     
     def __init__(self, **params):
         super().__init__(**params)
-        self.param.watch(self._update_docs, ['class_', 'page', 'query', 'refresh_table'])
+        
+
+        self.inc_page = pn.widgets.Button(name='\u25b6', disabled=(self.page >= self.last_page or self.page==-1),
+                                    height=50, max_width=50, align='center', )
+        self.inc_page.on_click(self.increment_page)
+
+        self.dec_page = pn.widgets.Button(name='\u25c0', disabled=self.page<=0, align='center', 
+                                    height=50, width=50, )
+        self.dec_page.on_click(self.decrement_page)
+
+        self.param.watch(self._update_docs, 
+                         ['class_', 'page', 'query', 'refresh_table'])
+
+    @param.depends('class_', watch=True, on_init=True)
+    def _class_changed(self):
+        docs = [json_serializable(doc.index_labels) for doc in self.docs]
+        df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
+
+        self.table = pn.widgets.Tabulator(df,
+                                     name="Data (Click to edit)",
+                                     disabled=True,
+                                     row_content=self.value_editor,
+                                     sizing_mode='stretch_both', 
+                                     embed_content=False,
+                                     show_index=False,
+                                    #  width=1000,
+                                     min_height=500)
+
+        self.query_editor = QueryEditor(class_=self.class_)
+
+        self.model_editor = XeDocEditor(class_=self.class_, allow_delete=False)
+        self.model_editor.post_save.append(self._update_docs)
+    
+    @param.depends('docs', watch=True)
+    def _docs_changed(self):
+        docs = [json_serializable(doc.index_labels) for doc in self.docs]
+        df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
+        self.table.value = df
+        self.table.loading = False
+
+    @param.depends('page', watch=True)
+    def _page_changed(self):
+        self.inc_page.disabled = self.page >= self.last_page or self.page==-1
+        self.dec_page.disabled = self.page<=0
+
+    @param.depends('last_page', watch=True)
+    def _last_page_changed(self):
+        self.inc_page.disabled = self.page >= self.last_page or self.page==-1
 
     def filter_callback(self, event):
         query = self.query_editor.value
@@ -479,17 +573,20 @@ class ModelTableEditor(pn.viewable.Viewer):
         docs = future.result()
         with unlocked():
             self.docs = docs
-            self.query_editor.loading = False
-
+            docs = [json_serializable(doc.index_labels) for doc in self.docs]
+            
     def _get_page(self):
         skip = self.page*self.page_size
-        docs = self.class_.find(**self.query, 
+        try:
+            docs = self.class_.find(**self.query, 
                                      _skip=skip, 
                                      _limit=self.page_size)
+        except:
+            docs = []
         return docs
 
     def _update_docs(self, *events):
-        self.query_editor.loading = True
+        self.table.loading = True
         loop = IOLoop.current()
         future = executor.submit(self._get_page)
         loop.add_future(future, self._set_docs)
@@ -506,134 +603,155 @@ class ModelTableEditor(pn.viewable.Viewer):
                              class_=self.class_, 
                              fields=columns,
                              allow_delete=True,
-                             show_debugger=False)
-
-        editor.post_delete.append(self.trigger_refresh_cb)
+                             )
+                
+        editor.post_delete.append(self._update_docs)
 
         return pn.Column(editor)
 
-    
-    @pn.depends('refresh_table', 'docs')
-    def table_panel(self):
-        docs = [json_serializable(doc.index_labels) for doc in self.docs]
-        df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
 
-        table = pn.widgets.Tabulator(df,
-                                     name="Data (Click to edit)",
-                                     disabled=True,
-                                     row_content=self.value_editor,
-                                     sizing_mode='stretch_both', 
-                                     embed_content=False,
-                                     show_index=False,
-                                     width=1000,
-                                     min_height=500)
+    @pn.depends('table')
+    def table_panel(self):
+        if self.table is None:
+            return pn.Column()
         return pn.Column( 
-                         table, 
+                         self.table,
                          sizing_mode='stretch_width', 
-                         width=1000, 
+                        #  width=1000, 
                          scroll=False,)
 
     @pn.depends('page','last_page')
     def page_controls(self):
         end = self.last_page or 1
+
         page_view = pn.indicators.LinearGauge(
             name='Page', value=self.page, bounds=(0, end), format='{value}',
             horizontal=True, width=75, min_height=75, align='end',
             tick_size='12px', title_size='12px', value_size='12px',
         )
-       
-
-        inc_page = pn.widgets.Button(name='\u25b6', disabled=(self.page >= self.last_page or self.page==-1),
-                                    height=50, max_width=50, align='center', )
-        inc_page.on_click(self.increment_page)
-
-        dec_page = pn.widgets.Button(name='\u25c0', disabled=self.page<=0, align='center', 
-                                    height=50, width=50, )
-        dec_page.on_click(self.decrement_page)
-
-        return pn.Row(dec_page, page_view,
-                        inc_page , max_width=600, width_policy='max')
+        return pn.Row(self.dec_page, page_view,
+                        self.inc_page , max_width=600, width_policy='max')
 
 
     @pn.depends('class_', 'query', 'page_size')
     def controls_panel(self):
         
-        find_button = pn.widgets.Button(name='Query 🔍',
+        find_button = pn.widgets.Button(name='🚀 Query',
                                         button_type='primary', 
                                         align='center')
+
         find_button.on_click(self.filter_callback)
 
-        self.query_editor = QueryEditor(class_=self.class_)
         
-        self.model_editor = XeDocEditor(class_=self.class_, allow_delete=False)
 
-        self.model_editor.post_save.append(self.trigger_refresh_cb)
+        query_container = pn.Card(
+            "Valid JSON or python literals", self.query_editor,
+            header=pn.Row('🔍 Filter Documents', pn.layout.Spacer(), width=300),
+            collapsed=True,
+        )
+        
 
         add_new = pn.Card(self.model_editor, 
                           name='insert_new', 
-                          header='➕ New Document', 
+                          header=pn.Row('➕ New Document', 
+                                        pn.layout.Spacer(), 
+                                        width=300), 
                           collapsed=True)
 
         return pn.Column(
-                        '##Filter documents \n(Valid JSON or python literals)',
-                        self.query_editor,
+                        
+                        query_container,
                         find_button,
                         pn.layout.Divider(),
                         add_new,
                         )
     
     def __panel__(self):
-        right_panel = pn.Column(self.page_controls, 
+        right_panel = pn.Column(self.page_controls,
                                 self.table_panel)
         left_panel = self.controls_panel
         return pn.Row(left_panel,
                       right_panel,
                       scroll=False,
-                      width=1000, sizing_mode='stretch_width')
+                      sizing_mode='stretch_width')
 
     
 class XedocsEditor(pn.viewable.Viewer):
-    _all_schemas = xedocs.schemas_by_category()
+    _schemas_by_category = xedocs.schemas_by_category()
 
-    controls_layout = param.ClassSelector(class_=ListPanel,
+    selection_layout = param.ClassSelector(class_=ListPanel,
                                         is_instance=False,
                                         default=pn.Row)
 
-    category = param.Selector(objects=list(_all_schemas))
-    selected_schema = param.Selector(objects=[None])
+    category = param.Selector(objects=list(_schemas_by_category))
+    collection = param.Selector(objects=[None])
     
     editor = param.ClassSelector(ModelTableEditor)
     
     def __init__(self, **params):
+        all_schemas = xedocs.schemas_by_category()
         schemas = params.pop('schemas', None)
-        if schemas is not None:
-            self._all_schemas = schemas
-            self.param.category.objects = list(schemas)
+        if schemas is None:
+            schemas = xedocs.list_schemas()
+
+        # if isinstance(schemas, dict):
+        #     self._all_schemas = schemas
+        #     
+
+        categories = params.pop('categories', None)
+
+        if categories is None:
+            categories = list(xedocs.schemas_by_category())
+
+        schemas_by_category = {}
+        for category in categories:
+            cat_schemas  = all_schemas.get(category, {})
+            schema_dict = {k: v for k,v in cat_schemas.items() if k in schemas}
+            schemas_by_category[category] = schema_dict
+
+        self._schemas_by_category = schemas_by_category
+        
         super().__init__(**params)
+        self.param.category.objects = list(schemas_by_category)
 
 
     @param.depends('category', watch=True, on_init=True)
-    def category_changed(self):
-        schemas = xedocs.schemas_by_category().get(self.category, {})
-
+    def _category_changed(self):
+        schemas = self._schemas_by_category.get(self.category, {})
         if not schemas:
             return
 
         objects = list(schemas.values())
-        self.param.selected_schema.names = schemas
-        self.param.selected_schema.objects = objects
-        self.selected_schema = objects[0]
+        self.param.collection.names = schemas
+        self.param.collection.objects = objects
+        self.collection = objects[0]
 
-    @pn.depends('controls_layout')
-    def controls_panel(self):
-        return self.controls_layout(self.param.category, self.param.selected_schema)
+    @param.depends('collection', watch=True, on_init=True)
+    def _selection_changed(self):
+        self.editor = ModelTableEditor(class_=self.collection)
 
-    @pn.depends('selected_schema')
-    def model_panel(self):
-        self.editor = ModelTableEditor(class_=self.selected_schema)
-        return self.editor
+    @pn.depends('selection_layout')
+    def selection_panel(self):
+        return self.selection_layout(self.param.category, 
+                                     self.param.collection)
+
+    @pn.depends('editor')
+    def query_panel(self):
+        if self.editor is None:
+            return pn.Column()
+        return pn.panel(self.editor.controls_panel)
+
+    @pn.depends('editor')
+    def data_panel(self):
+        if self.editor is None:
+            return pn.Column()
+        return pn.Column(self.editor.page_controls,
+                  self.editor.table_panel)
 
     def __panel__(self):
-        return pn.Column(self.controls_panel,
-                        self.model_panel)
+        bottom_panel = pn.Row(self.query_panel, self.data_panel)
+        return pn.Column(self.selection_panel,
+                        pn.layout.Divider(),
+                        bottom_panel
+                        )
 

@@ -7,11 +7,11 @@
 import rframe
 
 from .base_corrections import TimeSampledCorrection
-
+from ..constants import DETECTOR
 
 class HitThreshold(TimeSampledCorrection):
     _ALIAS = "hit_thresholds"
-    detector: str = rframe.Index()
+    detector: DETECTOR = rframe.Index()
     pmt: int = rframe.Index()
 
     value: int

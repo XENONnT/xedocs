@@ -6,12 +6,13 @@ from typing import List
 from pydantic import Field, BaseModel
 
 
-from .base_pmt_data import BasePmtData, DETECTOR_TYPE
+from .base_pmt_data import BasePmtData
+from ..constants import DETECTOR
 
 
 class VoltageChange(BasePmtData):
     
-    detector: DETECTOR_TYPE = rframe.Index()
+    detector: DETECTOR = rframe.Index()
     pmt: int = rframe.Index(ge=0)
     time: datetime.datetime = rframe.Index()
 

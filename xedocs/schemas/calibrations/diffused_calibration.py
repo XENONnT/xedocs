@@ -2,8 +2,7 @@ import datetime
 from pydantic import conint
 from typing import Literal
 from .base_calibrations import BaseCalibration
-
-DIFFUSED_SOURCE_TYPE = Literal['rn-220','kr-83m','ar-37']
+from ..constants import DIFFUSED_SOURCE
 
 
 class DiffusedCalibration(BaseCalibration):
@@ -12,7 +11,7 @@ class DiffusedCalibration(BaseCalibration):
 
     _ALIAS = "diffused_calibrations"
 
-    source: DIFFUSED_SOURCE_TYPE
+    source: DIFFUSED_SOURCE
 
     nv_ticks: conint(ge=0)
     valve_opened: datetime.datetime

@@ -8,7 +8,6 @@ from typing import Literal
 from ..base_schemas import XeDoc
 from ..._settings import settings
 
-DETECTOR_TYPE = Literal['tpc','neutron_veto','muon_veto']
 
 class BasePmtData(XeDoc):
     _ALIAS = ""

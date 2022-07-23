@@ -2,7 +2,15 @@
 import datetime
 import pydantic
 import rframe
-import utilix
+try:
+    import utilix
+    uconfig = utilix.uconfig
+    from utilix import xent_collection
+
+except ImportError:
+    uconfig = None
+    def xent_collection(**kwargs):
+        raise RuntimeError('utilix not configured')
 
 from pydantic import validator
 from typing import Literal
@@ -20,7 +28,9 @@ RSE_TYPE = Literal['SURFSARA_USERDISK',
 
 
 def xeauth_user():
-    return utilix.uconfig.get('xeauth', 'api_user', fallback='unknown')
+    if uconfig is None:
+        return 'unknown'
+    return uconfig.get('xeauth', 'api_user', fallback='unknown')
 
 
 class ProcessingRequest(BaseAnalysisSchema):
@@ -55,4 +65,5 @@ class ProcessingRequest(BaseAnalysisSchema):
         ctx = contexts.find_one({f'hashes.{self.data_type}': self.lineage_hash},
                   projection={'context': '$name', 'env': '$tag', '_id': 0},
                   sort=[('date_added', pymongo.DESCENDING)])
+        
         return dict(ctx)

@@ -7,7 +7,7 @@ from typing import Literal, List
 
 from ..base_schemas import XeDoc
 from ..._settings import settings
-
+from ..constants import SOURCE
 
 class ActivityMeasurement(BaseModel):
     time: datetime.datetime
@@ -22,6 +22,6 @@ class CalibrationSource(XeDoc):
     
     source_id: str = rframe.Index(max_length=50)
     lngs_id: constr(max_length=30) 
-    kind: constr(max_length=50)
+    kind: SOURCE
     ref: str
     activity_measurements: List[ActivityMeasurement]

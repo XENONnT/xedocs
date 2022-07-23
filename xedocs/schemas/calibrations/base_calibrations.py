@@ -8,14 +8,7 @@ from typing import Literal
 from ..base_schemas import XeDoc
 from ..._settings import settings
 
-SOURCE_TYPE = Literal['ambe',
- 'ar-37',
- 'kr-83m',
- 'led',
- 'noise',
- 'none',
- 'rn-220',
- 'th-232',]
+from ..constants import SOURCE
 
 class BaseCalibration(XeDoc):
     """Base class for calibration metadata
@@ -29,7 +22,7 @@ class BaseCalibration(XeDoc):
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
     source_id: str = rframe.Index(min_length=1, max_length=60)
 
-    source_type: SOURCE_TYPE
+    source_type: SOURCE
 
     operator: str = pydantic.Field(min_length=1, max_length=60)
     comments: str = ''
