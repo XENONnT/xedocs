@@ -436,7 +436,9 @@ class XeDocListEditor(CompositeWidget):
     def _update_table(self):
         if self.table_widget is None:
             return
-        
+        assert all([isinstance(doc, self.class_) 
+                    for doc in self.value]), f"Value must be a list of {self.class_} instances"
+                    
         docs = [json_serializable(doc.index_labels)
                 for doc in self.value]
         df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
@@ -620,7 +622,7 @@ class ModelTableEditor(pn.viewable.Viewer):
                         #  width=1000, 
                          scroll=False,)
 
-    @pn.depends('page','last_page')
+    @pn.depends('page', 'last_page')
     def page_controls(self):
         end = self.last_page or 1
 
@@ -643,7 +645,6 @@ class ModelTableEditor(pn.viewable.Viewer):
         find_button.on_click(self.filter_callback)
 
         
-
         query_container = pn.Card(
             "Valid JSON or python literals", self.query_editor,
             header=pn.Row('🔍 Filter Documents', pn.layout.Spacer(), width=300),

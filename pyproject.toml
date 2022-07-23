@@ -20,9 +20,8 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
 click = "*"
-rframe = "^0.1.16"
-rich = "^12.0.1"
-pydantic-panel = "^0.1.5"
+rich = "*"
+rframe = "^0.1.19"
 
 
 [tool.poetry.dev-dependencies]
@@ -38,14 +37,13 @@ yapf = "*"
 sphinx-material = "*"
 nbsphinx = "*"
 invoke = "*"
-black = "^22.1.0"
-pytest-cov = "^3.0.0"
-hypothesis = "^6.39.4"
-autodoc-pydantic = "^1.6.1"
-jupyterlite-sphinx = "^0.4.6"
-sphinxext-rediraffe = "^0.2.7"
-pymongo = "<4.0.0"
-utilix = "^0.7.0"
+black = "*"
+pytest-cov = "*"
+hypothesis = "*"
+autodoc-pydantic = "*"
+jupyterlite-sphinx = "*"
+sphinxext-rediraffe = "*"
+pymongo = "*"
 
 [tool.poetry.scripts]
 xedocs = 'xedocs.cli:main'
