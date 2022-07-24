@@ -8,7 +8,7 @@ class AnodeRampReport(BaseOperationsReport):
     """Anode ramp- report
     """
 
-    _ALIAS = "anode_ramp_reports"
+    _ALIAS = "anode_ramps"
     
     direction: Literal['up','down']
     starting_voltage: float
