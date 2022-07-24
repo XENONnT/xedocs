@@ -408,11 +408,14 @@ class QueryEditor(CompositeWidget):
             return
 
         index = self.class_.index_for(name)
+        
         label = index.validate_label(event.new)
+
         if label:
             self.value[name] = label
         else:
             self.value[name] = None
+
         self.param.trigger('value')
 
 class XeDocListEditor(CompositeWidget):
@@ -619,7 +622,8 @@ class ModelTableEditor(pn.viewable.Viewer):
         self.inc_page.disabled = self.page >= self.last_page or self.page==-1
 
     def filter_callback(self, event):
-        query = self.query_editor.value
+        query = { k:v for k,v in self.query_editor.value.items() if v }
+
         if self.query != query:
             self.query = query               
             self.page = 0
@@ -628,7 +632,7 @@ class ModelTableEditor(pn.viewable.Viewer):
         end = math.ceil(self.class_.compile_query(**self.query).count()/self.page_size)
         self.param.page.bounds = (0, end)
         self.last_page = end
-        self.refresh_table = True
+        self._update_docs()
         
     def trigger_refresh_cb(self, event):
         self.refresh_table = True
@@ -843,6 +847,14 @@ class XedocsEditor(pn.viewable.Viewer):
             return pn.Column()
         return pn.Column(self.editor.page_controls,
                   self.editor.table_panel)
+
+    @pn.depends('editor')
+    def find_button_panel(self):
+        if self.editor is None:
+            return pn.Row(pn.layout.Spacer(width_policy='max'))
+        return pn.Row(pn.layout.Spacer(width_policy='max'), 
+                              self.editor.find_button, 
+                              pn.layout.Spacer(width_policy='max'))
 
     def __panel__(self):
         bottom_panel = pn.Row(self.query_or_insert_panel, self.data_panel)
