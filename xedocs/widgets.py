@@ -25,7 +25,8 @@ from tornado.ioloop import IOLoop
 
 from pydantic_panel import (infer_widget, 
                             json_serializable, 
-                            PydanticModelEditor)
+                            PydanticModelEditor,
+                            ItemListEditor)
 from pydantic_panel.dispatchers import clean_kwargs
 
 from panel.widgets.slider import _SliderBase
@@ -355,8 +356,14 @@ class QueryEditor(CompositeWidget):
         alias = field.alias if self.by_alias else field_name
 
         alias = alias.replace('_', ' ').capitalize()
-        widget = NullableInput(value=value,
-                                name=alias,)
+        widget = ItemListEditor(value=[value] if value else [], 
+                                               class_=field.type_, 
+                                               item_field=field,
+                                               name=alias+ 's',
+                                               allow_delete=True)
+
+        # widget = NullableInput(value=value,
+        #                         name=alias,)
         widget.param.watch(self._validate_field, 'value')
         return widget
 
@@ -388,7 +395,6 @@ class QueryEditor(CompositeWidget):
         label = index.validate_label(event.new)
 
         self.value[name] = label
-
 
         self.param.trigger('value')
 
