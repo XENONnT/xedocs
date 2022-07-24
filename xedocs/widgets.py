@@ -13,6 +13,11 @@ import param
 
 from typing import Any, ClassVar, List, Literal, Type
 
+try:
+    from typing import _LiteralGenericAlias
+except ImportError:
+    _LiteralGenericAlias = None
+
 from panel.widgets import (Widget,
                            LiteralInput,
                            CompositeWidget, 
@@ -27,6 +32,7 @@ from pydantic_panel import (infer_widget,
                             json_serializable, 
                             PydanticModelEditor,
                             ItemListEditor)
+
 from pydantic_panel.dispatchers import clean_kwargs
 
 from panel.widgets.slider import _SliderBase
@@ -356,14 +362,24 @@ class QueryEditor(CompositeWidget):
         alias = field.alias if self.by_alias else field_name
 
         alias = alias.replace('_', ' ').capitalize()
-        widget = ItemListEditor(value=[value] if value else [], 
-                                               class_=field.type_, 
-                                               item_field=field,
-                                               name=alias+ 's',
-                                               allow_delete=True)
+        if type(field.outer_type_) == _LiteralGenericAlias:
+            options = list(field.outer_type_.__args__)
+            if value not in options:
+                value = options[0]
+            widget = pn.widgets.MultiChoice(name=alias + 's', 
+                                   value=[value] if value else [], 
+                                   options=options)
+        else:
+            try:
+                widget = ItemListEditor(value=[value] if value else [], 
+                                                class_=field.outer_type_, 
+                                                item_field=field,
+                                                name=alias+ 's',
+                                                )
+            except:
+                widget = NullableInput(value=value,
+                                    name=alias,)
 
-        # widget = NullableInput(value=value,
-        #                         name=alias,)
         widget.param.watch(self._validate_field, 'value')
         return widget
 
@@ -808,12 +824,12 @@ class XedocsEditor(pn.viewable.Viewer):
     def query_panel(self):
         if self.editor is None:
             return pn.Column()
+        
         return pn.Column(
                         "### Filters (python literals)",
                         self.editor.query_panel, 
-                        pn.layout.Divider(),
-                        self.editor.find_button,
-                        width_policy='min')
+                        
+                        width_policy='max')
 
     @pn.depends('editor')
     def new_doc_panel(self):
