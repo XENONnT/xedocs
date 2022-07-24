@@ -393,9 +393,10 @@ class QueryEditor(CompositeWidget):
 
         index = self.class_.index_for(name)
         label = index.validate_label(event.new)
-
-        self.value[name] = label
-
+        if label:
+            self.value[name] = label
+        else:
+            self.value[name] = None
         self.param.trigger('value')
 
 class XeDocListEditor(CompositeWidget):
