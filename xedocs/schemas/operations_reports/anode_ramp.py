@@ -5,7 +5,7 @@ from .base_report import BaseOperationsReport
 
 
 class AnodeRampReport(BaseOperationsReport):
-    """Anode ramp- report
+    """Anode ramp - report
     """
 
     _ALIAS = "anode_ramps"

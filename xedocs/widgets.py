@@ -537,6 +537,12 @@ class ModelTableEditor(pn.viewable.Viewer):
                                     height=50, width=50, )
         self.dec_page.on_click(self.decrement_page)
 
+        self.find_button = pn.widgets.Button(name='🚀 Query',
+                                        button_type='primary', 
+                                        align='center')
+
+        self.find_button.on_click(self.filter_callback)
+
         self.param.watch(self._update_docs, 
                          ['class_', 'page', 'query', 'refresh_table'])
 
@@ -600,6 +606,10 @@ class ModelTableEditor(pn.viewable.Viewer):
 
     def _set_docs(self, future):
         docs = future.result()
+
+        if docs == self.docs:
+            self.table.loading = False
+
         with unlocked():
             self.docs = docs
             docs = [json_serializable(doc.index_labels) for doc in self.docs]
@@ -663,25 +673,20 @@ class ModelTableEditor(pn.viewable.Viewer):
         return pn.Row(self.dec_page, page_view,
                         self.inc_page , max_width=600, width_policy='max')
 
+    @pn.depends('query_editor')
+    def query_panel(self):
+        if self.query_editor is None:
+            return pn.Column()
+        return pn.Column(self.query_editor)
 
-    @pn.depends('class_', 'query', 'page_size')
     def controls_panel(self):
-        
-        find_button = pn.widgets.Button(name='🚀 Query',
-                                        button_type='primary', 
-                                        align='center')
-
-        find_button.on_click(self.filter_callback)
-
-        
         query_container = pn.Card(
-            "Valid JSON or python literals", self.query_editor,
+            "Valid JSON or python literals", self.query_panel,
             header=pn.Row('🔍 Filter Documents', pn.layout.Spacer(), width=300),
             collapsed=True,
         )
-        
 
-        add_new = pn.Card(self.model_editor, 
+        add_new = pn.Card(self.new_doc_panel, 
                           name='insert_new', 
                           header=pn.Row('➕ New Document', 
                                         pn.layout.Spacer(), 
@@ -691,11 +696,18 @@ class ModelTableEditor(pn.viewable.Viewer):
         return pn.Column(
                         
                         query_container,
-                        find_button,
+                        self.find_button,
                         pn.layout.Divider(),
                         add_new,
                         )
-    
+
+    @pn.depends('model_editor')
+    def new_doc_panel(self):
+        if self.model_editor is None:
+            return pn.Column()
+        return pn.Column(self.model_editor,
+                         width_policy='min')
+
     def __panel__(self):
         right_panel = pn.Column(self.page_controls,
                                 self.table_panel)
@@ -768,10 +780,27 @@ class XedocsEditor(pn.viewable.Viewer):
                                      self.param.collection)
 
     @pn.depends('editor')
-    def query_panel(self):
+    def query_or_insert_panel(self):
         if self.editor is None:
             return pn.Column()
         return pn.panel(self.editor.controls_panel)
+
+    @pn.depends('editor')
+    def query_panel(self):
+        if self.editor is None:
+            return pn.Column()
+        return pn.Column(
+                        "### 🔍 Filters (JSON or python literals)",
+                        self.editor.query_panel, 
+                        pn.layout.Divider(),
+                        self.editor.find_button,
+                        width_policy='min')
+
+    @pn.depends('editor')
+    def new_doc_panel(self):
+        if self.editor is None:
+            return pn.Column()
+        return pn.panel(self.editor.new_doc_panel)
 
     @pn.depends('editor')
     def data_panel(self):
@@ -781,7 +810,7 @@ class XedocsEditor(pn.viewable.Viewer):
                   self.editor.table_panel)
 
     def __panel__(self):
-        bottom_panel = pn.Row(self.query_panel, self.data_panel)
+        bottom_panel = pn.Row(self.query_or_insert_panel, self.data_panel)
         return pn.Column(self.selection_panel,
                         pn.layout.Divider(),
                         bottom_panel
