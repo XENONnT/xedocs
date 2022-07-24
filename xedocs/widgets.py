@@ -11,9 +11,11 @@ import panel as pn
 
 import param
 
-from typing import Any, ClassVar, List, Type
+from typing import Any, ClassVar, List, Literal, Type
 
-from panel.widgets import (CompositeWidget, 
+from panel.widgets import (Widget,
+                           LiteralInput,
+                           CompositeWidget, 
                            DatetimeRangePicker, 
                            EditableRangeSlider)
 
@@ -45,6 +47,15 @@ logger = logging.getLogger(__name__)
 def json_serializable(value: rframe.Interval):
     return value.left, value.right
 
+
+class NullableInput(LiteralInput):
+    def _process_property_change(self, msg):
+        # msg = Widget._process_property_change(self, msg)
+        if 'value' in msg and msg['value'] == '':
+            msg['value'] = 'null' if self.serializer == 'json' else 'None' 
+
+        msg = super()._process_property_change(msg)
+        return msg
 
 class TimeIntervalEditor(DatetimeRangePicker):
     value = param.ClassSelector(rframe.TimeInterval, default=None)
@@ -344,8 +355,8 @@ class QueryEditor(CompositeWidget):
         alias = field.alias if self.by_alias else field_name
 
         alias = alias.replace('_', ' ').capitalize()
-        widget = pn.widgets.LiteralInput(value=value,
-                                            name=alias,)
+        widget = NullableInput(value=value,
+                                name=alias,)
         widget.param.watch(self._validate_field, 'value')
         return widget
 
@@ -377,6 +388,7 @@ class QueryEditor(CompositeWidget):
         label = index.validate_label(event.new)
 
         self.value[name] = label
+
 
         self.param.trigger('value')
 
@@ -586,7 +598,7 @@ class ModelTableEditor(pn.viewable.Viewer):
     def filter_callback(self, event):
         query = self.query_editor.value
         if self.query != query:
-            self.query = query                
+            self.query = query               
             self.page = 0
         if self.page == -1:
             self.page = 0
