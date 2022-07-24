@@ -549,7 +549,7 @@ class ModelTableEditor(pn.viewable.Viewer):
                                     height=50, width=50, )
         self.dec_page.on_click(self.decrement_page)
 
-        self.find_button = pn.widgets.Button(name='🚀 Query',
+        self.find_button = pn.widgets.Button(name='🔍 Query',
                                         button_type='primary', 
                                         align='center')
 
@@ -802,7 +802,7 @@ class XedocsEditor(pn.viewable.Viewer):
         if self.editor is None:
             return pn.Column()
         return pn.Column(
-                        "### 🔍 Filters (JSON or python literals)",
+                        "### Filters (python literals)",
                         self.editor.query_panel, 
                         pn.layout.Divider(),
                         self.editor.find_button,
