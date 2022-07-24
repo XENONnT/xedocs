@@ -24,4 +24,6 @@ class CalibrationSource(XeDoc):
     lngs_id: constr(max_length=30) 
     kind: SOURCE
     ref: str
+    comments: str
+    
     activity_measurements: List[ActivityMeasurement]
