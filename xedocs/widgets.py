@@ -449,7 +449,7 @@ class XeDocListEditor(CompositeWidget):
         self._composite[:] = [pn.panel(self.table_view)]
         
     @param.depends('class_', 'pagination', 'page_size', watch=True, on_init=True)
-    def _class_changed(self):
+    def _make_table_widget(self):
 
         if len(self.value) > self.MAX_SEND_ROWS:
             self.pagination = 'remote'
@@ -490,8 +490,7 @@ class XeDocListEditor(CompositeWidget):
         
     @param.depends('value', watch=True, )
     def _update_table(self):
-        if not self.value:
-            return
+        
 
         if len(self.value) > self.MAX_SEND_ROWS:
             self.pagination = 'remote'
@@ -501,6 +500,9 @@ class XeDocListEditor(CompositeWidget):
 
         if self.table_widget is None:
             return
+
+        if not len(self.table_widget.value) or not self.value:
+            return self._make_table_widget()
 
         assert all([isinstance(doc, self.class_) 
                     for doc in self.value]), f"Value must be a list of {self.class_} instances"
@@ -588,7 +590,7 @@ class ModelTableEditor(pn.viewable.Viewer):
                          ['class_', 'page', 'query', 'refresh_table'])
 
     @param.depends('class_', watch=True, on_init=True)
-    def _class_changed(self):
+    def _make_table_widget(self):
         docs = [json_serializable(doc.index_labels) for doc in self.docs]
         df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
 
@@ -610,6 +612,13 @@ class ModelTableEditor(pn.viewable.Viewer):
     
     @param.depends('docs', watch=True)
     def _docs_changed(self):
+        if self.table is None:
+            self._make_table_widget()
+            return
+
+        if not len(self.table.value):
+            return self._make_table_widget()
+
         docs = [json_serializable(doc.index_labels) for doc in self.docs]
         df = pd.DataFrame(docs, columns=list(self.class_.get_index_fields()))
         self.table.value = df
