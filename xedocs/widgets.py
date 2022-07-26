@@ -623,6 +623,7 @@ class ModelTableEditor(pn.viewable.Viewer):
 
     def filter_callback(self, event):
         query = { k:v for k,v in self.query_editor.value.items() if v }
+        query = { k: v[0] if len(v)==1 else v for k,v in query.items() }
 
         if self.query != query:
             self.query = query               

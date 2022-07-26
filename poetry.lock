@@ -434,7 +434,7 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "hypothesis"
-version = "6.52.4"
+version = "6.53.0"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -446,7 +446,7 @@ exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
 sortedcontainers = ">=2.1.0,<3.0.0"
 
 [package.extras]
-all = ["black (>=19.10b0)", "click (>=7.0)", "django (>=2.2)", "dpcontracts (>=0.4)", "lark-parser (>=0.6.5)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=0.25)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "importlib-metadata (>=3.6)", "backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.1)"]
+all = ["black (>=19.10b0)", "click (>=7.0)", "django (>=2.2)", "dpcontracts (>=0.4)", "lark-parser (>=0.6.5)", "libcst (>=0.3.16)", "numpy (>=1.9.0)", "pandas (>=1.0)", "pytest (>=4.6)", "python-dateutil (>=1.4)", "pytz (>=2014.1)", "redis (>=3.0.0)", "rich (>=9.0.0)", "importlib-metadata (>=3.6)", "backports.zoneinfo (>=0.2.1)", "tzdata (>=2022.1)"]
 cli = ["click (>=7.0)", "black (>=19.10b0)", "rich (>=9.0.0)"]
 codemods = ["libcst (>=0.3.16)"]
 dateutil = ["python-dateutil (>=1.4)"]
@@ -455,7 +455,7 @@ dpcontracts = ["dpcontracts (>=0.4)"]
 ghostwriter = ["black (>=19.10b0)"]
 lark = ["lark-parser (>=0.6.5)"]
 numpy = ["numpy (>=1.9.0)"]
-pandas = ["pandas (>=0.25)"]
+pandas = ["pandas (>=1.0)"]
 pytest = ["pytest (>=4.6)"]
 pytz = ["pytz (>=2014.1)"]
 redis = ["redis (>=3.0.0)"]
@@ -702,7 +702,7 @@ translation = ["jupyterlab_server (>=2.8.1,<3)"]
 
 [[package]]
 name = "jupyterlite-sphinx"
-version = "0.6.0"
+version = "0.7.0"
 description = "Sphinx extension for deploying JupyterLite"
 category = "dev"
 optional = false
@@ -1126,7 +1126,7 @@ email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pydantic-panel"
-version = "0.1.8"
+version = "0.1.12"
 description = "Top-level package for pydantic-panel."
 category = "main"
 optional = true
@@ -1354,7 +1354,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "rframe"
-version = "0.1.20"
+version = "0.1.22"
 description = "Top-level package for rframe."
 category = "main"
 optional = false
@@ -1719,7 +1719,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "urllib3"
-version = "1.26.10"
+version = "1.26.11"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
@@ -1732,21 +1732,20 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.15.1"
+version = "20.16.0"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+python-versions = ">=3.6"
 
 [package.dependencies]
 distlib = ">=0.3.1,<1"
 filelock = ">=3.2,<4"
 platformdirs = ">=2,<3"
-six = ">=1.9.0,<2"
 
 [package.extras]
 docs = ["proselint (>=0.10.2)", "sphinx (>=3)", "sphinx-argparse (>=0.2.5)", "sphinx-rtd-theme (>=0.4.3)", "towncrier (>=21.3)"]
-testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", "pytest (>=4)", "pytest-env (>=0.6.2)", "pytest-freezegun (>=0.4.1)", "pytest-mock (>=2)", "pytest-randomly (>=1)", "pytest-timeout (>=1)", "packaging (>=20.0)"]
+testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", "packaging (>=20.0)", "pytest (>=4)", "pytest-env (>=0.6.2)", "pytest-freezegun (>=0.4.1)", "pytest-mock (>=2)", "pytest-randomly (>=1)", "pytest-timeout (>=1)"]
 
 [[package]]
 name = "webencodings"
@@ -2101,8 +2100,8 @@ fsspec = [
     {file = "fsspec-2022.5.0.tar.gz", hash = "sha256:7a5459c75c44e760fbe6a3ccb1f37e81e023cde7da8ba20401258d877ec483b4"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.52.4-py3-none-any.whl", hash = "sha256:9e5da519958099586d4d44267a87fb83fe127ac6bafae4ecccfe2598c78d37fe"},
-    {file = "hypothesis-6.52.4.tar.gz", hash = "sha256:2af2f03cf49d44e2f8df916d46af6f9a0beeb2ca4c936512a6af0d61f4690772"},
+    {file = "hypothesis-6.53.0-py3-none-any.whl", hash = "sha256:9c2b073731010cc00bcf060e71bd8f9507f6fe8f6d173f454634d1b91c537412"},
+    {file = "hypothesis-6.53.0.tar.gz", hash = "sha256:39f225530c28fe484a59c39839c8a2fb414f2ecfd4743f75d82f55e0f09268c0"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
@@ -2168,8 +2167,8 @@ jupyterlite = [
     {file = "jupyterlite-0.1.0b11.tar.gz", hash = "sha256:e165ff4a04e53f79589b29fd7f1652eccb1a1341bc7235010ac731623f99328a"},
 ]
 jupyterlite-sphinx = [
-    {file = "jupyterlite-sphinx-0.6.0.tar.gz", hash = "sha256:0cbc25b2a8df045af0156f36864c3d3a462d7a64da4ab69606f25e3a2f98f8ee"},
-    {file = "jupyterlite_sphinx-0.6.0-py3-none-any.whl", hash = "sha256:91c0b18fc437d7d30427b1713d4e450bf0aaf35e61d31761b49882b322dbf5a7"},
+    {file = "jupyterlite-sphinx-0.7.0.tar.gz", hash = "sha256:d6aa4cf4537895ba4de6cd3747babd71f597e0ef2f5ec4f2f82b7e2f9e226781"},
+    {file = "jupyterlite_sphinx-0.7.0-py3-none-any.whl", hash = "sha256:1333e220da4539addf953493f32be40bca4fa65a615c7a923ce6fa3499440a0a"},
 ]
 lazy-object-proxy = [
     {file = "lazy-object-proxy-1.7.1.tar.gz", hash = "sha256:d609c75b986def706743cdebe5e47553f4a5a1da9c5ff66d76013ef396b5a8a4"},
@@ -2607,8 +2606,8 @@ pydantic = [
     {file = "pydantic-1.9.1.tar.gz", hash = "sha256:1ed987c3ff29fff7fd8c3ea3a3ea877ad310aae2ef9889a119e22d3f2db0691a"},
 ]
 pydantic-panel = [
-    {file = "pydantic_panel-0.1.8-py3-none-any.whl", hash = "sha256:c9bb579730258384903c4462903052966370d74dd65cc983e1d2dce0735b9750"},
-    {file = "pydantic_panel-0.1.8.tar.gz", hash = "sha256:c478cb994110a6fcc9474747e5341daea5f2275c75bb27d400e4123f6bdb2e57"},
+    {file = "pydantic_panel-0.1.12-py3-none-any.whl", hash = "sha256:26cfd34847d1ac92704adcda334a89916bf79eea5d4cf896db5ddf503b5244ff"},
+    {file = "pydantic_panel-0.1.12.tar.gz", hash = "sha256:3b7de71ef802c83569555b2cac68877edabe9481514387846a0bd37cb71a0ae0"},
 ]
 pyflakes = [
     {file = "pyflakes-2.4.0-py2.py3-none-any.whl", hash = "sha256:3bb3a3f256f4b7968c9c788781e4ff07dce46bdf12339dcda61053375426ee2e"},
@@ -2863,8 +2862,8 @@ requests = [
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
 ]
 rframe = [
-    {file = "rframe-0.1.20-py3-none-any.whl", hash = "sha256:a497c473a78399fd8f0c5ef995da19d88a480a8db247d508900219fa442d64ce"},
-    {file = "rframe-0.1.20.tar.gz", hash = "sha256:e53e798e9addbd60e35bd0c62a690b229a51d437ac3de1a5fa7549433208b188"},
+    {file = "rframe-0.1.22-py3-none-any.whl", hash = "sha256:f446f9f79d7e0eff19c0ca94bf0231447a03a46acf6d1360294174ad52ea8d8b"},
+    {file = "rframe-0.1.22.tar.gz", hash = "sha256:cd74ee9e5176972ecb3138c55d346593a35d305c0e2ddd3b0ec883e1d165ec7d"},
 ]
 rich = [
     {file = "rich-12.5.1-py3-none-any.whl", hash = "sha256:2eb4e6894cde1e017976d2975ac210ef515d7548bc595ba20e195fb9628acdeb"},
@@ -2992,12 +2991,12 @@ unidecode = [
     {file = "Unidecode-1.3.4.tar.gz", hash = "sha256:8e4352fb93d5a735c788110d2e7ac8e8031eb06ccbfe8d324ab71735015f9342"},
 ]
 urllib3 = [
-    {file = "urllib3-1.26.10-py2.py3-none-any.whl", hash = "sha256:8298d6d56d39be0e3bc13c1c97d133f9b45d797169a0e11cdd0e0489d786f7ec"},
-    {file = "urllib3-1.26.10.tar.gz", hash = "sha256:879ba4d1e89654d9769ce13121e0f94310ea32e8d2f8cf587b77c08bbcdb30d6"},
+    {file = "urllib3-1.26.11-py2.py3-none-any.whl", hash = "sha256:c33ccba33c819596124764c23a97d25f32b28433ba0dedeb77d873a38722c9bc"},
+    {file = "urllib3-1.26.11.tar.gz", hash = "sha256:ea6e8fb210b19d950fab93b60c9009226c63a28808bc8386e05301e25883ac0a"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.15.1-py2.py3-none-any.whl", hash = "sha256:b30aefac647e86af6d82bfc944c556f8f1a9c90427b2fb4e3bfbf338cb82becf"},
-    {file = "virtualenv-20.15.1.tar.gz", hash = "sha256:288171134a2ff3bfb1a2f54f119e77cd1b81c29fc1265a2356f3e8d14c7d58c4"},
+    {file = "virtualenv-20.16.0-py2.py3-none-any.whl", hash = "sha256:2202dbc33c4f9aaa13289d244d64f2ade8b0169e88d0213b505099b384c5ae04"},
+    {file = "virtualenv-20.16.0.tar.gz", hash = "sha256:6cfedd21e7584124a1d1e8f3b6e74c0bf8aeea44d9884b6d2d7241de5361a73c"},
 ]
 webencodings = [
     {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
