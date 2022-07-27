@@ -357,9 +357,6 @@ class QueryEditor(CompositeWidget):
         if value is None:
             value = field.default
 
-        if value is not None:
-            self.value[field_name] = value
-
         value = json_serializable(value)
 
         alias = field.alias if self.by_alias else field_name
@@ -370,7 +367,7 @@ class QueryEditor(CompositeWidget):
             if value not in options:
                 value = options[0]
             widget = pn.widgets.MultiChoice(name=alias + 's', 
-                                   value=[value] if value else [], 
+                                   value = [], 
                                    options=options)
         else:
             try:
