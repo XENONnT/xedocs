@@ -13,3 +13,4 @@ class AnodeRampReport(BaseOperationsReport):
     direction: Literal['up','down']
     starting_voltage: float
     final_voltage: float
+    voltage_unit: str = 'volts'

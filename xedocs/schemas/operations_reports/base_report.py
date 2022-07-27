@@ -16,7 +16,7 @@ class BaseOperationsReport(XeDoc):
 
     class Config:
         allow_population_by_field_name = True
-
+    
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
 
     operator: str = pydantic.Field(min_length=1, max_length=60)
