@@ -51,8 +51,12 @@ executor = ThreadPoolExecutor(max_workers=5)  # pylint: disable=consider-using-w
 logger = logging.getLogger(__name__)
 
 @json_serializable.dispatch(precedence=1)
-def json_serializable(value: rframe.Interval):
+def json_serializable(value: rframe.IntegerInterval):
     return value.left, value.right
+
+@json_serializable.dispatch(precedence=1)
+def json_serializable(value: rframe.TimeInterval):
+    return f"{str(value.left)} to {str(value.right)}"
 
 
 class NullableInput(LiteralInput):
