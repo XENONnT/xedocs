@@ -9,7 +9,7 @@ class HotPmt(pydantic.BaseModel):
     avg_rate_kbps: float
 
 
-class HotReport(BaseOperationsReport):
+class HotspotReport(BaseOperationsReport):
     """Hotspot report
     """
 
