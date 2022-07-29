@@ -643,9 +643,10 @@ class ModelTableEditor(pn.viewable.Viewer):
             self.page = 0
         if self.page == -1:
             self.page = 0
-        end = math.ceil(self.class_.compile_query(**self.query).count()/self.page_size)
-        self.param.page.bounds = (0, end)
-        self.last_page = end
+        # end = math.ceil(self.class_.compile_query(**self.query).count()/self.page_size)
+        # self.param.page.bounds = (0, end)
+        # self.last_page = end
+        self._update_page_range()
         self._update_docs()
         
     def trigger_refresh_cb(self, event):
@@ -656,6 +657,13 @@ class ModelTableEditor(pn.viewable.Viewer):
 
     def decrement_page(self, event):
         self.page -= 1
+
+    def _set_page_range(self, future):
+        count = future.result()
+        last_page =  math.ceil(count/self.page_size)
+        with unlocked():
+            self.param.page.bounds = (0, last_page)
+            self.last_page = last_page
 
     def _set_docs(self, future):
         docs = future.result()
@@ -679,11 +687,25 @@ class ModelTableEditor(pn.viewable.Viewer):
             
         return docs
 
+    def _get_page_count(self):
+        count = 1
+        try:
+            count = self.class_.compile_query(**self.query).count()
+        except Exception as e:
+            logger.error(str(e))
+        return count
+
     def _update_docs(self, *events):
         self.table.loading = True
         loop = IOLoop.current()
         future = executor.submit(self._get_page)
         loop.add_future(future, self._set_docs)
+
+    def _update_page_range(self, *events):
+        self.table.loading = True
+        loop = IOLoop.current()
+        future = executor.submit(self._get_page_count)
+        loop.add_future(future, self._set_page_range)
 
     def value_editor(self, row):
         if len(self.docs)<=row.name:
