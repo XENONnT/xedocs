@@ -1,4 +1,6 @@
+import io
 import math
+import json
 import xedocs
 import rframe
 import datetime
@@ -45,7 +47,7 @@ from typing import Mapping, ClassVar, Type
 from concurrent.futures import ThreadPoolExecutor
 
 from .schemas import XeDoc
-
+from .utils import docs_to_wiki, docs_to_dataframe
 
 executor = ThreadPoolExecutor(max_workers=5)  # pylint: disable=consider-using-with
 logger = logging.getLogger(__name__)
@@ -57,6 +59,27 @@ def json_serializable(value: rframe.IntegerInterval):
 @json_serializable.dispatch(precedence=1)
 def json_serializable(value: rframe.TimeInterval):
     return f"{str(value.left)} to {str(value.right)}"
+
+
+def make_csv(schema, docs):
+    df = docs_to_dataframe(schema, docs)
+    return io.StringIO(df.to_csv())
+
+
+def make_json(schema, docs):
+    docs= [doc.dict() for doc in docs]
+    return io.StringIO(json.dumps(docs))
+
+
+def make_wiki(schema, docs):
+    return io.StringIO(docs_to_wiki(schema, docs))
+
+
+download_options = {
+    'csv': make_csv,
+    'json': make_json,
+    'wiki': make_wiki,
+}
 
 
 class NullableInput(LiteralInput):
@@ -565,7 +588,7 @@ class ModelTableEditor(pn.viewable.Viewer):
     page = param.Integer(-1, bounds=(-1, 1))
     last_page = param.Integer(0)
     page_size = param.Integer(15)
-    
+
     refresh_table = param.Event()
     table = param.Parameter()
     
@@ -783,6 +806,35 @@ class ModelTableEditor(pn.viewable.Viewer):
         return pn.Column(self.model_editor,
                          width_policy='min')
 
+    pn.depends('class_')
+    def download_panel(self):
+
+        current_only = pn.widgets.RadioBoxGroup(options={'Current page': 1,
+                                                         'Entire query': 0}, 
+                                                inline=True)
+        filename = pn.widgets.TextInput(name='Filename', value=self.class_._ALIAS)
+
+        filetype = pn.widgets.Select(name='Format', options=list(download_options))
+        
+        def cb():
+            if current_only.value:
+                docs = self.docs
+            else:
+                docs = self.class_.find(**self.query)
+            return download_options[filetype.value](self.class_, docs)
+
+        download_button = pn.widgets.FileDownload(filename=f'{self.class_._ALIAS}.{filetype.value}',
+                                                  callback=cb, disabled=not len(self.docs))
+
+        def update_filename(*events):
+            download_button.filename = f'{filename.value}.{filetype.value}'
+
+        filename.param.watch(update_filename, 'value')
+        filetype.param.watch(update_filename, 'value')
+
+        return pn.Column(current_only, filename, filetype, download_button)
+
+
     def __panel__(self):
         right_panel = pn.Column(self.page_controls,
                                 self.table_panel)
@@ -891,6 +943,10 @@ class XedocsEditor(pn.viewable.Viewer):
         return pn.Row(pn.layout.Spacer(width_policy='max'), 
                               self.editor.find_button, 
                               pn.layout.Spacer(width_policy='max'))
+
+    @pn.depends('editor')
+    def download_panel(self):
+        return pn.panel(self.editor.download_panel)
 
     def __panel__(self):
         bottom_panel = pn.Row(self.query_or_insert_panel, self.data_panel)
