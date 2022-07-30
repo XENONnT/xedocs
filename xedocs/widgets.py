@@ -946,6 +946,8 @@ class XedocsEditor(pn.viewable.Viewer):
 
     @pn.depends('editor')
     def download_panel(self):
+        if self.editor is None:
+            return pn.Row(pn.layout.Spacer(width_policy='max'))
         return pn.panel(self.editor.download_panel)
 
     def __panel__(self):
