@@ -16,9 +16,8 @@ def docs_to_wiki(schema, docs, title=None):
     table += '^ ' + ' ^ '.join(columns) + ' ^\n'
 
     for doc in docs:
-        data = doc.dict()
         table += "| " + ' | '.join([
-            str(data[col]) for col in columns]) + ' |\n'
+            str(getattr(doc, col)) for col in columns]) + ' |\n'
     return table
 
 

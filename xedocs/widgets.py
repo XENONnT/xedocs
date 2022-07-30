@@ -824,7 +824,7 @@ class ModelTableEditor(pn.viewable.Viewer):
             return download_options[filetype.value](self.class_, docs)
 
         download_button = pn.widgets.FileDownload(filename=f'{self.class_._ALIAS}.{filetype.value}',
-                                                  callback=cb, disabled=not len(self.docs))
+                                                  callback=cb)
 
         def update_filename(*events):
             download_button.filename = f'{filename.value}.{filetype.value}'

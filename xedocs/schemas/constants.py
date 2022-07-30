@@ -15,4 +15,4 @@ SOURCE = Literal['ambe',
 
 DIFFUSED_SOURCE = Literal['rn-220','kr-83m','ar-37']
 
-DETECTOR = Literal['tpc','neutron_veto','muon_veto']
+DETECTOR = Literal['tpc','neutron_veto','muon_veto','tpc_he']
