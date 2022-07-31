@@ -17,5 +17,5 @@ class Bodega(VersionedXeDoc):
     value: float
     uncertainty: float
     definition: str
-    reference: str = ''
+    reference: str = ""
     date: datetime.datetime

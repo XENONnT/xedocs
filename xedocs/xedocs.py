@@ -32,6 +32,7 @@ def find_df(schema, datasource=None, **labels):
     """Find a document in a datasource."""
     return schema.find_df(datasource, **labels)
 
+
 def find_one(schema, datasource=None, **kwargs):
     if isinstance(schema, str):
         schema = find_schema(schema)
@@ -43,9 +44,10 @@ def find_one(schema, datasource=None, **kwargs):
     labels, extra = schema.extract_labels(**kwargs)
     return schema.find_one(datasource, **labels)
 
-def insert_docs(schema: str, docs: Union[list,dict,pd.DataFrame], datasource=None):
+
+def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None):
     if isinstance(docs, pd.DataFrame):
-        docs = docs.reset_index().to_dict(orient='records')
+        docs = docs.reset_index().to_dict(orient="records")
     if not isinstance(docs, list):
         docs = [docs]
     if isinstance(schema, str):
@@ -59,17 +61,21 @@ def insert_docs(schema: str, docs: Union[list,dict,pd.DataFrame], datasource=Non
 
     return inserted
 
+
 def list_schemas():
     return list(XeDoc._XEDOCS)
+
 
 def all_schemas():
     return dict(XeDoc._XEDOCS)
 
+
 def schemas_by_category():
     d = defaultdict(dict)
     for name, schema in all_schemas().items():
-        d[schema._CATEGORY][name] = schema 
+        d[schema._CATEGORY][name] = schema
     return d
+
 
 def find_schema(name):
     schema = XeDoc._XEDOCS.get(name, None)
@@ -86,15 +92,17 @@ def help(schema):
         schema = find_schema(schema)
     return schema.help()
 
+
 def get_api_client(schema):
     if isinstance(schema, str):
         schema = find_schema(schema)
     return settings.api_client(schema)
 
+
 try:
-    '''Attempt to register URConfig protocol if straxen
+    """Attempt to register URConfig protocol if straxen
     is installed.
-    '''
+    """
     from straxen import URLConfig
 
     @URLConfig.register("xedocs")

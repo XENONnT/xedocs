@@ -12,6 +12,7 @@ import xedocs
 schemas = xedocs.all_schemas()
 try:
     import extra_schemas
+
     schemas.update(extra_schemas.schemas)
 
 except ImportError:

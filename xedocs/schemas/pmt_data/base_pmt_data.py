@@ -1,4 +1,3 @@
-
 import datetime
 import pydantic
 import rframe
@@ -15,4 +14,4 @@ class BasePmtData(XeDoc):
 
     @classmethod
     def default_database_name(cls):
-        return 'xepmts'
+        return "xepmts"

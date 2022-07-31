@@ -15,10 +15,11 @@ def camel_to_snake(name):
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
+
 class Review(BaseModel):
     reviewer: str = Field(max_length=80)
     approved: bool = False
-    comments: str = ''
+    comments: str = ""
 
 
 class BaseCorrectionSchema(VersionedXeDoc):
@@ -34,7 +35,6 @@ class BaseCorrectionSchema(VersionedXeDoc):
     _ALIAS: ClassVar = ""
     _CATEGORY = "corrections"
     _CORRECTIONS = {}
-
 
     created_date: datetime.datetime = settings.clock.current_datetime()
     comments: str = ""
@@ -63,7 +63,8 @@ class BaseCorrectionSchema(VersionedXeDoc):
             raise IndexError(f"Values already set for {index}")
 
     def pre_delete(self, datasource, **kwargs):
-        raise RuntimeError('Corrections are append only.')
+        raise RuntimeError("Corrections are append only.")
+
 
 class TimeIntervalCorrection(BaseCorrectionSchema):
     """Base class for time-interval corrections
@@ -77,14 +78,15 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
     The cutoff is set to prevent values changing after already being used
     for processing data.
     """
+
     class Config:
         allow_population_by_field_name = True
-        
+
     _ALIAS = ""
 
-    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias='run_id')
+    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias="run_id")
 
-    @validator('time', pre=True)
+    @validator("time", pre=True)
     def run_id_to_time(cls, v):
         """Convert run id to time"""
         if isinstance(v, (str, int)):
@@ -144,26 +146,27 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
     def pre_delete(self, datasource, **kwargs):
         if settings.clock.after_cutoff(self.time.left):
             # We allow deletion of future values for all versions
-            # if they are completely in the future 
+            # if they are completely in the future
             return
         # all other cases, deletion is forbiden.
-        raise RuntimeError('Corrections are append only.')
+        raise RuntimeError("Corrections are append only.")
 
     @classmethod
     def validity_intervals(cls, datasource=None, **labels):
         """Returns a list of intervals that are valid for the given labels"""
-        ivs = cls.unique(datasource, fields='time', **labels)
+        ivs = cls.unique(datasource, fields="time", **labels)
         ivs = sorted(ivs)
         if not ivs:
             return []
         merged = ivs[:1]
         for iv in ivs[1:]:
-            
+
             if iv.left == merged[-1].right:
                 merged[-1] = merged[-1].clone(right=iv.right)
             else:
                 merged.append(iv)
         return merged
+
 
 def can_extrapolate(doc):
     # only extrapolate ONLINE versions
@@ -192,15 +195,17 @@ class TimeSampledCorrection(BaseCorrectionSchema):
     from affecting the interpolated values that have already been used
     for processing.
     """
+
     class Config:
         allow_population_by_field_name = True
-        
+
     _ALIAS = ""
 
-    time: datetime.datetime = rframe.InterpolatingIndex(extrapolate=can_extrapolate,
-                                                        alias='run_id')
-    
-    @validator('time', pre=True)
+    time: datetime.datetime = rframe.InterpolatingIndex(
+        extrapolate=can_extrapolate, alias="run_id"
+    )
+
+    @validator("time", pre=True)
     def run_id_to_time(cls, v):
         """Convert run id to time"""
         if isinstance(v, (str, int)):
@@ -221,7 +226,7 @@ class TimeSampledCorrection(BaseCorrectionSchema):
         new_index["time"] = settings.clock.cutoff_datetime(buffer=1)
 
         existing = self.find(datasource, **new_index)
-        
+
         # If values for the cutoff time are already set, the values may have been
         # used for processing. We add a sample at the
         # cutoff time to force interpolation and extrapolation
@@ -257,22 +262,21 @@ class TimeSampledCorrection(BaseCorrectionSchema):
 
         assert settings.clock.after_cutoff(
             self.time
-            ), f"Can only delete \
-                values after {cutoff}." 
+        ), f"Can only delete \
+                values after {cutoff}."
 
-        if self.version == 'ONLINE': 
+        if self.version == "ONLINE":
             # deleting ONLINE values can affect interpolation of
             # older values so we need to freeze the values up
-            # until the current time. 
+            # until the current time.
             self.freeze_values(datasource)
-       
 
     @classmethod
     def validity_intervals(cls, datasource=None, **labels):
-        left = cls.min(datasource, fields='time', **labels)
-        right = cls.max(datasource, fields='time', **labels)
+        left = cls.min(datasource, fields="time", **labels)
+        right = cls.max(datasource, fields="time", **labels)
         if left is None or right is None:
             return []
-        if 'version' not in labels or labels['version'] == 'ONLINE':
+        if "version" not in labels or labels["version"] == "ONLINE":
             right = max(settings.clock.cutoff_datetime(), right)
         return [rframe.Interval[datetime.datetime](left=left, right=right)]

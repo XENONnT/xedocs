@@ -10,9 +10,8 @@ class LevelChange(pydantic.BaseModel):
 
 
 class AnodeWashingReport(BaseOperationsReport):
-    """Anode washing report
-    """
+    """Anode washing report"""
 
     _ALIAS = "anode_washes"
-    
+
     washes: List[LevelChange]

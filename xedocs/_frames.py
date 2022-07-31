@@ -10,9 +10,9 @@ from ._settings import settings
 
 
 class SchemaFrames:
-    _cache: Dict[str,RemoteFrame] = {}
+    _cache: Dict[str, RemoteFrame] = {}
     db: Any
-    
+
     def __init__(self, db=None):
         self.db = db
 
@@ -37,9 +37,9 @@ class SchemaFrames:
 
             schema = xedocs.find_schema(name)
             self._cache[name] = schema.rframe()
-            
+
         return self._cache[name]
-        
+
     def __getitem__(self, key):
         if isinstance(key, tuple) and key[0] in self.schemas:
             return self.get_rf(key[0])[key[1:]]

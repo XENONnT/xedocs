@@ -1,5 +1,3 @@
-
-
 import rframe
 import datetime
 from typing import List
@@ -11,7 +9,7 @@ from ..constants import DETECTOR
 
 
 class VoltageChange(BasePmtData):
-    
+
     detector: DETECTOR = rframe.Index()
     pmt: int = rframe.Index(ge=0)
     time: datetime.datetime = rframe.Index()

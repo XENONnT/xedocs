@@ -1,18 +1,19 @@
 from typing import Literal
 
 
-SOURCE = Literal['ambe',
- 'ar-37',
- 'kr-83m',
- 'rn-220',
- 'led',
- 'pulser',
- 'noise',
- 'none',
- 'th-228',
- 'th-232',
+SOURCE = Literal[
+    "ambe",
+    "ar-37",
+    "kr-83m",
+    "rn-220",
+    "led",
+    "pulser",
+    "noise",
+    "none",
+    "th-228",
+    "th-232",
 ]
 
-DIFFUSED_SOURCE = Literal['rn-220','kr-83m','ar-37']
+DIFFUSED_SOURCE = Literal["rn-220", "kr-83m", "ar-37"]
 
-DETECTOR = Literal['tpc','neutron_veto','muon_veto','tpc_he']
+DETECTOR = Literal["tpc", "neutron_veto", "muon_veto", "tpc_he"]

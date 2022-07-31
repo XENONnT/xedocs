@@ -42,16 +42,16 @@ class SimpleClock:
 
     @classmethod
     def validate(cls, v):
-        if not hasattr(v, 'after_cutoff'):
-            raise TypeError('Clock must implement `after_cutoff`')
+        if not hasattr(v, "after_cutoff"):
+            raise TypeError("Clock must implement `after_cutoff`")
 
-        if not hasattr(v, 'cutoff_datetime'):
-            raise TypeError('Clock must implement `cutoff_datetime`')
+        if not hasattr(v, "cutoff_datetime"):
+            raise TypeError("Clock must implement `cutoff_datetime`")
 
-        if not hasattr(v, 'current_datetime'):
-            raise TypeError('Clock must implement `current_datetime`')
+        if not hasattr(v, "current_datetime"):
+            raise TypeError("Clock must implement `current_datetime`")
 
-        if not hasattr(v, 'normalize_tz'):
-            raise TypeError('Clock must implement `normalize_tz`')
+        if not hasattr(v, "normalize_tz"):
+            raise TypeError("Clock must implement `normalize_tz`")
 
         return v

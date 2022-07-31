@@ -5,6 +5,7 @@ import rframe
 from .base_corrections import TimeSampledCorrection
 from ..constants import DETECTOR
 
+
 class PmtGain(TimeSampledCorrection):
     _ALIAS = "pmt_gains"
 

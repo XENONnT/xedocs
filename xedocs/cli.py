@@ -17,10 +17,11 @@ logging.basicConfig(
     level="NOTSET",
     format="%(message)s",
     datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True)]
+    handlers=[RichHandler(rich_tracebacks=True)],
 )
 
 logger = logging.getLogger("xedocs")
+
 
 def to_str(obj):
     if isinstance(obj, (list, tuple)):
@@ -30,33 +31,38 @@ def to_str(obj):
         return ",".join([f"{k}={to_str(v)}" for k, v in obj.items()])
     return f"{obj}"
 
+
 @click.group()
 def main():
     """Console script for xedocs."""
     click.echo("Welcome to the xedocs CLI")
-    
+
     return 0
 
 
-@main.command(name='find', context_settings=dict(
-    ignore_unknown_options=True,
-    allow_extra_args=True,
-))
-@click.argument('name')
+@main.command(
+    name="find",
+    context_settings=dict(
+        ignore_unknown_options=True,
+        allow_extra_args=True,
+    ),
+)
+@click.argument("name")
 @click.pass_context
 def cli_find(ctx, name: str):
     console = Console()
-    kwargs = dict([item.strip('--').split('=') for item in ctx.args])
-    kwargs = {k: v.split(',') if ',' in v else v for k,v in kwargs.items()}
+    kwargs = dict([item.strip("--").split("=") for item in ctx.args])
+    kwargs = {k: v.split(",") if "," in v else v for k, v in kwargs.items()}
     try:
         schema = xedocs.find_schema(name)
     except KeyError:
-        logger.error(f'Cant find a schema for `{name}`\n'
-                    f'Available schemas: {xedocs.list_schemas()}'
+        logger.error(
+            f"Cant find a schema for `{name}`\n"
+            f"Available schemas: {xedocs.list_schemas()}"
         )
         exit(0)
-    
-    query_str = ", ".join([f'{k}={v}' for k,v in kwargs.items()])
+
+    query_str = ", ".join([f"{k}={v}" for k, v in kwargs.items()])
 
     table = Table(title=f"{name.title()} query {query_str}")
 
@@ -69,7 +75,9 @@ def cli_find(ctx, name: str):
         table.add_column(field.title(), justify="center")
         field_order.append(field)
 
-    with console.status(f"[bold green]Looking for {name} documents that match your query...") as status:
+    with console.status(
+        f"[bold green]Looking for {name} documents that match your query..."
+    ) as status:
         docs = schema.find_iter(**kwargs)
 
     with Live(table, refresh_per_second=4):
@@ -81,22 +89,26 @@ def cli_find(ctx, name: str):
             time.sleep(0.1)
 
 
-@main.command(name='download', context_settings=dict(
-    ignore_unknown_options=True,
-    allow_extra_args=True,
-))
-@click.argument('name')
-@click.option('path', '--path', '-p', default='.', help='Path to download to')
+@main.command(
+    name="download",
+    context_settings=dict(
+        ignore_unknown_options=True,
+        allow_extra_args=True,
+    ),
+)
+@click.argument("name")
+@click.option("path", "--path", "-p", default=".", help="Path to download to")
 @click.pass_context
 def cli_download(ctx, name: str, path: str = None):
     console = Console()
-    kwargs = dict([item.strip('--').split('=') for item in ctx.args])
-    kwargs = {k: v.split(',') if ',' in v else v for k,v in kwargs.items()}
+    kwargs = dict([item.strip("--").split("=") for item in ctx.args])
+    kwargs = {k: v.split(",") if "," in v else v for k, v in kwargs.items()}
     try:
         schema = xedocs.find_schema(name)
     except KeyError:
-        logger.error(f'Cant find a schema for `{name}`\n'
-                    f'Available schemas: {xedocs.list_schemas()}'
+        logger.error(
+            f"Cant find a schema for `{name}`\n"
+            f"Available schemas: {xedocs.list_schemas()}"
         )
         exit(0)
 
@@ -104,14 +116,17 @@ def cli_download(ctx, name: str, path: str = None):
     path = os.path.join(path, fname)
     fpath = os.path.abspath(path)
 
-    with console.status(f"[bold green]Looking for {name} documents that match your query...") as status:
+    with console.status(
+        f"[bold green]Looking for {name} documents that match your query..."
+    ) as status:
         df = schema.find_df(**kwargs)
 
     with console.status(f"[bold green]Saving {name} documents to {path}") as status:
         df.to_csv(fpath)
         time.sleep(1)
-        
+
     console.print(f"Data saved to {fpath}")
-   
+
+
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover

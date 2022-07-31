@@ -154,9 +154,7 @@ class TestCorrections(unittest.TestCase):
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     @given(
         st.lists(
-            st.builds(SomeSampledCorrection,
-                 version=st.just("v1"),
-                 value=floats),
+            st.builds(SomeSampledCorrection, version=st.just("v1"), value=floats),
             min_size=3,
             unique_by=lambda x: x.time,
         )
@@ -290,7 +288,7 @@ class TestCorrections(unittest.TestCase):
                 doc_found.save(datasource)
             else:
                 with self.assertRaises(UpdateError):
-                    doc_found.value = 2*doc_found.value + 1
+                    doc_found.value = 2 * doc_found.value + 1
                     doc_found.save(datasource)
             doc.save(datasource)
 

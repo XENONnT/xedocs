@@ -6,8 +6,7 @@ from ..constants import DIFFUSED_SOURCE
 
 
 class DiffusedCalibration(BaseCalibration):
-    """Internal diffused Calibrations
-    """
+    """Internal diffused Calibrations"""
 
     _ALIAS = "diffused_calibrations"
 

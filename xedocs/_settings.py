@@ -3,27 +3,31 @@ import pandas as pd
 
 try:
     import utilix
+
     uconfig = utilix.uconfig
     from utilix import xent_collection
 
 except ImportError:
     uconfig = None
+
     def xent_collection(**kwargs):
-        raise RuntimeError('utilix not configured')
+        raise RuntimeError("utilix not configured")
+
 
 from pydantic import BaseSettings
 
 from .clock import SimpleClock
 
+
 class Settings(BaseSettings):
     class Config:
-        env_prefix = 'XEDOCS_'
+        env_prefix = "XEDOCS_"
 
     DEFAULT_DATABASE: str = "xedocs"
 
-    API_URL: str = 'https://api.xedocs.yossisprojects.com'
-    API_VERSION: str = 'v1'
-    API_AUDIENCE: str = 'https://api.cmt.xenonnt.org'
+    API_URL: str = "https://api.xedocs.yossisprojects.com"
+    API_VERSION: str = "v1"
+    API_AUDIENCE: str = "https://api.cmt.xenonnt.org"
     API_WRITE: bool = False
     API_TOKEN: str = None
     API_USERNAME: str = None
@@ -39,9 +43,7 @@ class Settings(BaseSettings):
 
         if self.API_TOKEN is None:
             readonly = not self.API_WRITE
-            token = xedocs.api.api_token(self.API_USERNAME,
-                                     self.API_PASSWORD,
-                                     readonly)
+            token = xedocs.api.api_token(self.API_USERNAME, self.API_PASSWORD, readonly)
             self.API_TOKEN = token
 
         return self.API_TOKEN
@@ -49,7 +51,7 @@ class Settings(BaseSettings):
     def api_client(self, schema):
         import xedocs
 
-        url = '/'.join([self.API_URL.rstrip('/'), self.API_VERSION, schema._ALIAS ])
+        url = "/".join([self.API_URL.rstrip("/"), self.API_VERSION, schema._ALIAS])
 
         return xedocs.api.api_client(url, self.api_token)
 
@@ -61,20 +63,19 @@ class Settings(BaseSettings):
                 database = self.DEFAULT_DATABASE
             collection = schema.default_collection_name()
 
-            return xent_collection(collection=collection,
-                                   database=database)
+            return xent_collection(collection=collection, database=database)
         return self.api_client(schema)
 
     def get_datasource_for(self, schema):
         if schema._ALIAS in self.datasources:
             return self.datasources[schema._ALIAS]
-        
+
         return self.default_datasource(schema)
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:
             raise KeyError(f"Rundb not configured.")
-        
+
         rundb = xent_collection()
 
         if isinstance(run_id, str):
@@ -96,7 +97,7 @@ class Settings(BaseSettings):
 
     def run_id_to_interval(self, run_id):
         doc = self.run_doc(run_id)
-        return doc["start"] , doc["end"]
+        return doc["start"], doc["end"]
 
     def extract_time(self, kwargs):
         if "time" in kwargs:

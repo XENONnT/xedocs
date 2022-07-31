@@ -18,6 +18,7 @@ from . import api
 
 try:
     from . import widgets
+
     gui = widgets.XedocsEditor()
 except ImportError:
-    logger.warning('Could not import editors, GUI not available.')
+    logger.warning("Could not import editors, GUI not available.")

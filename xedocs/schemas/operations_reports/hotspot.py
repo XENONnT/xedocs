@@ -10,14 +10,13 @@ class PmtRate(pydantic.BaseModel):
 
 
 class HotspotReport(BaseOperationsReport):
-    """Hotspot report
-    """
+    """Hotspot report"""
 
     _ALIAS = "hotspot_reports"
-    severity: Literal['hotspot','warmspot'] = 'hotspot'
+    severity: Literal["hotspot", "warmspot"] = "hotspot"
     anode_voltage_kv: float
     disppeared_by_itself: bool
     action_taken: str
-    plot : str
+    plot: str
 
     pmt_rates: List[PmtRate]
