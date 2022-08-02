@@ -48,18 +48,21 @@ executor = ThreadPoolExecutor(max_workers=5)  # pylint: disable=consider-using-w
 logger = logging.getLogger(__name__)
 
 
-def make_csv(schema, docs):
-    df = docs_to_dataframe(schema, docs)
+def make_csv(schema, docs, fields=None):
+    df = docs_to_dataframe(schema, docs, columns=fields)
     return io.StringIO(df.to_csv())
 
 
-def make_json(schema, docs):
-    docs = [doc.dict() for doc in docs]
-    return io.StringIO(json.dumps(docs))
+def make_json(schema, docs, fields=None):
+    if fields is not None:
+        fields = set(fields)
+    docs = [json.loads(doc.json(include=fields)) for doc in docs]
+
+    return io.StringIO(json.dumps(docs, indent=4))
 
 
-def make_wiki(schema, docs):
-    return io.StringIO(docs_to_wiki(schema, docs))
+def make_wiki(schema, docs, fields=None):
+    return io.StringIO(docs_to_wiki(schema, docs, columns=fields))
 
 
 download_options = {
@@ -365,32 +368,24 @@ class QueryEditor(CompositeWidget):
     def _widget_for(self, field_name):
         field = self.class_.__fields__[field_name]
 
-        value = self.value.get(field_name, None)
-
-        if value is None:
-            value = field.default
-
-        value = json_serializable(value)
-
         alias = field.alias if self.by_alias else field_name
 
         alias = alias.replace("_", " ").capitalize()
+
         if type(field.outer_type_) == _LiteralGenericAlias:
             options = list(field.outer_type_.__args__)
-            if value not in options:
-                value = options[0]
             widget = pn.widgets.MultiChoice(name=alias + "s", value=[], options=options)
         else:
             try:
                 widget = ItemListEditor(
-                    value=[value] if value else [],
+                    value=[],
                     class_=field.outer_type_,
                     item_field=field,
                     name=alias + "s",
                 )
             except:
                 widget = NullableInput(
-                    value=value,
+                    value=None,
                     name=alias,
                 )
 
@@ -819,8 +814,7 @@ class ModelTableEditor(pn.viewable.Viewer):
             return pn.Column()
         return pn.Column(self.model_editor, width_policy="min")
 
-    pn.depends("class_")
-
+    @pn.depends("class_")
     def download_panel(self):
 
         current_only = pn.widgets.RadioBoxGroup(
@@ -830,12 +824,17 @@ class ModelTableEditor(pn.viewable.Viewer):
 
         filetype = pn.widgets.Select(name="Format", options=list(download_options))
 
+        fields = pn.widgets.MultiChoice(name='Fields', value=list(self.class_.__fields__),
+                    options=list(self.class_.__fields__))
+
         def cb():
             if current_only.value:
                 docs = self.docs
             else:
                 docs = self.class_.find(**self.query)
-            return download_options[filetype.value](self.class_, docs)
+            
+            return download_options[filetype.value](self.class_, docs, 
+                                                    fields=fields.value)
 
         download_button = pn.widgets.FileDownload(
             filename=f"{self.class_._ALIAS}.{filetype.value}", callback=cb
@@ -847,7 +846,9 @@ class ModelTableEditor(pn.viewable.Viewer):
         filename.param.watch(update_filename, "value")
         filetype.param.watch(update_filename, "value")
 
-        return pn.Column(current_only, filename, filetype, download_button)
+        return pn.Column(current_only, fields, 
+                         filename, filetype, 
+                         download_button)
 
     def __panel__(self):
         right_panel = pn.Column(self.page_controls, self.table_panel)

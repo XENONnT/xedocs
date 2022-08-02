@@ -12,6 +12,8 @@ SOURCE = Literal[
     "none",
     "th-228",
     "th-232",
+    "Y88",
+    "YBe",
 ]
 
 DIFFUSED_SOURCE = Literal["rn-220", "kr-83m", "ar-37"]

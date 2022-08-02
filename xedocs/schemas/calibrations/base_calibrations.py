@@ -2,7 +2,7 @@ import datetime
 import pydantic
 import rframe
 from pydantic import validator
-from typing import Literal
+from typing import List, Literal
 
 from ..base_schemas import XeDoc
 from ..._settings import settings
@@ -24,8 +24,10 @@ class BaseCalibration(XeDoc):
 
     source_type: SOURCE
 
-    operator: str = pydantic.Field(min_length=1, max_length=60)
+    operator: str = pydantic.Field(min_length=1, max_length=60, default="")
     comments: str = ""
+    run_ids: List[str] = []
+    filled_by: str = pydantic.Field(min_length=1, max_length=60, default="")
 
     @validator("time", pre=True)
     def run_id_to_time(cls, v):
