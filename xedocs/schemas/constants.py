@@ -19,3 +19,5 @@ SOURCE = Literal[
 DIFFUSED_SOURCE = Literal["rn-220", "kr-83m", "ar-37"]
 
 DETECTOR = Literal["tpc", "neutron_veto", "muon_veto", "tpc_he"]
+
+PARTITION = Literal["all_tpc", "ab", "cd"]
