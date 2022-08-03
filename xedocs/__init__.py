@@ -7,7 +7,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from ast import Import
 from ._settings import settings
 from ._frames import frames
 from . import schemas

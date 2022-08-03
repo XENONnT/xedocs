@@ -1,5 +1,5 @@
 from .base_schemas import VersionedXeDoc, XeDoc
-from .detector_numbers import Bodega
+from .detector_numbers import DetectorNumber
 from .fax import FaxConfig
 from .corrections import *
 from .calibrations import *
