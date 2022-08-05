@@ -11,11 +11,14 @@ Time dependence of Extraction Efficiency generated from Kr83m calibration data a
 - The json file contains two meaningful fields: `timestamps` and `correction`: `timestamps` are simply starting time for all available runs; `correction` are the associated correction coefficients. 
 
 """
+import rframe
 
 from .base_corrections import TimeSampledCorrection
+from ..constants import PARTITION
 
 
 class RelExtractionEff(TimeSampledCorrection):
     _ALIAS = "rel_extraction_effs"
 
+    partition: PARTITION = rframe.Index(default='all_tpc')
     value: float
