@@ -221,7 +221,6 @@ class TimeSampledCorrection(BaseCorrectionSchema):
         return super().url_protocol(attr, **labels)
 
     def freeze_values(self, datasource):
-
         new_index = self.index_labels
         new_index["time"] = settings.clock.cutoff_datetime(buffer=1)
 

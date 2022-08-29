@@ -37,8 +37,7 @@ class Settings(BaseSettings):
 
     datasources = {}
 
-    @property
-    def api_token(self):
+    def get_api_token(self):
         import xedocs
 
         if self.API_TOKEN is None:
@@ -53,7 +52,7 @@ class Settings(BaseSettings):
 
         url = "/".join([self.API_URL.rstrip("/"), self.API_VERSION, schema._ALIAS])
 
-        return xedocs.api.api_client(url, self.api_token)
+        return xedocs.api.api_client(url, self.get_api_token())
 
     def default_datasource(self, schema):
 
