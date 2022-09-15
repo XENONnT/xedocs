@@ -24,13 +24,11 @@ python = ">=3.8,<3.11"
 click = "*"
 rich = "*"
 rframe = "^0.1.19"
-pydantic-panel = {version = "^0.1.8", optional = true}
 pymongo = {version = "*", optional = true}
 
 [tool.poetry.extras]
-gui = ["pydantic-panel"]
 db = ["pymongo"]
-all = ["gui", "db"]
+all = ["db"]
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
