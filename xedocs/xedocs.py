@@ -127,6 +127,19 @@ try:
             return docs[0]
 
         return docs
+    
+    @URLConfig.register('docs-to-dict')
+    def docs_to_dict(docs: list, key_attr=None, value_attr='value'):
+        
+        if not isinstance(docs, list):
+            raise TypeError(f'The docs-to-dict protocol expects a list of documents but received {type(docs)} instead.')
+        result = {}
+        for i, doc in enumerate(docs):
+            key = i if key_attr is None else getattr(doc, key_attr)
+            result[key] = getattr(doc, value_attr)
+            
+        return result
+    
 
 except ImportError:
     pass
