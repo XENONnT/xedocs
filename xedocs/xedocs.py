@@ -125,21 +125,11 @@ try:
 
         if len(docs) == 1:
             return docs[0]
+        
+        if len(docs) == 0:
+            raise Exception("Xedocs could not find any corrections with the given attributes")
 
         return docs
-    
-    @URLConfig.register('docs-to-array')
-    def docs_to_array(docs: list):
-        import numpy as np
-        
-        if not isinstance(docs, list):
-            raise TypeError(f'The docs-to-array protocol expects a list but recieved a {type(docs)} instead')
-        result = np.array([])
-        
-        if isinstance(docs, list):
-            result =  np.array(docs)
-            
-        return result
     
 
 except ImportError:
