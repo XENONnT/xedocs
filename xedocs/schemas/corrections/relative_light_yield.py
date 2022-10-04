@@ -13,7 +13,7 @@ import rframe
 
 from .base_corrections import TimeSampledCorrection
 
-class RelativeLightYield(xd.schemas.base_corrections.TimeSampledCorrection):
+class RelativeLightYield(TimeSampledCorrection):
     
     _ALIAS = "relative_light_yield"
     value: float #we can spesify that type of data expected in each field to make sure all inputs are correcrt
