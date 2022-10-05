@@ -136,7 +136,7 @@ try:
             raise TypeError(f'The docs-to-array protocol expects a list but recieved a {type(docs)} instead')
         
             
-        return result
+        return np.array(docs)
     
 
 except ImportError:
