@@ -128,7 +128,7 @@ try:
 
         return docs
     
-    @URLConfig.register('docs-to-dict')
+    @URLConfig.register('objects-to-dict')
     def docs_to_dict(docs: list, key_attr=None, value_attr='value'):
         
         if not isinstance(docs, list):
