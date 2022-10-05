@@ -135,7 +135,6 @@ try:
         if not isinstance(docs, list):
             raise TypeError(f'The docs-to-array protocol expects a list but recieved a {type(docs)} instead')
         
-            result =  np.array(docs)
             
         return result
     
