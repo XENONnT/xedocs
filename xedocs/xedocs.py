@@ -128,7 +128,7 @@ try:
 
         return docs
     
-    @URLConfig.register('docs-to-array')
+    @URLConfig.register('list-to-array')
     def docs_to_array(docs: list):
         import numpy as np
         
