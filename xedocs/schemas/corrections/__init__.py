@@ -12,4 +12,4 @@ from .position_reconstruction import *
 from .s1_aft_xyz import *
 from .s1_xyz import *
 from .s2_xy import *
-from .se_gains import *
+from .se_gain import *

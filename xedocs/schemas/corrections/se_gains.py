@@ -1,12 +1,20 @@
 """
-# Single Electron Gain
+Correction: Single Electron Gain
+Affects: Corrected Areas
 
-Each time the anode is ramped up, there is an exponential relaxation period with a timescale of a day. The electron extraction efficiency and gain are affected, affecting S2 properties that make selection criteria invalid unless corrected. Here is provided the gain to make that correction.
+The single electron gain is a correction which affects the corrected S2 signals. It discribes the number of photons produced by a single electron (corresponding to an S2 signal).
 
-The `ONLINE` version of the correction is used as the average SE gain we want to correct to within straxen. So for any given future run we won't correct for the SE gain in the `ONLINE` processing. Details can be found in the [straxen event processing](https://github.com/XENONnT/straxen/blob/master/straxen/plugins/event_processing.py#L597).
-
-Each local version holds the SE gain at that time, extracted as a per run value.
-
-A useful [note](https://xe1t-wiki.lngs.infn.it/doku.php?id=jlong:sr0_ramp_up_kr_se_study) by Jianyu.
-
+Wiki:
 """
+
+import rframe
+
+from .base_corrections import TimeSampledCorrection
+from ..constants import PARTITION
+
+class SEGain(TimeSampledCorrection):
+    #from typing import Literal
+    
+    _ALIAS = "se_gain"
+    partition: PARTITION = rframe.Index(default='all_tpc')
+    value: float
