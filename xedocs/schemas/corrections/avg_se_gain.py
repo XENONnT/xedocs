@@ -13,7 +13,6 @@ from .base_corrections import TimeSampledCorrection
 from ..constants import PARTITION
 
 class AvgSEGain(TimeSampledCorrection):
-    #from typing import Literal
     
     _ALIAS = "avg_se_gain"
     #PARTITION = Literal["all_tpc", "ab", "cd"]
