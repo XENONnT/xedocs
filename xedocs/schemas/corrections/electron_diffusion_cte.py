@@ -13,4 +13,3 @@ class ElectronDiffusionCte(TimeSampledCorrection):
     
     _ALIAS = "electron_diffusion_cte"
     value: float 
-    version: str = rframe.Index()
