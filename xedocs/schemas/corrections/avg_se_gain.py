@@ -15,6 +15,5 @@ from ..constants import PARTITION
 class AvgSEGain(TimeSampledCorrection):
     
     _ALIAS = "avg_se_gain"
-    #PARTITION = Literal["all_tpc", "ab", "cd"]
     partition: PARTITION = rframe.Index(default='all_tpc')
     value: float
