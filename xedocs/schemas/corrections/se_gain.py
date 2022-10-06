@@ -17,7 +17,6 @@ from .base_corrections import TimeSampledCorrection
 from ..constants import PARTITION
 
 class SEGain(TimeSampledCorrection):
-    #from typing import Literal
     
     _ALIAS = "se_gain"
     partition: PARTITION = rframe.Index(default='all_tpc')
