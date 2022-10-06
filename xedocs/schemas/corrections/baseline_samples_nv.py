@@ -15,4 +15,3 @@ class BaselineSamplesNV(TimeSampledCorrection):
     
     _ALIAS = "baseline_samples_nv"
     value: float 
-    version: str = rframe.Index()
