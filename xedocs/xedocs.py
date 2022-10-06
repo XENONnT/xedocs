@@ -125,8 +125,12 @@ try:
 
         if len(docs) == 1:
             return docs[0]
+        
+        if len(docs) == 0:
+            raise Exception("Xedocs could not find any corrections with the given attributes")
 
         return docs
+    
 
 except ImportError:
     pass
