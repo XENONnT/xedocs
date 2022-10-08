@@ -125,8 +125,10 @@ try:
 
         if len(docs) == 1:
             return docs[0]
+        
 
         return docs
+    
 
 except ImportError:
     pass
