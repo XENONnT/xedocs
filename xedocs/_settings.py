@@ -1,4 +1,3 @@
-from ast import Import
 import pandas as pd
 
 try:
@@ -18,6 +17,22 @@ from pydantic import BaseSettings
 
 from .clock import SimpleClock
 
+
+def api_login(
+    username=None, password=None, readonly=True, audience="https://api.cmt.xenonnt.org"
+):
+    import xeauth
+
+    if readonly:
+        scopes = ["read:all", "write:all"]
+    else:
+        scopes = ["read:all"]
+
+    xetoken = xeauth.login(
+        username=username, password=password, scopes=scopes, audience=audience
+    )
+
+    return xetoken.access_token
 
 class Settings(BaseSettings):
     class Config:
@@ -42,7 +57,7 @@ class Settings(BaseSettings):
 
         if self.API_TOKEN is None:
             readonly = not self.API_WRITE
-            token = xedocs.api.api_token(self.API_USERNAME, self.API_PASSWORD, readonly)
+            token = api_login(self.API_USERNAME, self.API_PASSWORD, readonly)
             self.API_TOKEN = token
 
         return self.API_TOKEN
@@ -106,6 +121,7 @@ class Settings(BaseSettings):
         else:
             return None
         return pd.to_datetime(time)
+
 
 
 settings = Settings()
