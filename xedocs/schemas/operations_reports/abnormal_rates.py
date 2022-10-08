@@ -1,4 +1,3 @@
-
 from .base_report import BaseOperationsReport
 
 

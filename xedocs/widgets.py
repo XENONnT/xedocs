@@ -824,17 +824,21 @@ class ModelTableEditor(pn.viewable.Viewer):
 
         filetype = pn.widgets.Select(name="Format", options=list(download_options))
 
-        fields = pn.widgets.MultiChoice(name='Fields', value=list(self.class_.__fields__),
-                    options=list(self.class_.__fields__))
+        fields = pn.widgets.MultiChoice(
+            name="Fields",
+            value=list(self.class_.__fields__),
+            options=list(self.class_.__fields__),
+        )
 
         def cb():
             if current_only.value:
                 docs = self.docs
             else:
                 docs = self.class_.find(**self.query)
-            
-            return download_options[filetype.value](self.class_, docs, 
-                                                    fields=fields.value)
+
+            return download_options[filetype.value](
+                self.class_, docs, fields=fields.value
+            )
 
         download_button = pn.widgets.FileDownload(
             filename=f"{self.class_._ALIAS}.{filetype.value}", callback=cb
@@ -846,9 +850,7 @@ class ModelTableEditor(pn.viewable.Viewer):
         filename.param.watch(update_filename, "value")
         filetype.param.watch(update_filename, "value")
 
-        return pn.Column(current_only, fields, 
-                         filename, filetype, 
-                         download_button)
+        return pn.Column(current_only, fields, filename, filetype, download_button)
 
     def __panel__(self):
         right_panel = pn.Column(self.page_controls, self.table_panel)

@@ -34,10 +34,9 @@ def docs_to_dataframe(schema, docs, columns=None):
     else:
         df = df.reindex(columns=list(columns))
 
-    index_fields = [name for name in schema.get_index_fields()
-                    if name in columns]
+    index_fields = [name for name in schema.get_index_fields() if name in columns]
 
     if len(index_fields) == 1:
         index_fields = index_fields[0]
-    
+
     return df.set_index(index_fields)

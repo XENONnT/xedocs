@@ -20,5 +20,5 @@ from ..constants import PARTITION
 class RelExtractionEff(TimeSampledCorrection):
     _ALIAS = "rel_extraction_effs"
 
-    partition: PARTITION = rframe.Index(default='all_tpc')
+    partition: PARTITION = rframe.Index(default="all_tpc")
     value: float
