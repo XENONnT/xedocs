@@ -10,7 +10,7 @@ from ._settings import settings
 from .schemas import XeDoc
 
 
-def find(schema, datasource=None, **labels):
+def find_docs(schema, datasource=None, **labels):
     if isinstance(schema, str):
         schema = find_schema(schema)
     if not issubclass(schema, XeDoc):
@@ -106,11 +106,23 @@ try:
     from straxen import URLConfig
 
     @URLConfig.register("xedocs")
-    def xedocs_protocol(name, version="ONLINE", sort=None, attr=None, **kwargs):
+    def xedocs_protocol(name, 
+                        context='production', 
+                        version="ONLINE", 
+                        sort=None, 
+                        attr=None, 
+                        **labels):
         """URLConfig protocol for fetching values from
         correction documents.
         """
-        docs = find(name, version=version, **kwargs)
+        import xedocs
+
+        ctx = getattr(xedocs, context)
+        schema = xedocs.find_schema(name)
+
+        accessor = ctx[schema._CATEGORY][schema._ALIAS]
+
+        docs = accessor.find_docs(name, version=version, **labels)
 
         if not docs:
             raise KeyError(f"No matching documents found for {name}.")

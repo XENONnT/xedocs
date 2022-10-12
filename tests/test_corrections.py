@@ -12,7 +12,8 @@ import pytz
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from rframe.schema import InsertionError, UpdateError
-
+from xedocs.schemas import (BaseCorrectionSchema, 
+            TimeSampledCorrection, TimeIntervalCorrection)
 import xedocs
 
 
@@ -80,19 +81,19 @@ def pmt_gain_space(datetime_range=datetime.timedelta(days=100)):
     )
 
 
-class SimpleCorrection(xedocs.BaseCorrectionSchema):
+class SimpleCorrection(BaseCorrectionSchema):
     _NAME = "simple_correction"
 
     value: float
 
 
-class SomeSampledCorrection(xedocs.TimeSampledCorrection):
+class SomeSampledCorrection(TimeSampledCorrection):
     _NAME = "sampled_correction"
 
     value: float
 
 
-class SomeTimeIntervalCorrection(xedocs.TimeIntervalCorrection):
+class SomeTimeIntervalCorrection(TimeIntervalCorrection):
     _NAME = "time_interval_correction"
 
     value: float

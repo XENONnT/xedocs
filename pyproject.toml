@@ -23,7 +23,7 @@ packages = [
 python = ">=3.8,<3.11"
 click = "*"
 rich = "*"
-rframe = "^0.1.19"
+rframe = "^0.1.27"
 pymongo = {version = "*", optional = true}
 
 [tool.poetry.extras]

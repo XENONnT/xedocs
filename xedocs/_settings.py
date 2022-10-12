@@ -18,22 +18,6 @@ from pydantic import BaseSettings
 from .clock import SimpleClock
 
 
-def api_login(
-    username=None, password=None, readonly=True, audience="https://api.cmt.xenonnt.org"
-):
-    import xeauth
-
-    if readonly:
-        scopes = ["read:all", "write:all"]
-    else:
-        scopes = ["read:all"]
-
-    xetoken = xeauth.login(
-        username=username, password=password, scopes=scopes, audience=audience
-    )
-
-    return xetoken.access_token
-
 class Settings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_"
@@ -52,6 +36,9 @@ class Settings(BaseSettings):
 
     datasources = {}
 
+    def api_url_for_schema(self, schema):
+        return "/".join([self.API_URL.rstrip("/"), self.API_VERSION, schema._ALIAS])
+        
     def get_api_token(self):
         import xedocs
 
@@ -122,6 +109,25 @@ class Settings(BaseSettings):
             return None
         return pd.to_datetime(time)
 
+
+def api_login(
+    username=None, password=None, readonly=True, audience="https://api.cmt.xenonnt.org"
+):
+    import xeauth
+
+    if readonly:
+        scopes = ["read:all", "write:all"]
+    else:
+        scopes = ["read:all"]
+
+    xetoken = xeauth.login(
+        username=username, 
+        password=password, 
+        scopes=scopes, 
+        audience=audience
+    )
+
+    return xetoken.access_token
 
 
 settings = Settings()

@@ -60,3 +60,4 @@ class VersionedXeDoc(XeDoc):
 
     def pre_delete(self, datasource):
         raise IndexError("Versioned documents are append-only.")
+
