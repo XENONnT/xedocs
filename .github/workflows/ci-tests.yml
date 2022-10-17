@@ -21,13 +21,18 @@ jobs:
       - name: Install poethepoet
         run: pipx install poethepoet
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+
+      - name: Install dependencies
+        run: poetry install
+
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: 4.2
-
-      - name: Install dependencies
-        run: poetry install
 
       - name: Run tests
         env:
