@@ -8,14 +8,14 @@ from ._settings import settings
 
 
 class ApiAuth(AuthBase):
-    context = None
+    authenticator = None
     
-    def __init__(self, context=None) -> None:
-        self.context = context
+    def __init__(self, authenticator=None) -> None:
+        self.authenticator = authenticator
 
     def __call__(self, r: PreparedRequest) -> PreparedRequest:
-        if self.context is not None:
-            r.headers['Authorization'] = f"Bearer {self.context.token}"
+        if self.authenticator is not None:
+            r.headers['Authorization'] = f"Bearer {self.authenticator.token}"
         return r
 
 class RestClient(rframe.RestClient):

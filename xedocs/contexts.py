@@ -1,160 +1,109 @@
 
 from collections import defaultdict
-import requests
 
 
-from rframe import DataAccessor, RestClient
-from xedocs import settings, all_schemas
+from rframe import DataAccessor
+from xedocs import all_schemas
+from xedocs.storage import ApiStorage, DictStorage, UtilixStorage
 from xedocs.xedocs import find_schema
 
-from .api import ApiAuth
 from .utils import DatasetCollection
 from .schemas import XeDoc
 
 
 class XedocsContext:
-    _datasets: dict = None
+    _schemas: dict
+    storage: list
+    _accessors: dict
 
-    @property
-    def datasets(self):
-        return dict(self._datasets)
+    def __init__(self, schemas: dict=None, storage=None, by_category=True):
+        if by_category:
+            self._accessors = defaultdict(dict)
+        else:
+            self._accessors = {}
 
-    def __init__(self, schemas=None):
+        if storage is None:
+            storage = []
+        self.storage = storage
 
-        if not schemas:
+        if schemas is None:
             schemas = all_schemas()
 
-        if isinstance(schemas, dict):
-            schemas = list(schemas.values())
+        for name, schema in schemas.items():
+            if by_category:
+                category = schema._CATEGORY
+            else:
+                category = None
+            self.register_schema(schema, name=name, category=category)
 
-        self._datasets = self.make_datasets(*schemas)
+    def register_schema(self, schema, name=None, category=None):
+        if isinstance(schema, str):
+            schema = find_schema(schema)
 
-    def make_datasets(self, *schemas):
-        dsets = defaultdict(DatasetCollection)
+        if not issubclass(schema, XeDoc):
+            raise TypeError('Wrong type for schema spec, '
+                            f'expected a XeDoc or string got {type(schema)}')
 
-        for schema in schemas:
-            if isinstance(schema, str):
-                schema = find_schema(schema)
+        if name is None:
+            name = schema._ALIAS
 
-            if not issubclass(schema, XeDoc):
-                raise TypeError('Wrong type for schema spec, '
-                                f'expected a XeDoc or string got {type(schema)}')
-            dsource = self.make_datasource(schema)
-            dsets[schema._CATEGORY][schema._ALIAS] = DataAccessor(schema, dsource)
-        return dsets
+        datasource = self.get_accessor(schema, name=name)
 
-    def make_datasource(self, schema):
-        raise NotImplementedError
+        if datasource is None:
+            raise ValueError(f'No datasource found for {name}')
+        
+        if category is None:
+           self._accessors[name] = datasource
+
+        self._accessors[category][name] = datasource
+
+    def get_accessor(self, schema, name=None):
+        if name is None:
+            name = schema._ALIAS
+        for store in self.storage:
+            datasource = store.get_datasource(name)
+            if datasource is not None:
+                return DataAccessor(schema, datasource)      
 
     def __getitem__(self, key):
-        return self._datasets.get(key)
+        dset = self._accessors.get(key, None)
+        if dset is None:
+            raise KeyError(f'No dataset named {key} found')
+        if isinstance(dset, dict):
+            return DatasetCollection(dset)
+        return self._accessors.get(key)
 
     def __getattr__(self, attr):
-        if attr in self._datasets.keys():
+        if attr in self._accessors.keys():
             return self[attr]
         raise AttributeError(attr)
     
     def __dir__(self):
-        return super().__dir__() + list(self._datasets.keys())
+        return super().__dir__() + list(self._accessors.keys())
 
 
-class ApiContext(XedocsContext):
-    URL: str
-    VERSION: str
-    AUDIENCE: str
-    READONLY: bool
-    TOKEN: str
-    USERNAME: str
-    PASSWORD: str
 
-    @property
-    def token(self):
-        if self.TOKEN is None:
-            self.login()
-        
-        if hasattr(self.TOKEN, 'access_token'):
-            if self.TOKEN.expired:
-                self.TOKEN.refresh()
-            return self.TOKEN.access_token
+def production_db(schemas=None, datasource_overrides=None, by_category=True):
+    if schemas is None:
+        schemas = all_schemas()
 
-        return self.TOKEN
+    storage = [
+        DictStorage(datasource_overrides),
+        UtilixStorage(database='cmt2'),
+        ApiStorage()
+    ]
 
-    def __init__(self, *schemas,
-                    url=settings.API_URL, 
-                    version=settings.API_VERSION, 
-                    audience=settings.API_AUDIENCE, 
-                    token=settings.API_TOKEN, 
-                    username=settings.API_USERNAME, 
-                    password=settings.API_PASSWORD, 
-                    readonly=settings.API_TOKEN):
-        self.URL = url
-        self.VERSION = version
-        self.READONLY = readonly
-        self.AUDIENCE = audience
-        self.TOKEN = token
-        self.USERNAME = username
-        self.PASSWORD = password
-        
-        super().__init__(*schemas)
-
-    def url_for(self, schema):
-        return "/".join([self.URL.rstrip("/"), self.VERSION, schema._ALIAS])
-
-    def make_datasource(self, schema):
-        url = self.url_for(schema)
-        return RestClient(url, auth=ApiAuth(context=self))
-
-    def login(self):
-        import xeauth
-
-        if self.READONLY:
-            scopes = ["read:all", "write:all"]
-        else:
-            scopes = ["read:all"]
-
-        token = xeauth.login(
-            username=self.USERNAME, 
-            password=self.PASSWORD, 
-            scopes=scopes, 
-            audience=self.AUDIENCE
-            )
-
-        self.TOKEN = token
-
-class UtilixContext(XedocsContext):
-    DB_NAME = settings.DEFAULT_DATABASE
-
-    def __init__(self, *schemas, database=None):
-        self.DB_NAME = database
-        super().__init__(*schemas)
-
-    def make_datasource(self, schema):
-        import utilix
-        database = self.DATABASE
-        collection = schema.default_collection_name()
-        return utilix.xent_collection(collection=collection, 
-                                    database=database)
-
-class MongoContext(XedocsContext):
-
-    def __init__(self, *schemas, database=None):
-        import pymongo
-        self.db = pymongo.MongoClient()[database]
-        super().__init__(*schemas)
-
-    def make_datasource(self, schema):
-        collection = schema.default_collection_name()
-        return self.db[collection]
+    return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)
 
 
-staging_api = ApiContext()
-production_api = ApiContext()
+def staging_db(schemas=None, datasource_overrides=None, by_category=True):
+    if schemas is None:
+        schemas = all_schemas()
 
-try:
-    staging = UtilixContext()
-    production = UtilixContext(database='cmt2')
-except ImportError:
-    pass
+    storage = [
+        DictStorage(datasource_overrides),
+        UtilixStorage(database='xedocs'),
+        ApiStorage()
+    ]
 
-production_local = MongoContext(database='cmt2')
-staging_local = MongoContext(database='xedocs')
+    return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)
