@@ -107,7 +107,7 @@ try:
 
     @URLConfig.register("xedocs")
     def xedocs_protocol(name, 
-                        context='production', 
+                        context='production_db', 
                         version="ONLINE", 
                         sort=None, 
                         attr=None, 
