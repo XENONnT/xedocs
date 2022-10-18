@@ -12,7 +12,7 @@ import rframe
 from .base_corrections import TimeSampledCorrection
 from ..constants import PARTITION
 
-class AvgSEGain(TimeSampledCorrection):
+class AvgSingleElectronGain(TimeSampledCorrection):
     
     _ALIAS = "avg_se_gain"
     partition: PARTITION = rframe.Index(default='all_tpc')
