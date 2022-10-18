@@ -36,5 +36,5 @@ jobs:
 
       - name: Run tests
         env:
-          TEST_MONGO_URI: 'mongodb://localhost:27017/'
+          TEST_MONGO_URI: 'localhost'
         run: poe test -v
