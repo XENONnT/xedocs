@@ -14,6 +14,6 @@ from ..constants import PARTITION
 
 class AvgSingleElectronGain(TimeSampledCorrection):
     
-    _ALIAS = "avg_se_gain"
+    _ALIAS = "avg_se_gains"
     partition: PARTITION = rframe.Index(default='all_tpc')
     value: float
