@@ -2,6 +2,7 @@ import time
 import datetime
 import numbers
 import os
+from typing_extensions import dataclass_transform
 import unittest
 from typing import List
 
@@ -195,7 +196,7 @@ class TestCorrections(unittest.TestCase):
 
             doc_interp = SomeSampledCorrection.find_one(datasource, time=dt)
 
-            assert doc_interp is not None, f"No interpolated value found for date {dt}"
+            assert doc_interp is not None, f"No interpolated value found for date {dt} in {list(datasource.find())}"
 
             half_value = (doc2.value + doc1.value) / 2
 
