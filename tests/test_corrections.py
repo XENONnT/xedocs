@@ -147,10 +147,13 @@ class TestCorrections(unittest.TestCase):
         db = pymongo.MongoClient(uri)[db_name]
 
         self.collections = {name: db[name] for name in xedocs.list_schemas()}
+        for collection in self.collections.values():
+            collection.drop()
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     def tearDown(self):
-        pass
+        for collection in self.collections.values():
+            collection.drop()
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     @given(
