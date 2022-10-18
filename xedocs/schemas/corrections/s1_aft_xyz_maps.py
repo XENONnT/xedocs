@@ -6,10 +6,9 @@ S1 area fraction top data driven map used for event_patternfit within straxen. T
 
 import rframe
 
-from .base_references import TimeIntervalCorrection
+from .base_references import BaseResourceReference
 
-class S1AFTXYZMap(TimeIntervalCorrection):
+class S1AFTXYZMap(BaseResourceReference):
     _ALIAS = "s1_aft_xyz_maps"
     
     value: str
-    version: str = rframe.Index()
