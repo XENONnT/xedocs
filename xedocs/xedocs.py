@@ -119,7 +119,7 @@ try:
 
         accessor = ctx[schema._CATEGORY][schema._ALIAS]
 
-        docs = accessor.find_docs(name, version=version, **labels)
+        docs = accessor.find_docs(version=version, **labels)
 
         if not docs:
             raise KeyError(f"No matching documents found for {name}.")
