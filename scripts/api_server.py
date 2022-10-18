@@ -20,12 +20,13 @@ except ImportError:
 
 mongo_user = os.getenv("MONGO_USER")
 mongo_pass = os.getenv("MONGO_PASS")
+mongo_dbs = os.getenv("MONGO_DB", "xedocs").split(",")
 api_version = os.getenv("API_VERSION", "v1")
 
 url = f"mongodb://{mongo_user}:{mongo_pass}@xenon1t-daq.lngs.infn.it:27017/cmt2"
 
 client = pymongo.MongoClient(url)
-db = client["cmt2"]
+dbs = {db: client[db] for db in mongo_dbs}
 
 app = FastAPI()
 
@@ -63,19 +64,20 @@ def verfiy_write_auth(auth: str = Depends(token_auth_scheme)):
         )
 
 
-# Serve each schema at its own endpoint
-for name, schema in schemas.items():
+for db_name, db in dbs.items():
+    # Serve each schema at its own endpoint
+    for name, schema in schemas.items():
 
-    collection = db[name]
+        collection = db[name]
 
-    router = rframe.SchemaRouter(
-        schema,
-        collection,
-        prefix=f"/{api_version}/{name}",
-        can_read=Depends(verfiy_read_auth),
-        can_write=Depends(verfiy_write_auth),
-    )
-    app.include_router(router)
+        router = rframe.SchemaRouter(
+            schema,
+            collection,
+            prefix=f"/{api_version}/{db_name}/{name}",
+            can_read=Depends(verfiy_read_auth),
+            can_write=Depends(verfiy_write_auth),
+        )
+        app.include_router(router)
 
 # Root endpoint serves list of schema names
 @app.get(f"/{api_version}", response_model=List[str])

@@ -1,17 +1,31 @@
 import os
 import rframe
 import requests
+from requests import PreparedRequest
+from requests.auth import AuthBase
 
 from ._settings import settings
 
 
+class ApiAuth(AuthBase):
+    authenticator = None
+
+    def __init__(self, authenticator=None) -> None:
+        self.authenticator = authenticator
+
+    def __call__(self, r: PreparedRequest) -> PreparedRequest:
+        if self.authenticator is not None:
+            r.headers["Authorization"] = f"Bearer {self.authenticator.token}"
+        return r
+
+
 class RestClient(rframe.RestClient):
     _token = None
-    
+
     @property
     def token(self):
         if self._token is None:
-            settings.get_api_token()
+            self._token = settings.get_api_token()
         return self._token
 
     @property
@@ -40,4 +54,3 @@ def api_client(url, token=None):
         headers=headers,
     )
     return client
-

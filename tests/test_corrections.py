@@ -2,6 +2,7 @@ import time
 import datetime
 import numbers
 import os
+from typing_extensions import dataclass_transform
 import unittest
 from typing import List
 
@@ -12,7 +13,11 @@ import pytz
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from rframe.schema import InsertionError, UpdateError
-
+from xedocs.schemas import (
+    BaseCorrectionSchema,
+    TimeSampledCorrection,
+    TimeIntervalCorrection,
+)
 import xedocs
 
 
@@ -80,20 +85,20 @@ def pmt_gain_space(datetime_range=datetime.timedelta(days=100)):
     )
 
 
-class SimpleCorrection(xedocs.BaseCorrectionSchema):
-    _NAME = "simple_correction"
+class SimpleCorrection(BaseCorrectionSchema):
+    _ALIAS = "simple_correction"
 
     value: float
 
 
-class SomeSampledCorrection(xedocs.TimeSampledCorrection):
-    _NAME = "sampled_correction"
+class SomeSampledCorrection(TimeSampledCorrection):
+    _ALIAS = "sampled_correction"
 
     value: float
 
 
-class SomeTimeIntervalCorrection(xedocs.TimeIntervalCorrection):
-    _NAME = "time_interval_correction"
+class SomeTimeIntervalCorrection(TimeIntervalCorrection):
+    _ALIAS = "time_interval_correction"
 
     value: float
 
@@ -146,10 +151,13 @@ class TestCorrections(unittest.TestCase):
         db = pymongo.MongoClient(uri)[db_name]
 
         self.collections = {name: db[name] for name in xedocs.list_schemas()}
+        for collection in self.collections.values():
+            collection.drop()
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     def tearDown(self):
-        pass
+        for collection in self.collections.values():
+            collection.drop()
 
     @unittest.skipIf(mongo_uri_not_set(), "No access to test database")
     @given(
@@ -188,7 +196,12 @@ class TestCorrections(unittest.TestCase):
 
         for doc1, doc2 in zip(docs[:-1], docs[1:]):
             dt = doc1.time + (doc2.time - doc1.time) / 2
+
             doc_interp = SomeSampledCorrection.find_one(datasource, time=dt)
+
+            assert (
+                doc_interp is not None
+            ), f"No interpolated value found for date {dt} in {list(datasource.find())}"
 
             half_value = (doc2.value + doc1.value) / 2
 

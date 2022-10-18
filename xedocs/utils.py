@@ -1,5 +1,7 @@
 import pandas as pd
 
+from collections import UserDict
+
 
 def docs_to_wiki(schema, docs, title=None, columns=None):
     """Convert a list of documents to a dokuwiki table
@@ -40,3 +42,13 @@ def docs_to_dataframe(schema, docs, columns=None):
         index_fields = index_fields[0]
 
     return df.set_index(index_fields)
+
+
+class DatasetCollection(UserDict):
+    def __getattr__(self, attr):
+        if attr in self.keys():
+            return self[attr]
+        raise AttributeError(attr)
+
+    def __dir__(self):
+        return list(self.keys())
