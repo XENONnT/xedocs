@@ -54,8 +54,8 @@ class XedocsContext:
         
         if category is None:
            self._accessors[name] = datasource
-
-        self._accessors[category][name] = datasource
+        else:
+            self._accessors[category][name] = datasource
 
     def get_accessor(self, schema, name=None):
         if name is None:
