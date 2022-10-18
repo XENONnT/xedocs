@@ -83,19 +83,19 @@ def pmt_gain_space(datetime_range=datetime.timedelta(days=100)):
 
 
 class SimpleCorrection(BaseCorrectionSchema):
-    _NAME = "simple_correction"
+    _ALIAS = "simple_correction"
 
     value: float
 
 
 class SomeSampledCorrection(TimeSampledCorrection):
-    _NAME = "sampled_correction"
+    _ALIAS = "sampled_correction"
 
     value: float
 
 
 class SomeTimeIntervalCorrection(TimeIntervalCorrection):
-    _NAME = "time_interval_correction"
+    _ALIAS = "time_interval_correction"
 
     value: float
 
