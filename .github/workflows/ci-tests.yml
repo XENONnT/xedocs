@@ -1,6 +1,6 @@
 name: CI
 
-on: pull_request
+on: [push, pull_request]
 
 jobs:
 
@@ -8,8 +8,8 @@ jobs:
     name: Run tests
     strategy:
       matrix:
-        os: Ubuntu
-        python-version: [ '3.8', '3.9', '3.10']
+        os: [ubuntu]
+        python-version: [ '3.8', '3.9']
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Git checkout
