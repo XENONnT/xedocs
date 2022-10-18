@@ -189,7 +189,10 @@ class TestCorrections(unittest.TestCase):
 
         for doc1, doc2 in zip(docs[:-1], docs[1:]):
             dt = doc1.time + (doc2.time - doc1.time) / 2
+
             doc_interp = SomeSampledCorrection.find_one(datasource, time=dt)
+
+            assert doc_interp is not None, f"No interpolated value found for date {dt}"
 
             half_value = (doc2.value + doc1.value) / 2
 
