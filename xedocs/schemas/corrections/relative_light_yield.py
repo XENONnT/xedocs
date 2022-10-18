@@ -17,4 +17,3 @@ class RelativeLightYield(TimeSampledCorrection):
     
     _ALIAS = "relative_light_yield"
     value: float 
-    version: str = rframe.Index()
