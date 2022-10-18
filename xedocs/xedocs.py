@@ -114,7 +114,7 @@ try:
         """
         import xedocs
 
-        ctx = getattr(xedocs, context)
+        ctx = getattr(xedocs, context)()
         schema = xedocs.find_schema(name)
 
         accessor = ctx[schema._CATEGORY][schema._ALIAS]
