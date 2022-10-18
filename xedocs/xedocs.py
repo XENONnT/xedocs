@@ -106,12 +106,9 @@ try:
     from straxen import URLConfig
 
     @URLConfig.register("xedocs")
-    def xedocs_protocol(name, 
-                        context='production_db', 
-                        version="ONLINE", 
-                        sort=None, 
-                        attr=None, 
-                        **labels):
+    def xedocs_protocol(
+        name, context="production_db", version="ONLINE", sort=None, attr=None, **labels
+    ):
         """URLConfig protocol for fetching values from
         correction documents.
         """

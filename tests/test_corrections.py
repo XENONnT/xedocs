@@ -13,8 +13,11 @@ import pytz
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from rframe.schema import InsertionError, UpdateError
-from xedocs.schemas import (BaseCorrectionSchema, 
-            TimeSampledCorrection, TimeIntervalCorrection)
+from xedocs.schemas import (
+    BaseCorrectionSchema,
+    TimeSampledCorrection,
+    TimeIntervalCorrection,
+)
 import xedocs
 
 
@@ -196,7 +199,9 @@ class TestCorrections(unittest.TestCase):
 
             doc_interp = SomeSampledCorrection.find_one(datasource, time=dt)
 
-            assert doc_interp is not None, f"No interpolated value found for date {dt} in {list(datasource.find())}"
+            assert (
+                doc_interp is not None
+            ), f"No interpolated value found for date {dt} in {list(datasource.find())}"
 
             half_value = (doc2.value + doc1.value) / 2
 

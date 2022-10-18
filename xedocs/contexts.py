@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 
 
@@ -16,7 +15,7 @@ class XedocsContext:
     storage: list
     _accessors: dict
 
-    def __init__(self, schemas: dict=None, storage=None, by_category=True):
+    def __init__(self, schemas: dict = None, storage=None, by_category=True):
         if by_category:
             self._accessors = defaultdict(dict)
         else:
@@ -41,8 +40,10 @@ class XedocsContext:
             schema = find_schema(schema)
 
         if not issubclass(schema, XeDoc):
-            raise TypeError('Wrong type for schema spec, '
-                            f'expected a XeDoc or string got {type(schema)}')
+            raise TypeError(
+                "Wrong type for schema spec, "
+                f"expected a XeDoc or string got {type(schema)}"
+            )
 
         if name is None:
             name = schema._ALIAS
@@ -50,10 +51,10 @@ class XedocsContext:
         datasource = self.get_accessor(schema, name=name)
 
         if datasource is None:
-            raise ValueError(f'No datasource found for {name}')
-        
+            raise ValueError(f"No datasource found for {name}")
+
         if category is None:
-           self._accessors[name] = datasource
+            self._accessors[name] = datasource
         else:
             self._accessors[category][name] = datasource
 
@@ -63,12 +64,12 @@ class XedocsContext:
         for store in self.storage:
             datasource = store.get_datasource(name)
             if datasource is not None:
-                return DataAccessor(schema, datasource)      
+                return DataAccessor(schema, datasource)
 
     def __getitem__(self, key):
         dset = self._accessors.get(key, None)
         if dset is None:
-            raise KeyError(f'No dataset named {key} found')
+            raise KeyError(f"No dataset named {key} found")
         if isinstance(dset, dict):
             return DatasetCollection(dset)
         return self._accessors.get(key)
@@ -77,10 +78,9 @@ class XedocsContext:
         if attr in self._accessors.keys():
             return self[attr]
         raise AttributeError(attr)
-    
+
     def __dir__(self):
         return super().__dir__() + list(self._accessors.keys())
-
 
 
 def production_db(schemas=None, datasource_overrides=None, by_category=True):
@@ -89,8 +89,8 @@ def production_db(schemas=None, datasource_overrides=None, by_category=True):
 
     storage = [
         DictStorage(datasource_overrides),
-        UtilixStorage(database='cmt2'),
-        ApiStorage()
+        UtilixStorage(database="cmt2"),
+        ApiStorage(path="cmt2"),
     ]
 
     return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)
@@ -102,8 +102,8 @@ def staging_db(schemas=None, datasource_overrides=None, by_category=True):
 
     storage = [
         DictStorage(datasource_overrides),
-        UtilixStorage(database='xedocs'),
-        ApiStorage()
+        UtilixStorage(database="xedocs"),
+        ApiStorage(path="xedocs"),
     ]
 
     return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)

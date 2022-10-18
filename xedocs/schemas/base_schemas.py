@@ -53,10 +53,12 @@ class XeDoc(rframe.BaseSchema):
         print(help_str)
 
     def __repr__(self):
-        idx_str = ', '.join([f"{attr}={getattr(self, attr)}" 
-                            for attr in self.get_index_fields()])
-        values_str = ', '.join([f"{attr}={getattr(self, attr)}" 
-                            for attr in self.get_column_fields()])
+        idx_str = ", ".join(
+            [f"{attr}={getattr(self, attr)}" for attr in self.get_index_fields()]
+        )
+        values_str = ", ".join(
+            [f"{attr}={getattr(self, attr)}" for attr in self.get_column_fields()]
+        )
 
         header = f"Xenon {type(self).__name__} Document"
         repr_str = f"""
@@ -70,6 +72,7 @@ class XeDoc(rframe.BaseSchema):
         """
         return repr_str
 
+
 class VersionedXeDoc(XeDoc):
     _ALIAS = ""
 
@@ -77,4 +80,3 @@ class VersionedXeDoc(XeDoc):
 
     def pre_delete(self, datasource):
         raise IndexError("Versioned documents are append-only.")
-

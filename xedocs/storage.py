@@ -1,4 +1,3 @@
-
 from typing import Union
 from abc import ABC, abstractmethod
 from rframe import RestClient
@@ -10,10 +9,10 @@ from xedocs import settings
 
 class BaseStorage(ABC):
     @abstractmethod
-    def get_datasource(self, name: Union[str,XeDoc]):
+    def get_datasource(self, name: Union[str, XeDoc]):
         pass
 
-    
+
 class DictStorage(BaseStorage):
     def __init__(self, datasources=None):
         if datasources is None:
@@ -22,7 +21,7 @@ class DictStorage(BaseStorage):
 
     def get_datasource(self, name: str):
         return self.datasources.get(name, None)
-        
+
 
 class MongoDBStorage(BaseStorage):
     def __init__(self, db):
@@ -33,7 +32,7 @@ class MongoDBStorage(BaseStorage):
 
 
 class UtilixStorage(BaseStorage):
-    DB_NAME: str = 'xedocs'
+    DB_NAME: str = "xedocs"
 
     def __init__(self, database=settings.DEFAULT_DATABASE):
         self.DB_NAME = database
@@ -43,11 +42,12 @@ class UtilixStorage(BaseStorage):
             import utilix
         except ImportError:
             return None
-        return utilix.xent_collection(collection=name, 
-                                      database=self.DB_NAME)
+        return utilix.xent_collection(collection=name, database=self.DB_NAME)
+
 
 class ApiStorage(BaseStorage):
-    URL: str
+    BASE_URL: str
+    PATH: str
     VERSION: str
     AUDIENCE: str
     READONLY: bool
@@ -59,35 +59,36 @@ class ApiStorage(BaseStorage):
     def token(self):
         if self.TOKEN is None:
             self.login()
-        
-        if hasattr(self.TOKEN, 'access_token'):
+
+        if hasattr(self.TOKEN, "access_token"):
             if self.TOKEN.expired:
                 self.TOKEN.refresh()
             return self.TOKEN.access_token
 
         return self.TOKEN
 
-    def __init__(self,
-                    url=settings.API_URL, 
-                    version=settings.API_VERSION, 
-                    audience=settings.API_AUDIENCE, 
-                    token=settings.API_TOKEN, 
-                    username=settings.API_USERNAME, 
-                    password=settings.API_PASSWORD, 
-                    readonly=settings.API_TOKEN):
-        self.URL = url
+    def __init__(
+        self,
+        url=settings.API_BASE_URL,
+        path=settings.API_PATH,
+        version=settings.API_VERSION,
+        audience=settings.API_AUDIENCE,
+        token=settings.API_TOKEN,
+        username=settings.API_USERNAME,
+        password=settings.API_PASSWORD,
+        readonly=settings.API_TOKEN,
+    ):
+        self.BASE_URL = url
+        self.PATH = path
         self.VERSION = version
         self.READONLY = readonly
         self.AUDIENCE = audience
         self.TOKEN = token
         self.USERNAME = username
         self.PASSWORD = password
-        
-    def url_for(self, name: str):
-        return "/".join([self.URL.rstrip("/"), self.VERSION, name])
 
     def get_datasource(self, name: str):
-        url = self.url_for(name)
+        url = settings.api_url_for_schema(name, base_url=self.BASE_URL, version=self.VERSION)
         return RestClient(url, auth=ApiAuth(authenticator=self))
 
     def login(self):
@@ -99,11 +100,10 @@ class ApiStorage(BaseStorage):
             scopes = ["read:all"]
 
         token = xeauth.login(
-            username=self.USERNAME, 
-            password=self.PASSWORD, 
-            scopes=scopes, 
-            audience=self.AUDIENCE
-            )
+            username=self.USERNAME,
+            password=self.PASSWORD,
+            scopes=scopes,
+            audience=self.AUDIENCE,
+        )
 
         self.TOKEN = token
-

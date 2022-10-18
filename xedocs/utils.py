@@ -49,6 +49,6 @@ class DatasetCollection(UserDict):
         if attr in self.keys():
             return self[attr]
         raise AttributeError(attr)
-    
+
     def __dir__(self):
-        return  list(self.keys())
+        return list(self.keys())

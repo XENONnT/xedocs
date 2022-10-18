@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 try:
     import utilix
 
@@ -24,7 +25,9 @@ class Settings(BaseSettings):
 
     DEFAULT_DATABASE: str = "xedocs"
 
-    API_URL: str = "https://api.xedocs.yossisprojects.com"
+    API_URL_FORMAT: str = "{base_url}/{version}/{path}/{name}"
+    API_BASE_URL: str = "https://api.xedocs.yossisprojects.com"
+    API_PATH: str = "/xedocs"
     API_VERSION: str = "v1"
     API_AUDIENCE: str = "https://api.cmt.xenonnt.org"
     API_WRITE: bool = False
@@ -36,9 +39,21 @@ class Settings(BaseSettings):
 
     datasources = {}
 
-    def api_url_for_schema(self, schema):
-        return "/".join([self.API_URL.rstrip("/"), self.API_VERSION, schema._ALIAS])
-        
+    def api_url_for_schema(self, schema, base_url=None, version=None, path=None):
+        from xedocs.schemas import XeDoc
+
+        if base_url is None:
+            base_url = self.API_BASE_URL
+        if version is None:
+            version = self.API_VERSION
+        if path is None:
+            path = self.API_PATH
+        if isinstance(schema, XeDoc):
+            schema = schema._ALIAS
+        return self.API_URL_FORMAT.format(
+            base_url=base_url, version=version, name=schema, path=path
+        ).replace("//", "/")
+
     def get_api_token(self):
         import xedocs
 
@@ -52,7 +67,7 @@ class Settings(BaseSettings):
     def api_client(self, schema):
         import xedocs
 
-        url = "/".join([self.API_URL.rstrip("/"), self.API_VERSION, schema._ALIAS])
+        url = "/".join([self.API_BASE_URL.rstrip("/"), self.API_VERSION, schema._ALIAS])
 
         return xedocs.api.api_client(url, self.get_api_token())
 
@@ -121,10 +136,7 @@ def api_login(
         scopes = ["read:all"]
 
     xetoken = xeauth.login(
-        username=username, 
-        password=password, 
-        scopes=scopes, 
-        audience=audience
+        username=username, password=password, scopes=scopes, audience=audience
     )
 
     return xetoken.access_token
