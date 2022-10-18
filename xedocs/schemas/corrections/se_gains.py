@@ -18,6 +18,6 @@ from ..constants import PARTITION
 
 class SEGain(TimeSampledCorrection):
     
-    _ALIAS = "se_gain"
+    _ALIAS = "se_gains"
     partition: PARTITION = rframe.Index(default='all_tpc')
     value: float
