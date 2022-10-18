@@ -52,6 +52,26 @@ class XeDoc(rframe.BaseSchema):
         """
         print(help_str)
 
+    def __repr__(self):
+        idx_str = ", ".join(
+            [f"{attr}={getattr(self, attr)}" for attr in self.get_index_fields()]
+        )
+        values_str = ", ".join(
+            [f"{attr}={getattr(self, attr)}" for attr in self.get_column_fields()]
+        )
+
+        header = f"Xenon {type(self).__name__} Document"
+        repr_str = f"""
+        {header}
+        {len(header)*'-'}
+ 
+        Category:      {self._CATEGORY}
+        Alias:         {self._ALIAS}
+        Index:         {idx_str}
+        Values:        {values_str}
+        """
+        return repr_str
+
 
 class VersionedXeDoc(XeDoc):
     _ALIAS = ""

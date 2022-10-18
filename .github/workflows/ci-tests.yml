@@ -1,0 +1,40 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+
+  run-tests:
+    name: Run tests
+    strategy:
+      matrix:
+        os: [ubuntu]
+        python-version: [ '3.8', '3.9']
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Install poethepoet
+        run: pipx install poethepoet
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 4.4.1
+
+      - name: Run tests
+        env:
+          TEST_MONGO_URI: 'localhost'
+        run: poe test -v
