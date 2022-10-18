@@ -32,7 +32,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 4.2
+          mongodb-version: 6.0.2
 
       - name: Run tests
         env:
