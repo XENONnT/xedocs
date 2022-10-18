@@ -21,3 +21,4 @@ class SingleElectronGain(TimeSampledCorrection):
     _ALIAS = "se_gains"
     partition: PARTITION = rframe.Index(default='all_tpc')
     value: float
+
