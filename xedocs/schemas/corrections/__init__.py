@@ -15,5 +15,6 @@ from .s2_xy import *
 from .se_gains import *
 from .electron_diffusion_cte import *
 from .baseline_samples_nv import *
-from .avg_se_gain import *
 from .relative_light_yield import *
+from .s1_aft_xyz import *
+from .avg_se_gain import *
