@@ -31,30 +31,42 @@ Explore the available schemas
             Column fields: ['created_date', 'comments', 'value']
     
 
-Read data from the default data source
+Read/write data from the staging database, this database is writable from the default analysis username/password
 
 .. code-block:: python
 
     import xedocs
 
-    docs = xedocs.find('pmt_gains',  version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
+    db = xedocs.staging_db(by_category=False)
+
+    docs = db.pmt_gains.find_docs(version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
     gains = [doc.value for doc in docs]
 
-    doc = xedocs.find_one('pmt_gains',  version='v1', pmt=1, time='2021-01-01T00:00:00', detector='tpc')
+    doc = db.pmt_gains.find_one(version='v1', pmt=1, time='2021-01-01T00:00:00', detector='tpc')
     pmt1_gain = doc.value
 
+Read from the shared production database, this database is read-only for the default analysis username/password
 
-You can also query documents directly from the scham class, 
-Schemas will query the mongodb cmt2 database by default, if no explicit datasource is given.
+
+.. code-block:: python
+
+    import xedocs
+
+    db = xedocs.production_db(by_category=False)
+
+    ...
+    
+You can also query documents directly from the schema class, 
+Schemas will query the mongodb staging database by default, if no explicit datasource is given.
 
 .. code-block:: python
     
-    drift_velocity = xedocs.Bodega.find_one(field='drift_velocity', version='v1')
+    drift_velocity = xedocs.schemas.Bodega.find_one(field='drift_velocity', version='v1')
     
     # Returns a Bodega object with attributes value, description etc.
     drift_velocity.value
 
-    all_v1_documents = xedocs.Bodega.find(version='v1')
+    all_v1_documents = xedocs.schemas.Bodega.find(version='v1')
 
 
 
@@ -65,7 +77,7 @@ e.g csv files which will be loaded by pandas.
 
     import xedocs
     
-    g1_doc = xedocs.find_one('bodega', datasource='/path/to/file.csv', version='v1', field='g1')
+    g1_doc = xedocs.schemas.Bodega.find_one(datasource='/path/to/file.csv', version='v1', field='g1')
     g1_value = g1_doc.value
     g1_error = g1_doc.uncertainty
 
@@ -75,7 +87,7 @@ The path can also be a github URL or any other URL supported by fsspec.
 
     import xedocs
     
-    g1_doc = xedocs.find_one('bodega',
+    g1_doc = xedocs.schemas.Bodega.find_one('bodega',
                              datasource='github://org:repo@/path/to/file.csv', 
                              version='v1', 
                              field='g1')
