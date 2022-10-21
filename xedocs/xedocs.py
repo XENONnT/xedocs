@@ -3,7 +3,7 @@
 import pandas as pd
 
 from collections import defaultdict
-from typing import ClassVar, Union
+from typing import ClassVar, Dict, List, Type, Union
 
 
 from ._settings import settings
@@ -62,22 +62,22 @@ def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=N
     return inserted
 
 
-def list_schemas():
+def list_schemas() -> List[str]:
     return list(XeDoc._XEDOCS)
 
 
-def all_schemas():
+def all_schemas() -> Dict[str, Type[XeDoc]]:
     return dict(XeDoc._XEDOCS)
 
 
-def schemas_by_category():
+def schemas_by_category() -> Dict[str,Dict[str, Type[XeDoc]]]:
     d = defaultdict(dict)
     for name, schema in all_schemas().items():
         d[schema._CATEGORY][name] = schema
     return d
 
 
-def find_schema(name):
+def find_schema(name) -> Type[XeDoc]:
     schema = XeDoc._XEDOCS.get(name, None)
     if schema is not None:
         return schema
@@ -107,22 +107,31 @@ try:
 
     @straxen.URLConfig.register("xedocs")
     def xedocs_protocol(
-        name, context="production_db", version="ONLINE", sort=None, attr=None, **labels
+        name, context="production_db", sort=None, attr=None, **labels
     ):
         """URLConfig protocol for fetching values from
-        correction documents.
+            a xedocs database.
+        ::param name: Name of the schema.
+        ::param context: Context of the document.
+        ::param version: Version of the documents to filter by.
+        ::param sort: Attribute of the documents to sort on.
+        ::param attr: Attribute of the documents to return.
+        ::param labels: Label values to filter by to return.
         """
         import xedocs
 
         ctx = getattr(xedocs, context)()
-        
+
+        # Find the document schema
         schema = xedocs.find_schema(name)
+
+        # filter out any not index labels
+        index_fields = schema.get_index_fields()
+        labels = {k: v for k, v in labels.items() if k in index_fields}
 
         accessor = ctx[schema._CATEGORY][schema._ALIAS]
 
-        labels = straxen.filter_kwargs(accessor.find_docs, labels)
-        
-        docs = accessor.find_docs(version=version, **labels)
+        docs = accessor.find_docs(**labels)
 
         if not docs:
             raise KeyError(f"No matching documents found for {name}.")
