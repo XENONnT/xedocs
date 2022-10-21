@@ -103,9 +103,9 @@ try:
     """Attempt to register URConfig protocol if straxen
     is installed.
     """
-    from straxen import URLConfig
+    import straxen
 
-    @URLConfig.register("xedocs")
+    @straxen.URLConfig.register("xedocs")
     def xedocs_protocol(
         name, context="production_db", sort=None, attr=None, **labels
     ):
