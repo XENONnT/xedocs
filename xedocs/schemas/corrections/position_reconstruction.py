@@ -21,7 +21,7 @@ from .base_references import BaseResourceReference
 
 class PosRecModel(BaseResourceReference):
     _ALIAS = "posrec_models"
-    fmt = "binary"
+    fmt = "json"
 
     kind: Literal["cnn", "gcn", "mlp"] = rframe.Index()
     time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
