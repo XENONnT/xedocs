@@ -87,7 +87,7 @@ The path can also be a github URL or any other URL supported by fsspec.
 
     import xedocs
     
-    g1_doc = xedocs.schemas.DetectorNumber.find_one('bodega',
+    g1_doc = xedocs.schemas.DetectorNumber.find_one(
                              datasource='github://org:repo@/path/to/file.csv', 
                              version='v1', 
                              field='g1')
