@@ -14,7 +14,7 @@ Explore the available schemas
     import xedocs
 
     >>> xedocs.list_schemas()
-    >>> ['bodega',
+    >>> ['detector_numbers',
         'fax_configs',
         'plugin_lineages',
         'context_lineages',
@@ -61,12 +61,12 @@ Schemas will query the mongodb staging database by default, if no explicit datas
 
 .. code-block:: python
     
-    drift_velocity = xedocs.schemas.Bodega.find_one(field='drift_velocity', version='v1')
+    drift_velocity = xedocs.schemas.DetectorNumber.find_one(field='drift_velocity', version='v1')
     
     # Returns a Bodega object with attributes value, description etc.
     drift_velocity.value
 
-    all_v1_documents = xedocs.schemas.Bodega.find(version='v1')
+    all_v1_documents = xedocs.schemas.DetectorNumber.find(version='v1')
 
 
 
@@ -77,7 +77,7 @@ e.g csv files which will be loaded by pandas.
 
     import xedocs
     
-    g1_doc = xedocs.schemas.Bodega.find_one(datasource='/path/to/file.csv', version='v1', field='g1')
+    g1_doc = xedocs.schemas.DetectorNumber.find_one(datasource='/path/to/file.csv', version='v1', field='g1')
     g1_value = g1_doc.value
     g1_error = g1_doc.uncertainty
 
@@ -87,7 +87,7 @@ The path can also be a github URL or any other URL supported by fsspec.
 
     import xedocs
     
-    g1_doc = xedocs.schemas.Bodega.find_one('bodega',
+    g1_doc = xedocs.schemas.DetectorNumber.find_one(
                              datasource='github://org:repo@/path/to/file.csv', 
                              version='v1', 
                              field='g1')
