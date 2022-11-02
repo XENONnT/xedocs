@@ -234,7 +234,7 @@ class TestCorrections(unittest.TestCase):
             st.builds(
                 SomeSampledCorrection,
                 version=st.just("ONLINE"),
-                time=datetimes,
+                run_id=datetimes,
                 value=floats,
             ),
             min_size=3,
