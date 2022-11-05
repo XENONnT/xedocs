@@ -1,4 +1,5 @@
 import os
+from typing import Mapping
 import rframe
 import requests
 from requests import PreparedRequest
@@ -10,38 +11,25 @@ from ._settings import settings
 class ApiAuth(AuthBase):
     authenticator = None
 
+    @property
+    def token(self):
+        if isinstance(self.authenticator, str):
+            return self.authenticator
+        if hasattr(self.authenticator, 'token'):
+            return self.authenticator.token
+        if callable(self.authenticator):
+            return self.authenticator()
+        if isinstance(self.authenticator, Mapping) and 'token' in self.authenticator:
+            return self.authenticator['token']
+
     def __init__(self, authenticator=None) -> None:
         self.authenticator = authenticator
 
     def __call__(self, r: PreparedRequest) -> PreparedRequest:
-        if self.authenticator is not None:
-            r.headers["Authorization"] = f"Bearer {self.authenticator.token}"
+        token = self.token
+        if token is not None:
+            r.headers["Authorization"] = f"Bearer {token}"
         return r
-
-
-class RestClient(rframe.RestClient):
-    _token = None
-
-    @property
-    def token(self):
-        if self._token is None:
-            self._token = settings.get_api_token()
-        return self._token
-
-    @property
-    def headers(self):
-        if "Authorization" not in self._headers and self.token:
-            self._headers["Authorization"] = f"Bearer {self.token}"
-        return self._headers
-
-    def __init__(self, url, token=None, headers=None, client=None) -> None:
-        self.base_url = url
-        self._headers = headers if headers is not None else {}
-        self._token = token
-
-        if client is None:
-            client = requests
-        self.client = client
 
 
 def api_client(url, token=None):
@@ -49,7 +37,7 @@ def api_client(url, token=None):
     if token is not None:
         headers["Authorization"] = f"Bearer {token}"
 
-    client = RestClient(
+    client = rframe.RestClient(
         url,
         headers=headers,
     )
