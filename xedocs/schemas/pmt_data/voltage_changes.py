@@ -1,7 +1,6 @@
 import rframe
 import datetime
-from typing import List
-from pydantic import Field, BaseModel
+from pydantic import Field
 
 
 from .base_pmt_data import BasePmtData

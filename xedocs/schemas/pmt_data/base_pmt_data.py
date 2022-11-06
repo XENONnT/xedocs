@@ -1,11 +1,5 @@
-import datetime
-import pydantic
-import rframe
-from pydantic import validator
-from typing import Literal
 
 from ..base_schemas import XeDoc
-from ..._settings import settings
 
 
 class BasePmtData(XeDoc):

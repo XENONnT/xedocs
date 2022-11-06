@@ -1,10 +1,8 @@
-from locale import str
-from builtins import float, int
+
 import rframe
 import datetime
-from typing import List, Optional
-from pydantic import Field, BaseModel
-from xedocs.schemas.pmt_data.voltage_changes import VoltageChange
+from typing import Optional
+from pydantic import Field
 
 
 from .base_pmt_data import BasePmtData
@@ -16,7 +14,7 @@ class PmtInstall(BasePmtData):
 
     detector: DETECTOR = rframe.Index()
     pmt: int = rframe.Index(ge=0)
-    array: str = rframe.Index(min_length=4, max_length=60)
+    array: str = rframe.Index()
     sector: str = rframe.Index()
     time: datetime.datetime = rframe.Index()
 

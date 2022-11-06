@@ -1,12 +1,7 @@
 
 
-from builtins import float
 import rframe
 import datetime
-from typing import List
-from pydantic import Field, BaseModel
-from xedocs.schemas.pmt_data.voltage_changes import VoltageChange
-
 
 from .base_pmt_data import BasePmtData
 from ..constants import DETECTOR

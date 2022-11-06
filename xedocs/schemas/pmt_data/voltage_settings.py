@@ -1,8 +1,5 @@
 import rframe
 import datetime
-from typing import List
-from pydantic import Field, BaseModel
-
 
 from .base_pmt_data import BasePmtData
 from ..constants import DETECTOR
