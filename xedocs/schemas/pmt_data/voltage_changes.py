@@ -9,6 +9,7 @@ from ..constants import DETECTOR
 
 
 class VoltageChange(BasePmtData):
+    _ALIAS = "pmt_voltage_changes"
 
     detector: DETECTOR = rframe.Index()
     pmt: int = rframe.Index(ge=0)
