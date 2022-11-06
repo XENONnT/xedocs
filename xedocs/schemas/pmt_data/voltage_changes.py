@@ -1,7 +1,6 @@
 import rframe
 import datetime
-from typing import List
-from pydantic import Field, BaseModel
+from pydantic import Field
 
 
 from .base_pmt_data import BasePmtData
@@ -9,6 +8,7 @@ from ..constants import DETECTOR
 
 
 class VoltageChange(BasePmtData):
+    _ALIAS = "pmt_voltage_changes"
 
     detector: DETECTOR = rframe.Index()
     pmt: int = rframe.Index(ge=0)
