@@ -1240,7 +1240,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "rframe"
-version = "0.1.29"
+version = "0.2.0"
 description = "Top-level package for rframe."
 category = "main"
 optional = false
@@ -1677,7 +1677,7 @@ db = ["pymongo"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.11"
-content-hash = "7696744d36020fe8a5b12ee71011fc3be45dd5420875ffc8602041841e40cc54"
+content-hash = "e375fa8ebbcc4062941e0c1bf7fa0e606e4691f945d38209cead8b8e45acd14e"
 
 [metadata.files]
 alabaster = [
@@ -2593,8 +2593,8 @@ requests = [
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
 ]
 rframe = [
-    {file = "rframe-0.1.29-py3-none-any.whl", hash = "sha256:6799e3a1136a0e9b30dbbb176c1b9f91fb740442e44b7b5596dbc0d6ec3e03a3"},
-    {file = "rframe-0.1.29.tar.gz", hash = "sha256:2dec9c799533670359b71e74890e39f18af058ff552f1eda9f32c39b019aa94b"},
+    {file = "rframe-0.2.0-py3-none-any.whl", hash = "sha256:1255948088bb94371b1979f72019c193e4a16309006578ea3daeb8ccf8a339c7"},
+    {file = "rframe-0.2.0.tar.gz", hash = "sha256:fef10e48123e1231431ac05db32b4eed89ae22f89c6b377720c10f408847765c"},
 ]
 rich = [
     {file = "rich-12.6.0-py3-none-any.whl", hash = "sha256:a4eb26484f2c82589bd9a17c73d32a010b1e29d89f1604cd9bf3a2097b81bb5e"},
