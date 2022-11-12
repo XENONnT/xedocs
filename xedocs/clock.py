@@ -55,3 +55,14 @@ class SimpleClock:
             raise TypeError("Clock must implement `normalize_tz`")
 
         return v
+
+
+class FrozenClock(SimpleClock):
+    now: datetime.datetime
+
+    def __init__(self, now: datetime.datetime, utc=True, cutoff_offset=3600) -> None:
+        super().__init__(utc=utc, cutoff_offset=cutoff_offset)
+        self.now = self.normalize_tz(now)
+
+    def current_datetime(self):
+        return self.now

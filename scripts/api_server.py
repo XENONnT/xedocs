@@ -20,7 +20,7 @@ except ImportError:
 
 mongo_user = os.getenv("MONGO_USER")
 mongo_pass = os.getenv("MONGO_PASS")
-mongo_dbs = os.getenv("MONGO_DB", "xedocs").split(",")
+mongo_dbs = os.getenv("MONGO_DB", "xedocs,cmt2").split(",")
 api_version = os.getenv("API_VERSION", "v1")
 
 url = f"mongodb://{mongo_user}:{mongo_pass}@xenon1t-daq.lngs.infn.it:27017/cmt2"

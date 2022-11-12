@@ -7,12 +7,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from . import api
 from ._settings import settings
-from ._frames import frames
+from .datasources import *
 from . import schemas
 from .utils import *
 from .xedocs import *
-from . import api
+
 from .contexts import *
 
 try:
