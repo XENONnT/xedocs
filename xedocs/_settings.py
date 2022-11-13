@@ -69,14 +69,15 @@ class Settings(BaseSettings):
         self.API_TOKEN = token
 
     def api_url_for_schema(self, schema, base_url=None, version=None, mode='staging'):
-        from xedocs.schemas import XeDoc
-
         if base_url is None:
             base_url = self.API_BASE_URL
+        
         if version is None:
             version = self.API_VERSION
-        if isinstance(schema, XeDoc):
+
+        if hasattr(schema, "_ALIAS"):
             schema = schema._ALIAS
+
         return self.API_URL_FORMAT.format(
             base_url=base_url, version=version, name=schema, mode=mode
         ).replace("//", "/")
