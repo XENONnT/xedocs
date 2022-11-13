@@ -60,6 +60,7 @@ You can also query documents directly from the schema class,
 Schemas will query the mongodb staging database by default, if no explicit datasource is given.
 
 .. code-block:: python
+
     from xedocs.schemas import DetectorNumber
 
     drift_velocity = DetectorNumber.production_db.find_one(field='drift_velocity', version='v1')
