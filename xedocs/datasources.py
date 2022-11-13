@@ -39,7 +39,14 @@ def get_datasource_for(schema, mode='staging'):
 
 def register_default_storage(schema: BaseSchema):
     if uconfig is not None:
-        schema.register_datasource(utilix_datasource(schema), name='staging_db')
-        schema.register_datasource(utilix_datasource(schema, mode='production'), name='production_db')
-    schema.register_datasource(api_client(schema), name='staging_db_api')
-    schema.register_datasource(api_client(schema, mode='production'), name='production_db_api')
+        if not hasattr(schema, "staging_db"):
+            schema.register_datasource(utilix_datasource(schema), name='staging_db')
+            
+        if not hasattr(schema, "production_db"):
+            schema.register_datasource(utilix_datasource(schema, mode='production'), name='production_db')
+
+    if not hasattr(schema, "staging_db_api"):
+        schema.register_datasource(api_client(schema), name='staging_db_api')
+
+    if not hasattr(schema, "production_db_api"):
+        schema.register_datasource(api_client(schema, mode='production'), name='production_db_api')
