@@ -35,33 +35,38 @@ MAX_RESULTS = 2000
 token_auth_scheme = HTTPBearer()
 
 
-def verfiy_read_auth(auth: str = Depends(token_auth_scheme)):
-    try:
-        claims = xeauth.certs.extract_verified_claims(auth.credentials)
-        assert "https://api.cmt.xenonnt.org" in claims.get("aud", [])
-        assert "read:all" in claims.get("scope", "").split(" ")
+def get_read_auth(db):
+    def verfiy_read_auth(auth: str = Depends(token_auth_scheme)):
+        try:
+            claims = xeauth.certs.extract_verified_claims(auth.credentials)
+            assert "https://api.cmt.xenonnt.org" in claims.get("aud", [])
+            scopes = claims.get("scope", "").split(" ")
+            assert "read:all" in scopes or f"read:{db}" in scopes
 
-    except Exception as e:
-        print(e)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Unauthorized: {e}",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        except Exception as e:
+            print(e)
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Unauthorized: {e}",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    return verfiy_read_auth
 
+def get_write_auth(db):
+    def verfiy_write_auth(auth: str = Depends(token_auth_scheme)):
+        try:
+            claims = xeauth.certs.extract_verified_claims(auth.credentials)
+            assert "https://api.cmt.xenonnt.org" in claims.get("aud", [])
+            scopes = claims.get("scope", "").split(" ")
+            assert "write:all" in scopes  or f"write:{db}" in scopes
 
-def verfiy_write_auth(auth: str = Depends(token_auth_scheme)):
-    try:
-        claims = xeauth.certs.extract_verified_claims(auth.credentials)
-        assert "https://api.cmt.xenonnt.org" in claims.get("aud", [])
-        assert "write:all" in claims.get("scope", "").split(" ")
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Unauthorized: {e}",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Unauthorized: {e}",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    return verfiy_write_auth
 
 
 for db_name, db in dbs.items():
@@ -74,8 +79,8 @@ for db_name, db in dbs.items():
             schema,
             collection,
             prefix=f"/{api_version}/{db_name}/{name}",
-            can_read=Depends(verfiy_read_auth),
-            can_write=Depends(verfiy_write_auth),
+            can_read=Depends(get_read_auth(db_name)),
+            can_write=Depends(get_write_auth(db_name)),
         )
         app.include_router(router)
 
