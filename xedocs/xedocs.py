@@ -107,7 +107,7 @@ try:
 
     @straxen.URLConfig.register("xedocs")
     def xedocs_protocol(
-        name, context="production_db", sort=None, attr=None, **labels
+        name, db="production_db", sort=None, attr=None, as_list=False, **labels
     ):
         """URLConfig protocol for fetching values from
             a xedocs database.
@@ -120,16 +120,13 @@ try:
         """
         import xedocs
 
-        ctx = getattr(xedocs, context)()
-
         # Find the document schema
         schema = xedocs.find_schema(name)
 
-        # filter out any not index labels
-        index_fields = schema.get_index_fields()
-        labels = {k: v for k, v in labels.items() if k in index_fields}
+        accessor = getattr(schema, db)
 
-        accessor = ctx[schema._CATEGORY][schema._ALIAS]
+        if sort is not None:
+            labels['sort'] = sort
 
         docs = accessor.find_docs(**labels)
 
@@ -144,7 +141,7 @@ try:
         if attr is not None:
             docs = [getattr(d, attr) for d in docs]
 
-        if len(docs) == 1:
+        if not as_list:
             return docs[0]
 
         return docs

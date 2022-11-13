@@ -11,6 +11,9 @@ def camel_to_snake(name):
 
 
 class XeDoc(rframe.BaseSchema):
+    __STAGING_DB__: ClassVar[str] = "xedocs"
+    __PRODUCTION_DB__: ClassVar[str] = "cmt2"
+
     _ALIAS: ClassVar = ""
     _CATEGORY: ClassVar = "general"
 
@@ -20,19 +23,23 @@ class XeDoc(rframe.BaseSchema):
         allow_population_by_field_name = True
 
     def __init_subclass__(cls) -> None:
+        super().__init_subclass__()
 
         if "_ALIAS" not in cls.__dict__:
             cls._ALIAS = camel_to_snake(cls.__name__)
 
         if cls._ALIAS and cls._ALIAS not in cls._XEDOCS:
             cls._XEDOCS[cls._ALIAS] = cls
+            import xedocs
+            xedocs.register_default_storage(cls)   
 
     @classmethod
     def default_datasource(cls):
         """This method is called when a query method is
         called and no datasource is passed.
         """
-        return settings.get_datasource_for(cls)
+        import xedocs
+        return xedocs.get_datasource_for(cls)
 
     @classmethod
     def default_database_name(cls):

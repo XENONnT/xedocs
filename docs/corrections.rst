@@ -39,18 +39,6 @@ When subclassing a Correction class, you must give it a unique ``name`` attibute
     - TimeSampledCorrection - indexed by version and time, where time is a datetime
     - TimeIntervalCorrection - indexed by version and time, where time is a interval of datetimes
 
-Any subclass of ``BaseCorrectionSchema`` will automatically become available in the ``xedocs.frames`` namespace
-
-.. code-block:: python
-
-    rdfs = xedocs.frames.pmt_gains
-
-    # specific remote dataframes can be accessed via dict-like access or attribute access by their name
-    rf = xedocs.frames.pmt_gains
-    # or
-    rf = xedocs.frames['pmt_gains']
-
-    df = rf.sel(version=..., detector=..., time=...)
 
 
 References

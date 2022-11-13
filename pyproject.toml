@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "xedocs"
-version = "0.1.26"
+version = "0.2.0"
 homepage = "https://github.com/XENONnT/xedocs"
 description = "Top-level package for xedocs."
 authors = ["Yossi Mosbacher <joe.mosbacher@gmail.com>"]
@@ -23,7 +23,7 @@ packages = [
 python = ">=3.8,<3.11"
 click = "*"
 rich = "*"
-rframe = "^0.1.27"
+rframe = "^0.2.0"
 pymongo = {version = "*", optional = true}
 
 [tool.poetry.extras]

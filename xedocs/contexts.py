@@ -9,6 +9,8 @@ from xedocs.xedocs import find_schema
 from .utils import DatasetCollection
 from .schemas import XeDoc
 
+from ._settings import settings
+
 
 class XedocsContext:
     _schemas: dict
@@ -83,27 +85,27 @@ class XedocsContext:
         return super().__dir__() + list(self._accessors.keys())
 
 
-def production_db(schemas=None, datasource_overrides=None, by_category=True):
+def production_db(schemas=None, datasource_overrides=None, by_category=False):
     if schemas is None:
         schemas = all_schemas()
 
     storage = [
         DictStorage(datasource_overrides),
-        UtilixStorage(database="cmt2"),
-        ApiStorage(path="cmt2"),
+        UtilixStorage(database=settings.PRODUCTION_DB),
+        ApiStorage(mode='production'),
     ]
 
     return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)
 
 
-def staging_db(schemas=None, datasource_overrides=None, by_category=True):
+def staging_db(schemas=None, datasource_overrides=None, by_category=False):
     if schemas is None:
         schemas = all_schemas()
 
     storage = [
         DictStorage(datasource_overrides),
         UtilixStorage(database="xedocs"),
-        ApiStorage(path="xedocs"),
+        ApiStorage(mode='staging'),
     ]
 
     return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)

@@ -37,7 +37,7 @@ Read/write data from the staging database, this database is writable from the de
 
     import xedocs
 
-    db = xedocs.staging_db(by_category=False)
+    db = xedocs.staging_db()
 
     docs = db.pmt_gains.find_docs(version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
     gains = [doc.value for doc in docs]
@@ -52,7 +52,7 @@ Read from the shared production database, this database is read-only for the def
 
     import xedocs
 
-    db = xedocs.production_db(by_category=False)
+    db = xedocs.production_db()
 
     ...
     
@@ -60,13 +60,14 @@ You can also query documents directly from the schema class,
 Schemas will query the mongodb staging database by default, if no explicit datasource is given.
 
 .. code-block:: python
-    
-    drift_velocity = xedocs.schemas.DetectorNumber.find_one(field='drift_velocity', version='v1')
+    from xedocs.schemas import DetectorNumber
+
+    drift_velocity = DetectorNumber.production_db.find_one(field='drift_velocity', version='v1')
     
     # Returns a Bodega object with attributes value, description etc.
     drift_velocity.value
 
-    all_v1_documents = xedocs.schemas.DetectorNumber.find(version='v1')
+    all_v1_documents = DetectorNumber.production_db.find(version='v1')
 
 
 
@@ -75,9 +76,9 @@ e.g csv files which will be loaded by pandas.
 
 .. code-block:: python
 
-    import xedocs
+    from xedocs.schemas import DetectorNumber
     
-    g1_doc = xedocs.schemas.DetectorNumber.find_one(datasource='/path/to/file.csv', version='v1', field='g1')
+    g1_doc = DetectorNumber.find_one(datasource='/path/to/file.csv', version='v1', field='g1')
     g1_value = g1_doc.value
     g1_error = g1_doc.uncertainty
 
@@ -85,9 +86,9 @@ The path can also be a github URL or any other URL supported by fsspec.
 
 .. code-block:: python
 
-    import xedocs
+    from xedocs.schemas import DetectorNumber
     
-    g1_doc = xedocs.schemas.DetectorNumber.find_one(
+    g1_doc = DetectorNumber.find_one(
                              datasource='github://org:repo@/path/to/file.csv', 
                              version='v1', 
                              field='g1')
