@@ -18,7 +18,7 @@ def utilix_datasource(schema: BaseSchema, mode='staging'):
 
     database = getattr(schema, f'__{mode.capitalize()}_DB__', None)
     if database is None:
-        database = getattr(f"{mode.capitalize()}_DB", "xedocs")
+        database = getattr(settings, f"{mode.capitalize()}_DB", "xedocs")
     collection = schema.default_collection_name()
     return xent_collection(collection=collection, database=database)
 
