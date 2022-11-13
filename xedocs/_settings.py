@@ -14,7 +14,6 @@ try:
 except ImportError:
     uconfig = None
 
-
 from pydantic import BaseSettings
 
 from .clock import SimpleClock
@@ -26,12 +25,11 @@ class Settings(BaseSettings):
 
     STAGING_DB: str = "xedocs"
     PRODUCTION_DB: str = "cmt2"
-
     API_URL_FORMAT: str = "{base_url}/{version}/{mode}/{name}"
     API_BASE_URL: str = "https://api.xedocs.yossisprojects.com"
     API_VERSION: str = "v1"
     API_AUDIENCE: str = "https://api.cmt.xenonnt.org"
-    API_WRITE: bool = False
+    API_READONLY: bool = False
     API_TOKEN: str = None
     API_USERNAME: str = None
     API_PASSWORD: str = None
@@ -79,8 +77,9 @@ class Settings(BaseSettings):
             schema = schema._ALIAS
 
         return self.API_URL_FORMAT.format(
-            base_url=base_url, version=version, name=schema, mode=mode
-        ).replace("//", "/")
+            base_url=base_url.strip('/'), version=version.strip('/'),
+            name=schema.strip('/'), mode=mode.strip('/')
+        )
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:
