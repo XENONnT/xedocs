@@ -703,7 +703,7 @@ class ModelTableEditor(pn.viewable.Viewer):
         skip = self.page * self.page_size
         docs = []
         try:
-            docs = self.class_.find(**self.query, _skip=skip, _limit=self.page_size)
+            docs = self.class_.find(**self.query, skip=skip, limit=self.page_size)
         except Exception as e:
             logger.error(str(e))
 
