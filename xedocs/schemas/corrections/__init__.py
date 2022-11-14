@@ -18,4 +18,4 @@ from .baseline_samples_nv import *
 from .relative_light_yield import *
 from .s1_aft_xyz import *
 from .avg_se_gain import *
-from .bayes_model.py import *
+from .bayes_model import *
