@@ -5,9 +5,9 @@ Welcome to xedocs's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   basic_usage
    introduction
    installation
-   basic_usage
    advanced_usage
    corrections
    api_server
