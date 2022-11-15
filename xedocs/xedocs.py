@@ -145,6 +145,42 @@ try:
             return docs[0]
 
         return docs
+    
+    @straxen.URLConfig.register("xedocs-test")
+    def test_protocol(name, context="test_data", sort=None, attr=None, **labels):
+        import xedocs
+        import pymongo
+        
+        db = pymongo.MongoClient()[context]
+
+        schema = xedocs.find_schema(name)
+
+        # filter out any not index labels
+        index_fields = schema.get_index_fields()
+
+        labels = {k: v for k, v in labels.items() if k in index_fields}
+
+        #accessor = ctx[schema._CATEGORY][schema._ALIAS]
+
+        #docs = accessor.find_docs(**labels)
+        docs = schema.find(datasource=db[name], **labels)
+
+
+        if not docs:
+            raise KeyError(f"No matching documents found for {name}.")
+
+        if isinstance(sort, str):
+            docs = sorted(docs, key=lambda x: getattr(x, sort))
+        elif sort:
+            docs = sorted(docs)
+
+        if attr is not None:
+            docs = [getattr(d, attr) for d in docs]
+
+        if len(docs) == 1:
+            return docs[0]
+
+        return docs
 
 except ImportError:
     pass
