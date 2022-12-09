@@ -1,4 +1,4 @@
-from .functions_for_xedocs_test import check_map_correction
+from .functions_for_xedocs_test import * # check_map_correction
 from .variables_for_test import *
 import xedocs
 import straxen
