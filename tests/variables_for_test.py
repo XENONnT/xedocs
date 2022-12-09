@@ -64,21 +64,17 @@ installed = {pkg.key for pkg in pkg_resources.working_set}
 if 'straxen' in installed:
     import straxen
 
-db_name = "correctionsSandbox"  # "test_xedocs"
-db = pymongo.MongoClient(host='xenon1t-daq.lngs.infn.it',
-                         username='corrections',
-                         password='ItIsWarmOutside')[db_name]
+db_name = "test_data"  # "test_xedocs"
+db = pymongo.MongoClient()[db_name]
 
 
 ######### Testing Protocol ################
 @straxen.URLConfig.register("xedocs-test")
-def protocol_test(name, context="correctionsSandbox", sort=None, attr=None, **labels):
+def protocol_test(name, context="test_data", sort=None, attr=None, **labels):
     import xedocs
     import pymongo
 
-    db = pymongo.MongoClient(host='xenon1t-daq.lngs.infn.it',
-                             username='corrections',
-                             password='ItIsWarmOutside')[context]
+    db = pymongo.MongoClient()[context]
 
     schema = xedocs.find_schema(name)
 
