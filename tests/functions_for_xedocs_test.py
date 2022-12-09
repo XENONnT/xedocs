@@ -4,8 +4,7 @@ import numpy as np
 
 from hypothesis import assume
 
-import variables_for_test
-#from .variables_for_test import time_for_array, db
+from .variables_for_test import time_for_array, db
 
 installed = {pkg.key for pkg in pkg_resources.working_set}
 
@@ -50,7 +49,7 @@ if 'straxen' in installed:
 
             for v in np.arange(num_of_sensors):
 
-                schema(version = "v*", time = variables_for_test.time_for_array[u], pmt = v, value = data[f'arr_{u}'][v],
+                schema(version = "v*", time = time_for_array[u], pmt = v, value = data[f'arr_{u}'][v],
                        detector = detector).save(db[collection])
 
     def check_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
@@ -103,10 +102,10 @@ if 'straxen' in installed:
         st_xd = straxen.contexts.xenonnt_online(output_folder=output_file)
 
         # get unique times in docs for check
-        array_unique_time = variables_for_test.time_for_array
+        array_unique_time = time_for_array
 
         for j in np.arange(len(array_unique_time)):
-            time_doc = schema.find(version='v*', detector= detector, time=array_unique_time[j], datasource = variables_for_test.db[collection])
+            time_doc = schema.find(version='v*', detector= detector, time=array_unique_time[j], datasource = db[collection])
 
             st_xd.set_config({straxen_correction_name:'list-to-array://xedocs-test://'
                       '{collection}'
@@ -166,10 +165,10 @@ if 'straxen' in installed:
         # Reprocess data in straxen with xedocs URLConfiguration
         st_xd = straxen.contexts.xenonnt_online(output_folder=output_file)
 
-        array_unique_time = variables_for_test.time_for_array
+        array_unique_time = time_for_array
 
         for j in np.arange(len(array_unique_time)):
-            time_doc = schema.find(version='v*', detector= detector, time=array_unique_time[j], datasource = variables_for_test.db[collection])
+            time_doc = schema.find(version='v*', detector= detector, time=array_unique_time[j], datasource = db[collection])
 
             st_xd.set_config({straxen_correction_name:'list-to-array://xedocs-test://'
                       '{collection}'
