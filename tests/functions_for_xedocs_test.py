@@ -1,7 +1,6 @@
 import pkg_resources
 import datetime
 import numpy as np
-import cutax
 
 from hypothesis import assume
 
@@ -73,23 +72,6 @@ if 'straxen' in installed:
             correction_value = st_xd.get_single_plugin(run_id_nt, plugin)
             assert (getattr(correction_value, straxen_correction_name) == docs[j].value), f"The data generated in docs for correction {collection} does not match the inserted value"
 
-    def check_cutax_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
-        """
-        Insures that the value inserted does not change
-        """
-        st_xd = cutax.contexts.xenonnt_online(output_folder=output_file)
-
-        for j in np.arange(len(docs)):
-            st_xd.set_config({'diffusion_constant': 'xedocs-test://'
-                                                    'electron_diffusion_cte'
-                                                    '?version={version}'
-                                                    '&time={time}&attr=value'.format(version=docs[j].version,
-                                                                                       time=docs[j].time,
-                                                                                       correction=collection
-                                                                                       )})
-            correction_value = st_xd.get_single_plugin(run_id_nt, plugin)
-            assert (getattr(correction_value, straxen_correction_name) == docs[j].value), f"The data generated in docs for correction {collection} does not match the inserted value"        
-
     def check_insert_data_dict(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
         # checks we are able to insert data into straxen from xedocs using URLConfigs
         # Due to the difference in URLConfig between the two a separate function was made
@@ -155,24 +137,6 @@ if 'straxen' in installed:
                                                                             )
                               })
             data = st_xd.get_array(run_id_nt, plugin)
-
-            assert (len(data) != 0), f"Data could not be generated with correction {collection}"
-
-
-    def check_reprocessing_cutax(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
-        # Reprocess data in straxen with xedocs URLConfiguration
-        st_xd = cutax.contexts.xenonnt_online(output_folder=output_file, include_rucio_remote=True,
-                                                download_heavy=True)
-
-        for j in np.arange(len(docs)):
-            st_xd.set_config({straxen_correction_name: 'xedocs-test://'
-                                                       'electron_diffusion_cte'
-                                                       '?version={version}'
-                                                       '&time={time}&attr=value'.format(version=docs[j].version,
-                                                                                     time=docs[j].time,
-                                                                                     correction=collection
-                                                                                     )})
-            data = st_xd.get_df(run_id_nt, targets=('event_basics', plugin))
 
             assert (len(data) != 0), f"Data could not be generated with correction {collection}"
 
@@ -341,3 +305,41 @@ if 'straxen' in installed:
                                                                        run_id=new_doc.time)})
             if straxen.utilix_is_configured():
                 assert (len(st_xd.get_array(run_id_nt, plugin)) != 0)
+                
+                
+if 'cutax' in installed:
+    import cutax
+    
+    def check_cutax_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
+        """
+        Insures that the value inserted does not change
+        """
+        st_xd = cutax.contexts.xenonnt_online(output_folder=output_file)
+
+        for j in np.arange(len(docs)):
+            st_xd.set_config({'diffusion_constant': 'xedocs-test://'
+                                                    'electron_diffusion_cte'
+                                                    '?version={version}'
+                                                    '&time={time}&attr=value'.format(version=docs[j].version,
+                                                                                       time=docs[j].time,
+                                                                                       correction=collection
+                                                                                       )})
+            correction_value = st_xd.get_single_plugin(run_id_nt, plugin)
+            assert (getattr(correction_value, straxen_correction_name) == docs[j].value), f"The data generated in docs for correction {collection} does not match the inserted value" 
+            
+    def check_reprocessing_cutax(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
+        # Reprocess data in straxen with xedocs URLConfiguration
+        st_xd = cutax.contexts.xenonnt_online(output_folder=output_file, include_rucio_remote=True,
+                                                download_heavy=True)
+
+        for j in np.arange(len(docs)):
+            st_xd.set_config({straxen_correction_name: 'xedocs-test://'
+                                                       'electron_diffusion_cte'
+                                                       '?version={version}'
+                                                       '&time={time}&attr=value'.format(version=docs[j].version,
+                                                                                     time=docs[j].time,
+                                                                                     correction=collection
+                                                                                     )})
+            data = st_xd.get_df(run_id_nt, targets=('event_basics', plugin))
+
+            assert (len(data) != 0), f"Data could not be generated with correction {collection}"
