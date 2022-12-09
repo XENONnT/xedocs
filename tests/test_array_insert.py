@@ -1,5 +1,5 @@
-from functions_for_xedocs_test import check_insert_array, create_array_docs
-from variables_for_test import *
+from .functions_for_xedocs_test import check_insert_array, create_array_docs
+from .variables_for_test import *
 import numpy as np
 import pytest
 
