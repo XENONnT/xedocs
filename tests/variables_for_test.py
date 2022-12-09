@@ -59,48 +59,43 @@ time_for_array = [datetime.datetime(2001,1,1,0,0),
 
 ########### Check for straxen and database settings ##############
 installed = {pkg.key for pkg in pkg_resources.working_set}
+db_name = "test_data"  # "test_xedocs"
+db = pymongo.MongoClient()[db_name]
 
 # import straxen only if you have it
 if 'straxen' in installed:
     import straxen
 
-db_name = "test_data"  # "test_xedocs"
-db = pymongo.MongoClient()[db_name]
+    ######### Testing Protocol ################
+    @straxen.URLConfig.register("xedocs-test")
+    def protocol_test(name, context="test_data", sort=None, attr=None, **labels):
+        import xedocs
+        import pymongo
 
+        db = pymongo.MongoClient()[context]
 
-######### Testing Protocol ################
-@straxen.URLConfig.register("xedocs-test")
-def protocol_test(name, context="test_data", sort=None, attr=None, **labels):
-    import xedocs
-    import pymongo
+        schema = xedocs.find_schema(name)
 
-    db = pymongo.MongoClient()[context]
+        # filter out any not index labels
+        index_fields = schema.get_index_fields()
 
-    schema = xedocs.find_schema(name)
+        labels = {k: v for k, v in labels.items() if k in index_fields}
 
-    # filter out any not index labels
-    index_fields = schema.get_index_fields()
+        docs = schema.find(datasource=db[name], **labels)
 
-    labels = {k: v for k, v in labels.items() if k in index_fields}
+        if not docs:
+            raise KeyError(f"No matching documents found for {name}.")
 
-    # accessor = ctx[schema._CATEGORY][schema._ALIAS]
+        if isinstance(sort, str):
+            docs = sorted(docs, key=lambda x: getattr(x, sort))
+        elif sort:
+            docs = sorted(docs)
 
-    # docs = accessor.find_docs(**labels)
-    docs = schema.find(datasource=db[name], **labels)
+        if attr is not None:
+            docs = [getattr(d, attr) for d in docs]
 
-    if not docs:
-        raise KeyError(f"No matching documents found for {name}.")
+        if len(docs) == 1:
+            return docs[0]
 
-    if isinstance(sort, str):
-        docs = sorted(docs, key=lambda x: getattr(x, sort))
-    elif sort:
-        docs = sorted(docs)
-
-    if attr is not None:
-        docs = [getattr(d, attr) for d in docs]
-
-    if len(docs) == 1:
-        return docs[0]
-
-    return docs
+        return docs
 
