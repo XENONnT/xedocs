@@ -12,8 +12,7 @@ installed = {pkg.key for pkg in pkg_resources.working_set}
 if 'straxen' in installed:
     import straxen
 
-
-def save_test_data(docs, collection, db, **kwargs):
+    def save_test_data(docs, collection, db, **kwargs):
     # saves all the data generated so we can access it via URLConfig
 
     # some of the correction involve interpolating so it is important we first organize the data in time
@@ -46,7 +45,7 @@ def save_test_data(docs, collection, db, **kwargs):
 
     return saved_docs
 
-def create_array_docs(data, num_of_sensors, schema, detector, db, collection):
+    def create_array_docs(data, num_of_sensors, schema, detector, db, collection):
     for u in np.arange(len(data)):
 
         for v in np.arange(num_of_sensors):
@@ -54,12 +53,12 @@ def create_array_docs(data, num_of_sensors, schema, detector, db, collection):
             schema(version = "v*", time = time_for_array[u], pmt = v, value = data[f'arr_{u}'][v],
                    detector = detector).save(db[collection])
 
-def check_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
+    def check_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
     """
     Insures that the value inserted does not change
     """
     st_xd = straxen.contexts.xenonnt_online(output_folder=output_file)
-    
+
     # we only need to check 3 docs so I need to cheat a little since I am getting a lot more
     # need to pass 1 array at a time
     for j in np.arange(len(docs)):
@@ -74,7 +73,7 @@ def check_insert_data(docs, collection, straxen_correction_name, plugin, output_
         correction_value = st_xd.get_single_plugin(run_id_nt, plugin)
         assert (getattr(correction_value, straxen_correction_name) == docs[j].value), f"The data generated in docs for correction {collection} does not match the inserted value"
 
-def check_cutax_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
+    def check_cutax_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
     """
     Insures that the value inserted does not change
     """
@@ -90,8 +89,8 @@ def check_cutax_insert_data(docs, collection, straxen_correction_name, plugin, o
                                                                                    )})
         correction_value = st_xd.get_single_plugin(run_id_nt, plugin)
         assert (getattr(correction_value, straxen_correction_name) == docs[j].value), f"The data generated in docs for correction {collection} does not match the inserted value"        
-        
-def check_insert_data_dict(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
+
+    def check_insert_data_dict(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
     # checks we are able to insert data into straxen from xedocs using URLConfigs
     # Due to the difference in URLConfig between the two a separate function was made
     st_xd = straxen.contexts.xenonnt_online(output_folder=output_file, include_rucio_remote=True,
@@ -114,34 +113,34 @@ def check_insert_data_dict(docs, collection, straxen_correction_name, plugin, ou
         assert (getattr(correction_value, straxen_correction_name)['ab'] == docs[
             2 * j].value), f"The data generated in docs for correction {collection} does not match the inserted value"
 
-def check_insert_array(docs, schema, detector, collection, straxen_correction_name, plugin, output_file, run_id_nt):
+    def check_insert_array(docs, schema, detector, collection, straxen_correction_name, plugin, output_file, run_id_nt):
     """
     Insures that the value inserted does not change
     """
     st_xd = straxen.contexts.xenonnt_online(output_folder=output_file)
-    
+
     # get unique times in docs for check
     array_unique_time = time_for_array
 
     for j in np.arange(len(array_unique_time)):
         time_doc = schema.find(version='v*', detector= detector, time=array_unique_time[j], datasource = db[collection])
-        
+
         st_xd.set_config({straxen_correction_name:'list-to-array://xedocs-test://'
                   '{collection}'
                   '?version=v*&time={time}&detector={detector}&attr=value'.format(version='v*',
                                                                            collection=collection,
                                                                            detector=detector,
                                                                            time=array_unique_time[j])})
-        
+
         correction_value = st_xd.get_single_plugin(run_id_nt, plugin)
         data_array = np.zeros(len(time_doc))
-        
+
         for t in np.arange(len(time_doc)):
             data_array[t] = time_doc[t].value
-            
+
         assert (all(getattr(correction_value, straxen_correction_name) == data_array)), f"The data generated in docs for correction {collection} does not match the inserted value"
 
-def check_reprocessing(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
+    def check_reprocessing(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
     # Reprocess data in straxen with xedocs URLConfiguration
     st_xd = straxen.contexts.xenonnt_online(output_folder=output_file, include_rucio_remote=True,
                                             download_heavy=True)
@@ -158,9 +157,9 @@ def check_reprocessing(docs, straxen_correction_name, collection, plugin, output
         data = st_xd.get_array(run_id_nt, plugin)
 
         assert (len(data) != 0), f"Data could not be generated with correction {collection}"
-        
-        
-def check_reprocessing_cutax(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
+
+
+    def check_reprocessing_cutax(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
     # Reprocess data in straxen with xedocs URLConfiguration
     st_xd = cutax.contexts.xenonnt_online(output_folder=output_file, include_rucio_remote=True,
                                             download_heavy=True)
@@ -176,9 +175,9 @@ def check_reprocessing_cutax(docs, straxen_correction_name, collection, plugin, 
         data = st_xd.get_df(run_id_nt, targets=('event_basics', plugin))
 
         assert (len(data) != 0), f"Data could not be generated with correction {collection}"
-        
 
-def check_reprocessing_dict(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
+
+    def check_reprocessing_dict(docs, straxen_correction_name, collection, plugin, output_file, run_id_nt):
     # Reprocess data in straxen with xedocs URLConfiguration
 
     st_xd = straxen.contexts.xenonnt_online(output_folder=output_file, include_rucio_remote=True,
@@ -198,7 +197,7 @@ def check_reprocessing_dict(docs, straxen_correction_name, collection, plugin, o
 
         assert (len(data) != 0), f"Data could not be generated with correction {collection}"
 
-def check_reprocessing_array(docs, schema, detector, straxen_correction_name, collection, plugin, output_file, run_id_nt):
+    def check_reprocessing_array(docs, schema, detector, straxen_correction_name, collection, plugin, output_file, run_id_nt):
     # Reprocess data in straxen with xedocs URLConfiguration
     st_xd = straxen.contexts.xenonnt_online(output_folder=output_file)
 
@@ -206,20 +205,20 @@ def check_reprocessing_array(docs, schema, detector, straxen_correction_name, co
 
     for j in np.arange(len(array_unique_time)):
         time_doc = schema.find(version='v*', detector= detector, time=array_unique_time[j], datasource = db[collection])
-        
+
         st_xd.set_config({straxen_correction_name:'list-to-array://xedocs-test://'
                   '{collection}'
                   '?version=v*&time={time}&detector={detector}&attr=value'.format(version='v*',
                                                                            collection=collection,
                                                                            detector=detector,
                                                                            time=array_unique_time[j])})
-        
+
         data = st_xd.get_array(run_id_nt, plugin)
 
         assert (len(data) != 0), f"Data could not be generated with correction {collection}"
 
 
-def get_docs(schema, **kwarg):
+    def get_docs(schema, **kwarg):
     new_doc = []
     if 'value' not in kwarg:
         doc = kwarg['db_correction'].find_one(version='v1', algorithm=kwarg['algorithm'])
@@ -248,7 +247,7 @@ def get_docs(schema, **kwarg):
 
     return new_doc
 
-def get_docs_posrec(schema, **kwarg):
+    def get_docs_posrec(schema, **kwarg):
     new_doc = schema(version='v*',
                      value=kwarg['value'],
                      kind=kwarg['algorithm'],
@@ -256,7 +255,7 @@ def get_docs_posrec(schema, **kwarg):
     return new_doc
 
 
-def check_map_correction(schema, straxen_cor_name, xedocs_cor_name,
+    def check_map_correction(schema, straxen_cor_name, xedocs_cor_name,
                          output_file, run_id_nt, db, plugin, **kwarg):
     # Maybe break down this functions in the future
     # moved algorithm and db_correction to kwargs
