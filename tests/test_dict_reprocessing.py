@@ -1,5 +1,5 @@
-from functions_for_xedocs_test import save_test_data, check_reprocessing_dict
-from variables_for_test import *
+from .functions_for_xedocs_test import save_test_data, check_reprocessing_dict
+from .variables_for_test import *
 import pytest
 
 
