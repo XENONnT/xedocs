@@ -6,7 +6,7 @@ import xedocs
 from hypothesis import given, example, settings, assume
 from hypothesis import strategies as st  # import integers, composite, SearchStrategy
 
-from .functions_for_xedocs_test import save_test_data, check_insert_data
+from .functions_for_xedocs_test import * # save_test_data, check_insert_data
 from .variables_for_test import *
 
 import pytest
