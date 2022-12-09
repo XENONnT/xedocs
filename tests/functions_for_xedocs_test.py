@@ -1,4 +1,4 @@
-import straxen
+import pkg_resources
 import datetime
 import numpy as np
 import cutax
@@ -6,6 +6,11 @@ import cutax
 from hypothesis import assume
 
 from variables_for_test import time_for_array, db
+
+installed = {pkg.key for pkg in pkg_resources.working_set}
+
+if 'straxen' in installed:
+    import straxen
 
 
 def save_test_data(docs, collection, db, **kwargs):
