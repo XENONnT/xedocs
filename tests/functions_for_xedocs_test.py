@@ -53,7 +53,7 @@ if 'straxen' in installed:
                 schema(version = "v*", time = time_for_array[u], pmt = v, value = data[f'arr_{u}'][v],
                        detector = detector).save(db[collection])
 
-        def check_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
+    def check_insert_data(docs, collection, straxen_correction_name, plugin, output_file, run_id_nt):
         """
         Insures that the value inserted does not change
         """
