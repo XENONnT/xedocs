@@ -1,4 +1,4 @@
-from .functions_for_xedocs_test import save_test_data, check_reprocessing_cutax
+from .functions_for_xedocs_test * # import save_test_data, check_reprocessing_cutax
 from .variables_for_test import *
 import xedocs
 import straxen
