@@ -1,6 +1,6 @@
 
-from functions_for_xedocs_test import save_test_data, check_insert_data_dict
-from variables_for_test import *
+from .functions_for_xedocs_test import save_test_data, check_insert_data_dict
+from .variables_for_test import *
 import pytest
 
 @pytest.mark.skipif('straxen' not in installed, reason="Straxen is not installed skipping test")
