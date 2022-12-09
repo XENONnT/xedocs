@@ -1,5 +1,5 @@
 
-from .functions_for_xedocs_test import save_test_data, check_insert_data_dict
+from .functions_for_xedocs_test import * # save_test_data, check_insert_data_dict
 from .variables_for_test import *
 import pytest
 
