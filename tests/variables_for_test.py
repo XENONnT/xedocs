@@ -49,9 +49,9 @@ def time_sampled_correction_strategy(correction, **overrides):
 
 ########## Data for array corrections #############
 
-pmt_data = np.load("./pmt_corrections.npz")
-nveto_data = np.load("./nveto_corrections.npz")
-mveto_data = np.load("./mveto_corrections.npz")
+pmt_data = np.load("tests/pmt_corrections.npz")
+nveto_data = np.load("tests/nveto_corrections.npz")
+mveto_data = np.load("tests/mveto_corrections.npz")
 
 time_for_array = [datetime.datetime(2001,1,1,0,0),
                   datetime.datetime(2001,1,1,1,0),
