@@ -1,5 +1,5 @@
-from functions_for_xedocs_test import check_map_correction
-from variables_for_test import *
+from .functions_for_xedocs_test import check_map_correction
+from .variables_for_test import *
 import xedocs
 import straxen
 import unittest
