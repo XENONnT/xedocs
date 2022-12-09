@@ -1,10 +1,18 @@
 import pkg_resources
 import datetime
 import numpy as np
+import pymongo
 
 from hypothesis import assume
 
-from .variables_for_test import time_for_array, db
+#from .variables_for_test import time_for_array, db
+
+time_for_array = [datetime.datetime(2001,1,1,0,0),
+                  datetime.datetime(2001,1,1,1,0),
+                  datetime.datetime(2001,1,1,2,0)]
+
+db_name = "test_data"  # "test_xedocs"
+db = pymongo.MongoClient()[db_name]
 
 installed = {pkg.key for pkg in pkg_resources.working_set}
 
