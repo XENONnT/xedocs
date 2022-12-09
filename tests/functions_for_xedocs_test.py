@@ -4,7 +4,7 @@ import numpy as np
 
 from hypothesis import assume
 
-from variables_for_test import time_for_array, db
+from .variables_for_test import time_for_array, db
 
 installed = {pkg.key for pkg in pkg_resources.working_set}
 
