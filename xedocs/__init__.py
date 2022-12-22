@@ -17,6 +17,15 @@ from .xedocs import *
 from .contexts import *
 
 try:
+    from . import _straxen_plugin
+
+except ImportError:
+    logger.warning("Could not register straxen protocol, \
+                     most likely straxen not installed.")
+except ValueError:
+    pass
+
+try:
     from . import widgets
 
     gui = widgets.XedocsEditor()
