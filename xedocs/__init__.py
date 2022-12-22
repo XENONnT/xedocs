@@ -2,7 +2,7 @@
 
 __author__ = """Yossi Mosbacher"""
 __email__ = "joe.mosbacher@gmail.com"
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 import logging
 
 logger = logging.getLogger(__name__)
