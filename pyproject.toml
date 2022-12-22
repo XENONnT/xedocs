@@ -54,6 +54,10 @@ pymongo = "*"
 [tool.poetry.scripts]
 xedocs = 'xedocs.cli:main'
 
+[tool.poetry.plugins]
+[tool.poetry.plugins."straxen"]
+"_" = "xedocs._straxen_plugin"
+
 [build-system]
 requires = ["poetry-core>=1.0.8", "setuptools"]
 build-backend = "poetry.core.masonry.api"

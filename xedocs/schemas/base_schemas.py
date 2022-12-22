@@ -11,8 +11,8 @@ def camel_to_snake(name):
 
 
 class XeDoc(rframe.BaseSchema):
-    __STAGING_DB__: ClassVar[str] = "xedocs"
-    __PRODUCTION_DB__: ClassVar[str] = "cmt2"
+    __STAGING_DB__: ClassVar[str] = "xedocs-dev"
+    __PRODUCTION_DB__: ClassVar[str] = "xedocs"
 
     _ALIAS: ClassVar = ""
     _CATEGORY: ClassVar = "general"
@@ -84,6 +84,3 @@ class VersionedXeDoc(XeDoc):
     _ALIAS = ""
 
     version: str = rframe.Index(max_length=20)
-
-    def pre_delete(self, datasource):
-        raise IndexError("Versioned documents are append-only.")
