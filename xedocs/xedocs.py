@@ -122,7 +122,8 @@ def get_accessor(schema, db='analyst_db'):
         raise TypeError(
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
-
+    if db is None:
+        db = 'analyst_db'
     if isinstance(db, str):
         accessor = getattr(schema, db)
     else:

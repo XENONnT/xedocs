@@ -10,24 +10,24 @@ What does Xedocs give you
 Data reading
 ------------
 
-    - Read data from multiple formats (e.g. mongodb, pandas) and locations with a simple unified interface.
-    - Custom logic implemented on the document class, e.g. creating a tensorflow model from the data etc.
-    - Multiple APIs for reading data, fun functional, ODM style, pandas and xarray.
-    - Read data as objects, dataframes, dicts, json.
+- Read data from multiple formats (e.g. mongodb, pandas) and locations with a simple unified interface.
+- Custom logic implemented on the document class, e.g. creating a tensorflow model from the data etc.
+- Multiple APIs for reading data, fun functional, ODM style, pandas and xarray.
+- Read data as objects, dataframes, dicts, json.
     
 Writing data
 ------------
 
-    - Write data to multiple storage backends with the same interface
-    - Custom per-collection rules for data insertion, deletion and updating.
-    - Schema validation and type coercion so storage has uniform and consistent data.
+- Write data to multiple storage backends with the same interface
+- Custom per-collection rules for data insertion, deletion and updating.
+- Schema validation and type coercion so storage has uniform and consistent data.
     
 Other
 -----
 
-    - Custom panel widgets for graphical representation of data, web client
-    - Auto-generated API server and client + openapi documentation
-    - CLI for viewing and downloading data
+- Custom panel widgets for graphical representation of data, web client
+- Auto-generated API server and client + openapi documentation
+- CLI for viewing and downloading data
 
 
 Basic Usage
@@ -57,13 +57,13 @@ Explore the available schemas
             Column fields: ['created_date', 'comments', 'value']
     
 
-Read/write data from the staging database, this database is writable from the default analysis username/password
+Read/write data from the shared analyst database, this database is writable from the default analysis username/password
 
 .. code-block:: python
 
     import xedocs
 
-    db = xedocs.staging_db()
+    db = xedocs.analyst_db()
 
     docs = db.pmt_gains.find_docs(version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
     gains = [doc.value for doc in docs]
@@ -71,30 +71,30 @@ Read/write data from the staging database, this database is writable from the de
     doc = db.pmt_gains.find_one(version='v1', pmt=1, time='2021-01-01T00:00:00', detector='tpc')
     pmt1_gain = doc.value
 
-Read from the shared production database, this database is read-only for the default analysis username/password
+Read from the straxen processing database, this database is read-only for the default analysis username/password
 
 
 .. code-block:: python
 
     import xedocs
 
-    db = xedocs.production_db()
+    db = xedocs.straxen_db()
 
     ...
     
 You can also query documents directly from the schema class, 
-Schemas will query the mongodb staging database by default, if no explicit datasource is given.
+Schemas will query the mongodb analyst database by default, if no explicit datasource is given.
 
 .. code-block:: python
 
     from xedocs.schemas import DetectorNumber
 
-    drift_velocity = DetectorNumber.production_db.find_one(field='drift_velocity', version='v1')
+    drift_velocity = DetectorNumber.straxen_db.find_one(field='drift_velocity', version='v1')
     
     # Returns a Bodega object with attributes value, description etc.
     drift_velocity.value
 
-    all_v1_documents = DetectorNumber.production_db.find(version='v1')
+    all_v1_documents = DetectorNumber.straxen_db.find(version='v1')
 
 
 
