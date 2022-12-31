@@ -85,27 +85,27 @@ class XedocsContext:
         return super().__dir__() + list(self._accessors.keys())
 
 
-def production_db(schemas=None, datasource_overrides=None, by_category=False):
+def straxen_db(schemas=None, datasource_overrides=None, by_category=False):
     if schemas is None:
         schemas = all_schemas()
 
     storage = [
         DictStorage(datasource_overrides),
-        UtilixStorage(database=settings.PRODUCTION_DB),
-        ApiStorage(mode='production'),
+        UtilixStorage(database=settings.STRAXEN_DB),
+        ApiStorage(mode='straxen'),
     ]
 
     return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)
 
 
-def staging_db(schemas=None, datasource_overrides=None, by_category=False):
+def analyst_db(schemas=None, datasource_overrides=None, by_category=False):
     if schemas is None:
         schemas = all_schemas()
 
     storage = [
         DictStorage(datasource_overrides),
         UtilixStorage(database="xedocs"),
-        ApiStorage(mode='staging'),
+        ApiStorage(mode='analyst'),
     ]
 
     return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)

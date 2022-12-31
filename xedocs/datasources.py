@@ -4,7 +4,7 @@ from rframe import BaseSchema
 from ._settings import settings, uconfig, xent_collection
 
 
-def api_client(schema, mode='staging'):
+def api_client(schema, mode='analyst'):
     import xedocs
 
     url = settings.api_url_for_schema(schema, mode=mode)
@@ -12,7 +12,7 @@ def api_client(schema, mode='staging'):
     return xedocs.api.api_client(url, token=settings.API_TOKEN, authenticator=settings)
 
 
-def utilix_datasource(schema: BaseSchema, mode='staging'):
+def utilix_datasource(schema: BaseSchema, mode='analyst'):
     if uconfig is None:
         return None
 
@@ -23,14 +23,14 @@ def utilix_datasource(schema: BaseSchema, mode='staging'):
     return xent_collection(collection=collection, database=database)
 
 
-def default_datasource(schema, mode='staging'):
+def default_datasource(schema, mode='analyst'):
     datasource = utilix_datasource(schema, mode=mode)
     if datasource is None:
         datasource = api_client(schema, mode=mode)
     return datasource        
 
 
-def get_datasource_for(schema, mode='staging'):
+def get_datasource_for(schema, mode='analyst'):
     if schema._ALIAS in settings.datasources:
         return settings.datasources[schema._ALIAS]
 
@@ -39,25 +39,25 @@ def get_datasource_for(schema, mode='staging'):
 
 def register_default_storage(schema: BaseSchema):
     if uconfig is not None:
-        if not hasattr(schema, "staging_db"):
+        if not hasattr(schema, "analyst_db"):
             try:
-                schema.register_datasource(utilix_datasource(schema), name='staging_db')
+                schema.register_datasource(utilix_datasource(schema), name='analyst_db')
             except:
                 pass
-        if not hasattr(schema, "production_db"):
+        if not hasattr(schema, "straxen_db"):
             try:
-                schema.register_datasource(utilix_datasource(schema, mode='production'), name='production_db')
+                schema.register_datasource(utilix_datasource(schema, mode='straxen'), name='straxen_db')
             except:
                 pass
 
-    if not hasattr(schema, "staging_db_api"):
+    if not hasattr(schema, "analyst_db_api"):
         try:
-            schema.register_datasource(api_client(schema), name='staging_db_api')
+            schema.register_datasource(api_client(schema), name='analyst_db_api')
         except:
             pass
 
-    if not hasattr(schema, "production_db_api"):
+    if not hasattr(schema, "straxen_db_api"):
         try:
-            schema.register_datasource(api_client(schema, mode='production'), name='production_db_api')
+            schema.register_datasource(api_client(schema, mode='straxen'), name='straxen_db_api')
         except:
             pass

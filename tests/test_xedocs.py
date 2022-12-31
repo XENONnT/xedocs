@@ -8,21 +8,21 @@ from click.testing import CliRunner
 from xedocs import cli
 
 
-def test_staging_context():
-    from xedocs.contexts import staging_db
+def test_analyst_context():
+    from xedocs.contexts import analyst_db
 
-    ctx = staging_db()
+    ctx = analyst_db()
     assert ctx is not None
-    ctx = staging_db(by_category=False)
+    ctx = analyst_db(by_category=False)
     assert ctx is not None
 
 
-def test_production_context():
-    from xedocs.contexts import production_db
+def test_straxen_context():
+    from xedocs.contexts import straxen_db
 
-    ctx = production_db()
+    ctx = straxen_db()
     assert ctx is not None
-    ctx = production_db(by_category=False)
+    ctx = straxen_db(by_category=False)
     assert ctx is not None
 
 

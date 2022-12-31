@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_"
 
-    STAGING_DB: str = "xedocs"
-    PRODUCTION_DB: str = "cmt2"
+    ANALYST_DB: str = "xedocs-dev"
+    STRAXEN_DB: str = "xedocs"
     API_URL_FORMAT: str = "{base_url}/{version}/{mode}/{name}"
     API_BASE_URL: str = "https://api.xedocs.yossisprojects.com"
     API_VERSION: str = "v1"
