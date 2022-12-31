@@ -26,6 +26,22 @@ def find_docs(schema, datasource=None, **labels):
     return accessor.find_docs(**labels)
 
 
+def find_iter(schema, datasource=None, **labels):
+    """find documents by labels, return iterator
+
+    Args:
+        schema (Union[XeDoc,str]): A Xedocs schema or name/alias of one.
+        datasource (optional): compatible datasource or name of known source. Defaults to None.
+        **labels: label selections
+    Returns:
+        Iterator[XeDoc]: an iterator over documents matching selection.
+    """
+
+    accessor = get_accessor(schema, datasource)
+
+    return accessor.find_iter(**labels)
+
+
 def find_df(schema, datasource=None, **labels):
     """find dataframe by labels
 
