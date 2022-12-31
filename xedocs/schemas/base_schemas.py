@@ -11,8 +11,8 @@ def camel_to_snake(name):
 
 
 class XeDoc(rframe.BaseSchema):
-    __STAGING_DB__: ClassVar[str] = "xedocs-dev"
-    __PRODUCTION_DB__: ClassVar[str] = "xedocs"
+    __ANALYST_DB__: ClassVar[str] = "xedocs-dev"
+    __STRAXEN_DB__: ClassVar[str] = "xedocs"
 
     _ALIAS: ClassVar = ""
     _CATEGORY: ClassVar = "general"

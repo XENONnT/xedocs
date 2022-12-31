@@ -4,45 +4,58 @@ import pandas as pd
 
 from collections import defaultdict
 from typing import ClassVar, Dict, List, Type, Union
-
+from rframe import DataAccessor
 
 from ._settings import settings
 from .schemas import XeDoc
 
 
 def find_docs(schema, datasource=None, **labels):
-    if isinstance(schema, str):
-        schema = find_schema(schema)
-    if not issubclass(schema, XeDoc):
-        raise TypeError(
-            "Schema must be a subclass of XeDoc" "or the name of a known schema."
-        )
-    """Find a document in a datasource."""
-    # labels, extra = schema.extract_labels(**kwargs)
-    return schema.find(datasource, **labels)
+    """find documents by labels
+
+    Args:
+        schema (Union[XeDoc,str]): A Xedocs schema or name/alias of one.
+        datasource (optional): compatible datasource or name of known source. Defaults to None.
+        **labels: label selections
+    Returns:
+        List[XeDoc]: a list of documents matching selection.
+    """
+
+    accessor = get_accessor(schema, datasource)
+
+    return accessor.find_docs(**labels)
 
 
 def find_df(schema, datasource=None, **labels):
-    if isinstance(schema, str):
-        schema = find_schema(schema)
-    if not issubclass(schema, XeDoc):
-        raise TypeError(
-            "Schema must be a subclass of XeDoc or the name of a known schema."
-        )
-    """Find a document in a datasource."""
-    return schema.find_df(datasource, **labels)
+    """find dataframe by labels
+
+    Args:
+        schema (Union[XeDoc,str]): A Xedocs schema or name/alias of one.
+        datasource (optional): compatible datasource or name of known source. Defaults to None.
+        **labels: label selections
+    Returns:
+        DataFrame: a pandas dataframe matching selection.
+    """
+
+    accessor = get_accessor(schema, datasource)
+
+    return accessor.find_df(**labels)
 
 
-def find_one(schema, datasource=None, **kwargs):
-    if isinstance(schema, str):
-        schema = find_schema(schema)
-    if not issubclass(schema, XeDoc):
-        raise TypeError(
-            "Schema must be a subclass of XeDoc or the name of a known schema."
-        )
-    """Find a document in a datasource."""
-    labels, extra = schema.extract_labels(**kwargs)
-    return schema.find_one(datasource, **labels)
+def find_one(schema, datasource=None, **labels):
+    """find dataframe by labels
+
+    Args:
+        schema (Union[XeDoc,str]): A Xedocs schema or name/alias of one.
+        datasource (optional): compatible datasource or name of known source. Defaults to None.
+        **labels: label selections
+    Returns:
+        Optional[XeDoc]: The first document matching selection or None.
+    """
+
+    accessor = get_accessor(schema, datasource)
+
+    return accessor.find_one(**labels)
 
 
 def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None):
@@ -50,16 +63,9 @@ def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=N
         docs = docs.reset_index().to_dict(orient="records")
     if not isinstance(docs, list):
         docs = [docs]
-    if isinstance(schema, str):
-        schema = find_schema(schema)
+    accessor = get_accessor(schema, datasource)
 
-    inserted = []
-    for data in docs:
-        doc = schema(**data)
-        doc.save(datasource)
-        inserted.append(doc)
-
-    return inserted
+    return accessor.insert(docs)
 
 
 def list_schemas() -> List[str]:
@@ -78,13 +84,35 @@ def schemas_by_category() -> Dict[str,Dict[str, Type[XeDoc]]]:
 
 
 def find_schema(name) -> Type[XeDoc]:
+    if issubclass(name, XeDoc):
+        return name
+
     schema = XeDoc._XEDOCS.get(name, None)
+
     if schema is not None:
         return schema
+    
     for schema in XeDoc._XEDOCS.values():
         if schema.__name__ == name:
             return schema
+    
     raise KeyError(f"Correction with name {name} not found.")
+
+
+def get_accessor(schema, db='analyst_db'):
+    schema = find_schema(schema)
+
+    if not issubclass(schema, XeDoc):
+        raise TypeError(
+            "Schema must be a subclass of XeDoc" "or the name of a known schema."
+        )
+
+    if isinstance(db, str):
+        accessor = getattr(schema, db)
+    else:
+        accessor = DataAccessor(schema, db)
+
+    return accessor
 
 
 def help(schema):

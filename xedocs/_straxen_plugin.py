@@ -4,9 +4,10 @@ is installed.
 """
 import straxen
 
+
 @straxen.URLConfig.register("xedocs")
 def xedocs_protocol(
-    name, db="production_db", sort=None, attr=None, as_list=False, **labels
+    name, db="straxen_db", sort=None, attr=None, as_list=False, **labels
 ):
     """URLConfig protocol for fetching values from
         a xedocs database.

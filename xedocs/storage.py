@@ -1,6 +1,5 @@
 from typing import Union
 from abc import ABC, abstractmethod
-from rframe import RestClient
 
 from .api import ApiAuth
 from .schemas import XeDoc
@@ -32,9 +31,9 @@ class MongoDBStorage(BaseStorage):
 
 
 class UtilixStorage(BaseStorage):
-    DB_NAME: str = "xedocs"
+    DB_NAME: str = "xedocs-dev"
 
-    def __init__(self, database=settings.STAGING_DB):
+    def __init__(self, database=settings.ANALYST_DB):
         self.DB_NAME = database
 
     def get_datasource(self, name):
@@ -46,9 +45,9 @@ class UtilixStorage(BaseStorage):
 
 
 class ApiStorage(BaseStorage):
-    MODE: str = "staging"
+    MODE: str = "anaylst"
 
-    def __init__(self, mode="staging"):
+    def __init__(self, mode="anaylst"):
         self.MODE = mode
 
     def get_datasource(self, name: str):
