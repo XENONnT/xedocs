@@ -101,11 +101,14 @@ class Settings(BaseSettings):
     def run_id_to_time(self, run_id):
         doc = self.run_doc(run_id)
         # use center time of run
-        return doc["start"] + (doc["end"] - doc["start"]) / 2
+        time = doc["start"] + (doc["end"] - doc["start"]) / 2
+        return self.clock.normalize_tz(time)
 
     def run_id_to_interval(self, run_id):
         doc = self.run_doc(run_id)
-        return doc["start"], doc["end"]
+        start = self.clock.normalize_tz(doc["start"])
+        end = self.clock.normalize_tz(doc["end"])
+        return start, end
 
     def extract_time(self, kwargs):
         if "time" in kwargs:
@@ -114,7 +117,9 @@ class Settings(BaseSettings):
             time = self.run_id_to_time(kwargs.pop("run_id"))
         else:
             return None
-        return pd.to_datetime(time)
+        time = pd.to_datetime(time)
+        time = self.clock.normalize_tz(time)
+        return time
 
 
 settings = Settings()

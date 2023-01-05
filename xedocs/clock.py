@@ -2,7 +2,7 @@ import datetime
 import time
 
 import pytz
-
+import pandas as pd
 
 class SimpleClock:
     utc: bool
@@ -24,6 +24,8 @@ class SimpleClock:
         return self.current_datetime() + offset
 
     def normalize_tz(self, dt: datetime.datetime) -> datetime.datetime:
+        if isinstance(dt, pd.Timestamp):
+            dt = dt.to_pydatetime()
         if dt.tzinfo is not None:
             if dt.tzinfo.utcoffset(dt) is not None:
                 dt = dt.astimezone(pytz.utc)
