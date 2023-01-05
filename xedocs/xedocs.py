@@ -100,10 +100,12 @@ def schemas_by_category() -> Dict[str,Dict[str, Type[XeDoc]]]:
 
 
 def find_schema(name) -> Type[XeDoc]:
-    if issubclass(name, XeDoc):
+    
+    if isinstance(name, type) and issubclass(name, XeDoc):
         return name
 
-    schema = XeDoc._XEDOCS.get(name, None)
+    if not isinstance(name, str):
+        raise TypeError(f"Schema name must be a string or XeDoc class, not {type(name)}")
 
     if schema is not None:
         return schema
