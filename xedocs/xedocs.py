@@ -107,6 +107,8 @@ def find_schema(name) -> Type[XeDoc]:
     if not isinstance(name, str):
         raise TypeError(f"Schema name must be a string or XeDoc class, not {type(name)}")
 
+    schema = XeDoc._XEDOCS.get(name, None)
+
     if schema is not None:
         return schema
     
