@@ -31,3 +31,10 @@ try:
     gui = widgets.XedocsEditor()
 except ImportError:
     logger.warning("Could not import editors, GUI not available.")
+
+try:
+    from .entrypoints import load_entry_points
+    load_entry_points()
+    del load_entry_points
+except Exception as e:
+    logger.warning(f"Could not register entrypoints. Failed with error: {e}")
