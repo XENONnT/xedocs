@@ -58,10 +58,10 @@ class Settings(BaseSettings):
     API_TOKEN: str = None
     API_USERNAME: str = None
     API_PASSWORD: str = None
-    GITHUB_URL: str = "github://XENONnT:xedocs-data@/data/{category}/{name}.json"
+    GITHUB_URL: str = "github://XENONnT:xedocs-data@/{db}/{category}/{name}/*.json"
     GITHUB_USERNAME: str = default_github_username()
     GITHUB_TOKEN: str = default_github_token()
-    LOCAL_DB_PATH: str = os.path.join(dirs.user_data_dir, "data")
+    LOCAL_DB_PATH: str = dirs.user_data_dir
 
     clock = SimpleClock()
 
@@ -92,7 +92,9 @@ class Settings(BaseSettings):
 
         self.API_TOKEN = token
 
-    def api_url_for_schema(self, schema: BaseSchema, base_url=None, version=None, mode='staging'):
+    def api_url_for_schema(self, schema: BaseSchema,
+                            base_url=None, version=None, 
+                            mode='staging'):
         if base_url is None:
             base_url = self.API_BASE_URL
         
@@ -107,11 +109,11 @@ class Settings(BaseSettings):
             name=schema.strip('/'), mode=mode.strip('/')
         )
 
-    def local_path_for_schema(self, schema: BaseSchema):
-        return Path(self.LOCAL_DB_PATH) / schema._CATEGORY / f"{schema._ALIAS}.json"
+    def local_path_for_schema(self, schema: BaseSchema, db='straxen_db'):
+        return Path(self.LOCAL_DB_PATH) / db / schema._CATEGORY / schema._ALIAS
 
-    def github_url_for_schema(self, schema: BaseSchema):
-        return self.GITHUB_URL.format(category=schema._CATEGORY, name=schema._ALIAS)
+    def github_url_for_schema(self, schema: BaseSchema, db='straxen_db'):
+        return self.GITHUB_URL.format(category=schema._CATEGORY, name=schema._ALIAS, db=db)
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:
