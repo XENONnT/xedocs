@@ -4,7 +4,7 @@ import appdirs
 
 import pandas as pd
 
-from xedocs.schemas.base_schemas import XeDoc
+from rframe import BaseSchema
 
 
 def xent_collection(**kwargs):
@@ -72,7 +72,7 @@ class Settings(BaseSettings):
 
         self.API_TOKEN = token
 
-    def api_url_for_schema(self, schema, base_url=None, version=None, mode='staging'):
+    def api_url_for_schema(self, schema: BaseSchema, base_url=None, version=None, mode='staging'):
         if base_url is None:
             base_url = self.API_BASE_URL
         
@@ -87,10 +87,10 @@ class Settings(BaseSettings):
             name=schema.strip('/'), mode=mode.strip('/')
         )
 
-    def local_path_for_schema(self, schema: XeDoc):
+    def local_path_for_schema(self, schema: BaseSchema):
         return Path(self.LOCAL_DB_PATH) / schema._CATEGORY / f"{schema._ALIAS}.json"
 
-    def github_url_for_schema(self, schema: XeDoc):
+    def github_url_for_schema(self, schema: BaseSchema):
         return self.GITHUB_URL.format(category=schema._CATEGORY, name=schema._ALIAS)
 
     def run_doc(self, run_id, fields=("start", "end")):
