@@ -141,9 +141,3 @@ def help(schema):
         schema = find_schema(schema)
     return schema.help()
 
-
-def get_api_client(schema):
-    if isinstance(schema, str):
-        schema = find_schema(schema)
-    return settings.api_client(schema)
-

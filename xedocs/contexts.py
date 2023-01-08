@@ -2,110 +2,75 @@ from collections import defaultdict
 
 
 from rframe import DataAccessor
-from xedocs import all_schemas
-from xedocs.storage import ApiStorage, DictStorage, UtilixStorage
-from xedocs.xedocs import find_schema
-
-from .utils import DatasetCollection
-from .schemas import XeDoc
-
-from ._settings import settings
+from xedocs import all_schemas, schemas_by_category
 
 
 class XedocsContext:
     _schemas: dict
-    storage: list
-    _accessors: dict
+    _overrides: dict
+    _db_name: str
 
-    def __init__(self, schemas: dict = None, storage=None, by_category=True):
-        if by_category:
-            self._accessors = defaultdict(dict)
-        else:
-            self._accessors = {}
+    def __init__(self, schemas: dict = None, 
+                db_name=None, overrides=None):
 
-        if storage is None:
-            storage = []
-        self.storage = storage
+        self._db_name = db_name
 
         if schemas is None:
             schemas = all_schemas()
+        self._schemas = schemas
 
-        for name, schema in schemas.items():
-            if by_category:
-                category = schema._CATEGORY
-            else:
-                category = None
-            self.register_schema(schema, name=name, category=category)
-
-    def register_schema(self, schema, name=None, category=None):
-        if isinstance(schema, str):
-            schema = find_schema(schema)
-
-        if not issubclass(schema, XeDoc):
-            raise TypeError(
-                "Wrong type for schema spec, "
-                f"expected a XeDoc or string got {type(schema)}"
-            )
-
-        if name is None:
-            name = schema._ALIAS
-
-        datasource = self.get_accessor(schema, name=name)
-
-        if datasource is None:
-            raise ValueError(f"No datasource found for {name}")
-
-        if category is None:
-            self._accessors[name] = datasource
-        else:
-            self._accessors[category][name] = datasource
+        if overrides is None:
+            overrides = {}
+        self._overrides = overrides
 
     def get_accessor(self, schema, name=None):
         if name is None:
             name = schema._ALIAS
-        for store in self.storage:
-            datasource = store.get_datasource(name)
-            if datasource is not None:
-                return DataAccessor(schema, datasource)
+        if name in self._overrides:
+            return DataAccessor(schema, self._overrides[name])
+        return getattr(schema, self._db_name, None)
 
     def __getitem__(self, key):
-        dset = self._accessors.get(key, None)
-        if dset is None:
-            raise KeyError(f"No dataset named {key} found")
-        if isinstance(dset, dict):
-            return DatasetCollection(dset)
-        return self._accessors.get(key)
+        schema = self._schemas.get(key, None)
+        if schema is None:
+            raise KeyError(f"No schema named {key} found")
+        
+        if isinstance(schema, dict):
+            return XedocsContext(schema, 
+                                db_name=self._db_name, 
+                                overrides=self._overrides)
+
+        accessor = self.get_accessor(schema, name=key)
+
+        if accessor is None:
+            raise KeyError(f"No accessor named {key} found")
+
+        return accessor
 
     def __getattr__(self, attr):
-        if attr in self._accessors.keys():
+        if attr in self._schemas.keys():
             return self[attr]
         raise AttributeError(attr)
 
     def __dir__(self):
-        return super().__dir__() + list(self._accessors.keys())
+        return super().__dir__() + list(self._schemas.keys())
 
 
 def straxen_db(schemas=None, datasource_overrides=None, by_category=False):
     if schemas is None:
-        schemas = all_schemas()
+        if by_category:
+            schemas = schemas_by_category()
+        else:
+            schemas = all_schemas()
 
-    storage = [
-        DictStorage(datasource_overrides),
-        UtilixStorage(database=settings.STRAXEN_DB),
-        ApiStorage(mode='straxen'),
-    ]
-
-    return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)
+    return XedocsContext(schemas, db_name='straxen_db', overrides=datasource_overrides)
 
 
 def analyst_db(schemas=None, datasource_overrides=None, by_category=False):
     if schemas is None:
-        schemas = all_schemas()
+        if by_category:
+            schemas = schemas_by_category()
+        else:
+            schemas = all_schemas()
 
-    storage = [
-        DictStorage(datasource_overrides),
-        UtilixStorage(database="xedocs"),
-        ApiStorage(mode='analyst'),
-    ]
-
-    return XedocsContext(storage=storage, schemas=schemas, by_category=by_category)
+    return XedocsContext(schemas, db_name='analyst_db', overrides=datasource_overrides)

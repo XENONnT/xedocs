@@ -13,6 +13,7 @@ def camel_to_snake(name):
 class XeDoc(rframe.BaseSchema):
     __ANALYST_DB__: ClassVar[str] = "xedocs-dev"
     __STRAXEN_DB__: ClassVar[str] = "xedocs"
+    __DATASOURCE_HOOKS__: ClassVar[dict] = {}
 
     _ALIAS: ClassVar = ""
     _CATEGORY: ClassVar = "general"
@@ -30,8 +31,29 @@ class XeDoc(rframe.BaseSchema):
 
         if cls._ALIAS and cls._ALIAS not in cls._XEDOCS:
             cls._XEDOCS[cls._ALIAS] = cls
-            import xedocs
-            xedocs.register_default_storage(cls)   
+            for name, hook in cls.__DATASOURCE_HOOKS__.items():
+                source = hook(cls)
+                if source is None:
+                    continue
+                if hasattr(cls, name):
+                    continue
+
+                cls.register_datasource(source, name=name)
+
+    @classmethod
+    def register_datasource_hook(cls, name, func):
+        cls.__DATASOURCE_HOOKS__[name] = func
+
+        for schema in cls._XEDOCS.values():
+            source = func(schema)
+            
+            if source is None:
+                continue
+
+            if hasattr(schema, name):
+                continue
+            
+            schema.register_datasource(source, name=name)
 
     @classmethod
     def default_datasource(cls):

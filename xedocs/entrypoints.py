@@ -47,7 +47,12 @@ except ImportError:
 
 
 def load_entry_points():
+    datasource_hooks = {}
     for entry in get_entry_points():  # pragma: no cover
-        hook = entry.load()
-        if callable(hook):
-            hook()
+        try:
+            hook = entry.load()
+            if callable(hook):
+                datasource_hooks[entry.name] = hook
+        except Exception:
+            warnings.warn(f'Could not import entrypoint {entry.name} from {entry.module_name}.')
+    return datasource_hooks

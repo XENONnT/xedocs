@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     API_TOKEN: str = None
     API_USERNAME: str = None
     API_PASSWORD: str = None
+    GITHUB_URL: str = "github://XENONnT:xedocs-data@/data/{name}.csv"
 
     clock = SimpleClock()
 
@@ -40,9 +41,6 @@ class Settings(BaseSettings):
 
     @property
     def token(self):
-        if self.API_TOKEN is None:
-            self.login()
-
         if hasattr(self.API_TOKEN, "access_token"):
             if self.API_TOKEN.expired:
                 self.API_TOKEN.refresh()

@@ -11,6 +11,8 @@ class ApiAuth(AuthBase):
 
     def __call__(self, r: PreparedRequest) -> PreparedRequest:
         if self.authenticator is not None:
+            if self.authenticator.token is None:
+                self.authenticator.login()
             r.headers["Authorization"] = f"Bearer {self.authenticator.token}"
         return r
 
