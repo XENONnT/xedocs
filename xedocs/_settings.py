@@ -26,6 +26,24 @@ from .clock import SimpleClock
 dirs = appdirs.AppDirs('xedocs')
 
 
+def default_github_username():
+    try:
+        from git import config
+        cfg_path = config.get_config_path('global')
+        cfg = config.GitConfigParser(cfg_path)
+        return cfg.get('github', 'user')
+    except:
+        return None
+
+def default_github_token():
+    try:
+        from git import config
+        cfg_path = config.get_config_path('global')
+        cfg = config.GitConfigParser(cfg_path)
+        return cfg.get('github', 'token')
+    except:
+        return None
+
 class Settings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_"
@@ -41,6 +59,8 @@ class Settings(BaseSettings):
     API_USERNAME: str = None
     API_PASSWORD: str = None
     GITHUB_URL: str = "github://XENONnT:xedocs-data@/data/{category}/{name}.json"
+    GITHUB_USERNAME: str = default_github_username()
+    GITHUB_TOKEN: str = default_github_token()
     LOCAL_DB_PATH: str = os.path.join(dirs.user_data_dir, "data")
 
     clock = SimpleClock()
