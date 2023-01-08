@@ -1,10 +1,12 @@
 """Main module."""
 
+from pathlib import Path
 import pandas as pd
 
 from collections import defaultdict
 from typing import ClassVar, Dict, List, Type, Union
 from rframe import DataAccessor
+from tqdm.auto import tqdm
 
 from ._settings import settings
 from .schemas import XeDoc
@@ -141,3 +143,48 @@ def help(schema):
         schema = find_schema(schema)
     return schema.help()
 
+def download_db(db_name='straxen_db', 
+                schemas=None, 
+                path=None, 
+                batch_size=10_000,
+                verbose=True):
+    """Download data from a remote database to a local database.
+    """
+    import tinydb
+
+    if schemas is None:
+        schemas = list_schemas()
+        
+    if not isinstance(schemas, list):
+        schemas = [schemas]
+
+    with tqdm(total=len(schemas)) as pbar:
+
+        for schema in schemas:
+            schema = find_schema(schema)
+            accessor = get_accessor(schema, db_name)
+            pbar.set_description(f"Downloading {schema._ALIAS}")
+            
+            if path is None:
+                fpath = settings.local_path_for_schema(schema)
+            else:
+                fpath = Path(path) / schema._CATEGORY / f"{schema._ALIAS}.json"
+
+            db = tinydb.TinyDB(fpath, 
+                    create_dirs=True, 
+                    indent=4)
+
+            table = db.table(schema._ALIAS)
+            table.truncate()
+            docs = []
+            with tqdm(total=accessor.count(), desc=schema._ALIAS, leave=verbose) as pbar2:
+                for doc in accessor.find_iter():
+                    docs.append(doc.jsonable())
+                    pbar2.update(1)
+                    if len(docs) >= batch_size:
+                        table.insert_multiple(docs)
+                        docs = []
+                if len(docs) > 0:
+                    table.insert_multiple(docs)
+        
+            pbar.update(1)

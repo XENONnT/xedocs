@@ -1,5 +1,8 @@
+import os
+from pathlib import Path
+import appdirs
+
 import pandas as pd
-from rframe import BaseSchema
 
 
 def xent_collection(**kwargs):
@@ -18,7 +21,9 @@ from pydantic import BaseSettings
 
 from .clock import SimpleClock
 
-    
+dirs = appdirs.AppDirs('xedocs')
+
+
 class Settings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_"
@@ -34,6 +39,7 @@ class Settings(BaseSettings):
     API_USERNAME: str = None
     API_PASSWORD: str = None
     GITHUB_URL: str = "github://XENONnT:xedocs-data@/data/{name}.csv"
+    LOCAL_DB_PATH: str = os.path.join(dirs.user_data_dir, "data")
 
     clock = SimpleClock()
 
@@ -78,6 +84,9 @@ class Settings(BaseSettings):
             base_url=base_url.strip('/'), version=version.strip('/'),
             name=schema.strip('/'), mode=mode.strip('/')
         )
+
+    def local_path_for_schema(self, schema):
+        return Path(self.LOCAL_DB_PATH) / schema._CATEGORY / f"{schema._ALIAS}.json"
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:
