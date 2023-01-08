@@ -4,6 +4,8 @@ import appdirs
 
 import pandas as pd
 
+from xedocs.schemas.base_schemas import XeDoc
+
 
 def xent_collection(**kwargs):
     pass
@@ -38,7 +40,7 @@ class Settings(BaseSettings):
     API_TOKEN: str = None
     API_USERNAME: str = None
     API_PASSWORD: str = None
-    GITHUB_URL: str = "github://XENONnT:xedocs-data@/data/{name}.csv"
+    GITHUB_URL: str = "github://XENONnT:xedocs-data@/data/{category}/{name}.json"
     LOCAL_DB_PATH: str = os.path.join(dirs.user_data_dir, "data")
 
     clock = SimpleClock()
@@ -85,8 +87,11 @@ class Settings(BaseSettings):
             name=schema.strip('/'), mode=mode.strip('/')
         )
 
-    def local_path_for_schema(self, schema):
+    def local_path_for_schema(self, schema: XeDoc):
         return Path(self.LOCAL_DB_PATH) / schema._CATEGORY / f"{schema._ALIAS}.json"
+
+    def github_url_for_schema(self, schema: XeDoc):
+        return self.GITHUB_URL.format(category=schema._CATEGORY, name=schema._ALIAS)
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:
