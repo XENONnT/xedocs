@@ -143,6 +143,7 @@ def help(schema):
         schema = find_schema(schema)
     return schema.help()
 
+
 def download_db(db_name='straxen_db', 
                 schemas=None, 
                 path=None, 
@@ -166,25 +167,30 @@ def download_db(db_name='straxen_db',
             pbar.set_description(f"Downloading {schema._ALIAS}")
             
             if path is None:
-                fpath = settings.local_path_for_schema(schema)
+                basepath = settings.local_path_for_schema(schema, db=db_name)
             else:
-                fpath = Path(path) / schema._CATEGORY / f"{schema._ALIAS}.json"
-
-            db = tinydb.TinyDB(fpath, 
+                basepath = Path(path) / db_name / schema._CATEGORY / schema._ALIAS
+            
+            def write_docs(docs, num=1):
+                fpath = basepath / f"{num}.json"
+                db = tinydb.TinyDB(fpath, 
                     create_dirs=True, 
                     indent=4)
+                table = db.table(schema._ALIAS)
+                table.truncate()
+                table.insert_multiple(docs)
 
-            table = db.table(schema._ALIAS)
-            table.truncate()
+            filenum = 1
             docs = []
             with tqdm(total=accessor.count(), desc=schema._ALIAS, leave=verbose) as pbar2:
                 for doc in accessor.find_iter():
                     docs.append(doc.jsonable())
                     pbar2.update(1)
                     if len(docs) >= batch_size:
-                        table.insert_multiple(docs)
+                        write_docs(docs, filenum)
                         docs = []
+                        filenum += 1
                 if len(docs) > 0:
-                    table.insert_multiple(docs)
+                    write_docs(docs, filenum)
         
             pbar.update(1)

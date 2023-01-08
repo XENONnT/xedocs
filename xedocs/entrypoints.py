@@ -4,7 +4,7 @@
 # The nice optimization of the different import attempts
 # was copied from the hypothesis package
 # https://github.com/HypothesisWorks/hypothesis/blob/master/hypothesis-python/src/hypothesis/entry_points.py
-
+import warnings
 
 try:
     # We prefer to use importlib.metadata, or the backport on Python <= 3.7,
@@ -53,6 +53,6 @@ def load_entry_points():
             hook = entry.load()
             if callable(hook):
                 datasource_hooks[entry.name] = hook
-        except Exception:
-            warnings.warn(f'Could not import entrypoint {entry.name} from {entry.module_name}.')
+        except Exception as e:
+            warnings.warn(f'Could not import entrypoint {entry.name}. \n {e}')
     return datasource_hooks

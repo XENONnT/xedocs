@@ -66,7 +66,10 @@ xedocs = 'xedocs.cli:main'
 "straxen_db_api" = "xedocs.datasources.api:straxen_db_api_source"
 "straxen_db" = "xedocs.datasources.utilix:straxen_db_source"
 "analyst_db" = "xedocs.datasources.utilix:analyst_db_source"
-"github_db" = "xedocs.datasources.github:github_source"
+"analyst_db_github" = "xedocs.datasources.github:analyst_db_api_source"
+"straxen_db_github" = "xedocs.datasources.github:straxen_db_api_source"
+"analyst_db_local" = "xedocs.datasources.local:analyst_db_local_source"
+"straxen_db_local" = "xedocs.datasources.local:straxen_db_local_source"
 
 [build-system]
 requires = ["poetry-core>=1.0.8", "setuptools"]
