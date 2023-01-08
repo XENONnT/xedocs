@@ -7,13 +7,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from . import api
-from ._settings import settings
-from .datasources import *
-from . import schemas
-from .utils import *
-from .xedocs import *
 
+from ._settings import settings
+from .utils import *
+
+from . import schemas
+from .xedocs import *
+from . import api
+from . import datasources
 from .contexts import *
 
 try:
@@ -31,3 +32,14 @@ try:
     gui = widgets.XedocsEditor()
 except ImportError:
     logger.warning("Could not import editors, GUI not available.")
+
+try:
+    from .entrypoints import load_entry_points
+    datasource_hooks = load_entry_points()
+
+    for key, value in datasource_hooks.items():
+        XeDoc.register_datasource_hook(key, value)
+
+    del load_entry_points
+except Exception as e:
+    logger.warning(f"Could not register entrypoints. Failed with error: {e}")

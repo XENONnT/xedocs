@@ -25,6 +25,9 @@ click = "*"
 rich = "*"
 rframe = "^0.2.0"
 pymongo = {version = "*", optional = true}
+appdirs = "^1.4.4"
+tinydb = "^4.7.0"
+tqdm = "^4.64.1"
 
 [tool.poetry.extras]
 db = ["pymongo"]
@@ -56,7 +59,14 @@ xedocs = 'xedocs.cli:main'
 
 [tool.poetry.plugins]
 [tool.poetry.plugins."straxen"]
-"_" = "xedocs._straxen_plugin"
+"xedocs_protocol" = "xedocs._straxen_plugin"
+
+[tool.poetry.plugins."xedocs"]
+"analyst_db_api" = "xedocs.datasources.api:analyst_db_api_source"
+"straxen_db_api" = "xedocs.datasources.api:straxen_db_api_source"
+"straxen_db" = "xedocs.datasources.utilix:straxen_db_source"
+"analyst_db" = "xedocs.datasources.utilix:analyst_db_source"
+"github_db" = "xedocs.datasources.github:github_source"
 
 [build-system]
 requires = ["poetry-core>=1.0.8", "setuptools"]

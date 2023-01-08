@@ -1,4 +1,9 @@
+import os
+from pathlib import Path
+import appdirs
+
 import pandas as pd
+
 from rframe import BaseSchema
 
 
@@ -18,7 +23,9 @@ from pydantic import BaseSettings
 
 from .clock import SimpleClock
 
-    
+dirs = appdirs.AppDirs('xedocs')
+
+
 class Settings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_"
@@ -33,6 +40,8 @@ class Settings(BaseSettings):
     API_TOKEN: str = None
     API_USERNAME: str = None
     API_PASSWORD: str = None
+    GITHUB_URL: str = "github://XENONnT:xedocs-data@/data/{category}/{name}.json"
+    LOCAL_DB_PATH: str = os.path.join(dirs.user_data_dir, "data")
 
     clock = SimpleClock()
 
@@ -40,9 +49,6 @@ class Settings(BaseSettings):
 
     @property
     def token(self):
-        if self.API_TOKEN is None:
-            self.login()
-
         if hasattr(self.API_TOKEN, "access_token"):
             if self.API_TOKEN.expired:
                 self.API_TOKEN.refresh()
@@ -66,7 +72,7 @@ class Settings(BaseSettings):
 
         self.API_TOKEN = token
 
-    def api_url_for_schema(self, schema, base_url=None, version=None, mode='staging'):
+    def api_url_for_schema(self, schema: BaseSchema, base_url=None, version=None, mode='staging'):
         if base_url is None:
             base_url = self.API_BASE_URL
         
@@ -80,6 +86,12 @@ class Settings(BaseSettings):
             base_url=base_url.strip('/'), version=version.strip('/'),
             name=schema.strip('/'), mode=mode.strip('/')
         )
+
+    def local_path_for_schema(self, schema: BaseSchema):
+        return Path(self.LOCAL_DB_PATH) / schema._CATEGORY / f"{schema._ALIAS}.json"
+
+    def github_url_for_schema(self, schema: BaseSchema):
+        return self.GITHUB_URL.format(category=schema._CATEGORY, name=schema._ALIAS)
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:
