@@ -11,6 +11,6 @@ from .base_references import BaseResourceReference
 
 class S1AFTXYZMap(BaseResourceReference):
     _ALIAS = "s1_aft_xyz_maps"
-    fmt = 'json'
+    fmt = "json"
 
     value: str

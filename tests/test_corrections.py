@@ -169,7 +169,7 @@ class TestCorrections(unittest.TestCase):
     )
     @settings(deadline=None)
     def test_sampled_correction_v1(self, docs: List[SomeSampledCorrection]):
-        name = SomeSampledCorrection.default_collection_name()
+        name = SomeSampledCorrection._ALIAS
         datasource = self.collections[name]
         datasource.delete_many({})
 
@@ -243,7 +243,7 @@ class TestCorrections(unittest.TestCase):
     )
     @settings(deadline=None)
     def test_sampled_correction_online(self, docs: List[SomeSampledCorrection]):
-        name = SomeSampledCorrection.default_collection_name()
+        name = SomeSampledCorrection._ALIAS
         datasource = self.collections[name]
         datasource.delete_many({})
 
@@ -278,7 +278,7 @@ class TestCorrections(unittest.TestCase):
     @given(time_interval_corrections_strategy(version=st.just("v1"), value=floats))
     @settings(deadline=None)
     def test_interval_correction_v1(self, docs: List[SomeTimeIntervalCorrection]):
-        name = SomeTimeIntervalCorrection.default_collection_name()
+        name = SomeTimeIntervalCorrection._ALIAS
         datasource = self.collections[name]
         datasource.delete_many({})
 

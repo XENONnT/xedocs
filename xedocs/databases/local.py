@@ -1,14 +1,18 @@
+from pathlib import Path
+import appdirs
 
-import tinydb
 import fsspec
 import json
 
 from typing import Any, Dict, Optional
 
-from xedocs import settings
-from xedocs.schemas import XeDoc
-
+from tinydb import TinyDB
+from pydantic import BaseSettings
+from xedocs.database_interface import DatabaseInterface
 from tinydb.storages import Storage
+
+
+dirs = appdirs.AppDirs("xedocs")
 
 
 class FsspecStorage(Storage):
@@ -30,7 +34,7 @@ class FsspecStorage(Storage):
                         datasets[table].update(data)
                     else:
                         datasets[table] = data
-                        
+
         if not datasets:
             return None
         return datasets
@@ -44,18 +48,41 @@ class FsspecStorage(Storage):
             json.dump(data, f)
 
 
-def github_source_for(schema: XeDoc, db='analyst_db'):
-    url = settings.github_url_for_schema(schema, db=db)
-    db = tinydb.TinyDB(url, 
-        storage=FsspecStorage,
-        username=settings.GITHUB_USERNAME, 
-        token=settings.GITHUB_TOKEN)
-    return db.table(schema._ALIAS)
+class LocalRepoSettings(BaseSettings):
+    class Config:
+        env_prefix = "XEDOCS_LOCAL_REPO_"
+
+    PRIORITY: int = 3
+    PATH: str = dirs.user_data_dir
 
 
-def analyst_db_api_source(schema: XeDoc):
-    return github_source_for(schema, db='analyst_db')
+class LocalRepoDatabase(DatabaseInterface):
+    settings: LocalRepoSettings = LocalRepoSettings()
+    database: str
+    alias: str
 
+    def __init__(
+        self,
+        database: str = None,
+        alias: str = None,
+        settings: LocalRepoSettings = None,
+    ):
+        self.database = database
+        if alias is None:
+            alias = database
+        self.alias = alias
+        if settings is None:
+            settings = LocalRepoSettings()
+        self.settings = settings
 
-def straxen_db_api_source(schema: XeDoc):
-    return github_source_for(schema, db='straxen_db')
+    def datasource_for_schema(self, schema):
+        path = (
+            Path(self.settings.PATH)
+            / self.database
+            / schema._CATEGORY
+            / schema._ALIAS
+            / "*.json"
+        )
+        if path.exists():
+            db = TinyDB(path.absolute())
+            return db.table(schema._ALIAS)

@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from collections import defaultdict
-from typing import ClassVar, Dict, List, Type, Union
+from typing import Dict, List, Type, Union
 from rframe import DataAccessor
 from tqdm.auto import tqdm
 
@@ -94,7 +94,7 @@ def all_schemas() -> Dict[str, Type[XeDoc]]:
     return dict(XeDoc._XEDOCS)
 
 
-def schemas_by_category() -> Dict[str,Dict[str, Type[XeDoc]]]:
+def schemas_by_category() -> Dict[str, Dict[str, Type[XeDoc]]]:
     d = defaultdict(dict)
     for name, schema in all_schemas().items():
         d[schema._CATEGORY][name] = schema
@@ -102,26 +102,28 @@ def schemas_by_category() -> Dict[str,Dict[str, Type[XeDoc]]]:
 
 
 def find_schema(name) -> Type[XeDoc]:
-    
+
     if isinstance(name, type) and issubclass(name, XeDoc):
         return name
 
     if not isinstance(name, str):
-        raise TypeError(f"Schema name must be a string or XeDoc class, not {type(name)}")
+        raise TypeError(
+            f"Schema name must be a string or XeDoc class, not {type(name)}"
+        )
 
     schema = XeDoc._XEDOCS.get(name, None)
 
     if schema is not None:
         return schema
-    
+
     for schema in XeDoc._XEDOCS.values():
         if schema.__name__ == name:
             return schema
-    
+
     raise KeyError(f"Correction with name {name} not found.")
 
 
-def get_accessor(schema, db='analyst_db'):
+def get_accessor(schema, db="analyst_db"):
     schema = find_schema(schema)
 
     if not issubclass(schema, XeDoc):
@@ -129,7 +131,7 @@ def get_accessor(schema, db='analyst_db'):
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
     if db is None:
-        db = 'analyst_db'
+        db = "analyst_db"
     if isinstance(db, str):
         accessor = getattr(schema, db)
     else:
@@ -144,18 +146,21 @@ def help(schema):
     return schema.help()
 
 
-def download_db(db_name='straxen_db', 
-                schemas=None, 
-                path=None, 
-                batch_size=10_000,
-                verbose=True):
-    """Download data from a remote database to a local database.
-    """
+def default_datasource_for(schema):
+    schema = find_schema(schema)
+
+    return settings.default_datasource_for_schema(schema)
+
+
+def download_db(
+    db_name="straxen_db", schemas=None, path=None, batch_size=10_000, verbose=True
+):
+    """Download data from a remote database to a local database."""
     import tinydb
 
     if schemas is None:
         schemas = list_schemas()
-        
+
     if not isinstance(schemas, list):
         schemas = [schemas]
 
@@ -165,24 +170,24 @@ def download_db(db_name='straxen_db',
             schema = find_schema(schema)
             accessor = get_accessor(schema, db_name)
             pbar.set_description(f"Downloading {schema._ALIAS}")
-            
+
             if path is None:
                 basepath = settings.local_path_for_schema(schema, db=db_name)
             else:
                 basepath = Path(path) / db_name / schema._CATEGORY / schema._ALIAS
-            
+
             def write_docs(docs, num=1):
                 fpath = basepath / f"{num}.json"
-                db = tinydb.TinyDB(fpath, 
-                    create_dirs=True, 
-                    indent=4)
+                db = tinydb.TinyDB(fpath, create_dirs=True, indent=4)
                 table = db.table(schema._ALIAS)
                 table.truncate()
                 table.insert_multiple(docs)
 
             filenum = 1
             docs = []
-            with tqdm(total=accessor.count(), desc=schema._ALIAS, leave=verbose) as pbar2:
+            with tqdm(
+                total=accessor.count(), desc=schema._ALIAS, leave=verbose
+            ) as pbar2:
                 for doc in accessor.find_iter():
                     docs.append(doc.jsonable())
                     pbar2.update(1)
@@ -192,5 +197,5 @@ def download_db(db_name='straxen_db',
                         filenum += 1
                 if len(docs) > 0:
                     write_docs(docs, filenum)
-        
+
             pbar.update(1)

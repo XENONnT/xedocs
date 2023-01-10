@@ -1,14 +1,18 @@
 import os
 from pathlib import Path
 import appdirs
-
+import logging
 import pandas as pd
 
 from rframe import BaseSchema
 
 
+logger = logging.getLogger(__name__)
+
+
 def xent_collection(**kwargs):
     pass
+
 
 try:
     import utilix
@@ -23,97 +27,76 @@ from pydantic import BaseSettings
 
 from .clock import SimpleClock
 
-dirs = appdirs.AppDirs('xedocs')
+dirs = appdirs.AppDirs("xedocs")
 
-
-def default_github_username():
-    try:
-        from git import config
-        cfg_path = config.get_config_path('global')
-        cfg = config.GitConfigParser(cfg_path)
-        return cfg.get('github', 'user')
-    except:
-        return None
-
-def default_github_token():
-    try:
-        from git import config
-        cfg_path = config.get_config_path('global')
-        cfg = config.GitConfigParser(cfg_path)
-        return cfg.get('github', 'token')
-    except:
-        return None
 
 class Settings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_"
 
-    ANALYST_DB: str = "xedocs-dev"
-    STRAXEN_DB: str = "xedocs"
-    API_URL_FORMAT: str = "{base_url}/{version}/{mode}/{name}"
-    API_BASE_URL: str = "https://api.xedocs.yossisprojects.com"
-    API_VERSION: str = "v1"
-    API_AUDIENCE: str = "https://api.cmt.xenonnt.org"
-    API_READONLY: bool = False
-    API_TOKEN: str = None
-    API_USERNAME: str = None
-    API_PASSWORD: str = None
-    GITHUB_URL: str = "github://XENONnT:xedocs-data@/{db}/{category}/{name}/*.json"
-    GITHUB_USERNAME: str = default_github_username()
-    GITHUB_TOKEN: str = default_github_token()
-    LOCAL_DB_PATH: str = dirs.user_data_dir
+    _DATABASE_INTERFACE_CLASSES = {}
+
+    DATABASES = ["straxen_db", "development_db"]
 
     clock = SimpleClock()
 
-    datasources = {}
+    _database_interfaces = {}
 
-    @property
-    def token(self):
-        if hasattr(self.API_TOKEN, "access_token"):
-            if self.API_TOKEN.expired:
-                self.API_TOKEN.refresh()
-            return self.API_TOKEN.access_token
-        return self.API_TOKEN
-
-    def login(self):
-        import xeauth
-
-        if self.API_READONLY:
-            scopes = ["read:all"]
-        else:
-            scopes = ["read:all", "write:all"]
-            
-        token = xeauth.login(
-            username=self.API_USERNAME,
-            password=self.API_PASSWORD,
-            scopes=scopes,
-            audience=self.API_AUDIENCE,
+    def database_interfaces(self, database: str):
+        interfaces = self._database_interfaces.get(database, {})
+        interfaces = dict(
+            sorted(interfaces.items(), key=lambda x: x[1].settings.PRIORITY)
         )
 
-        self.API_TOKEN = token
+        return interfaces
 
-    def api_url_for_schema(self, schema: BaseSchema,
-                            base_url=None, version=None, 
-                            mode='staging'):
-        if base_url is None:
-            base_url = self.API_BASE_URL
-        
-        if version is None:
-            version = self.API_VERSION
+    def iter_sources_for_schema(
+        self, schema: BaseSchema, interfaces=None, databases=None
+    ):
+        if databases is None:
+            databases = self.DATABASES
+        for dbname in databases:
+            interfaces = self.database_interfaces(dbname)
+            for iname, interface in interfaces.items():
+                if interfaces is not None and iname not in interfaces:
+                    continue
+                source = interface.datasource_for_schema(schema)
+                if source is None:
+                    continue
+                yield (dbname, iname, source)
 
-        if hasattr(schema, "_ALIAS"):
-            schema = schema._ALIAS
+    def register_databases(self, schema: BaseSchema, databases=None, interfaces=None):
+        for dbname, iname, source in self.iter_sources_for_schema(
+            schema, interfaces=interfaces, databases=databases
+        ):
+            for name in (dbname, f"{dbname}_{iname}"):
+                if hasattr(schema, name):
+                    continue
+                schema.register_datasource(source, name=name)
 
-        return self.API_URL_FORMAT.format(
-            base_url=base_url.strip('/'), version=version.strip('/'),
-            name=schema.strip('/'), mode=mode.strip('/')
-        )
+    def default_datasource_for_schema(self, schema, databases=None, interfaces=None):
+        for _, _, source in self.iter_sources_for_schema(
+            schema, databases=databases, interfaces=interfaces
+        ):
+            return source
 
-    def local_path_for_schema(self, schema: BaseSchema, db='straxen_db'):
-        return Path(self.LOCAL_DB_PATH) / db / schema._CATEGORY / schema._ALIAS
+    def register_database_interface_class(self, name: str, interface_class):
+        self._DATABASE_INTERFACE_CLASSES[name] = interface_class
 
-    def github_url_for_schema(self, schema: BaseSchema, db='straxen_db'):
-        return self.GITHUB_URL.format(category=schema._CATEGORY, name=schema._ALIAS, db=db)
+        if not hasattr(interface_class, "settings"):
+            return
+
+        if interface_class.settings.PRIORITY == -1:
+            return
+
+        for database in self.DATABASES:
+            if database not in self._database_interfaces:
+                self._database_interfaces[database] = {}
+            try:
+                interface = interface_class(database=database)
+                self._database_interfaces[database][name] = interface
+            except Exception as e:
+                logger.warning(f"Could not register {name} for {database}: {e}")
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:

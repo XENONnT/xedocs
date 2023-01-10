@@ -1,4 +1,3 @@
-
 """Attempt to register URConfig protocol if straxen
 is installed.
 """
@@ -26,7 +25,7 @@ def xedocs_protocol(
     accessor = getattr(schema, db)
 
     if sort is not None:
-        labels['sort'] = sort
+        labels["sort"] = sort
 
     docs = accessor.find_docs(**labels)
 
