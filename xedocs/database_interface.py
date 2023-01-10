@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
+from typing import Iterable
 from rframe import DataAccessor
+from collections import UserDict
 
 from .schemas import XeDoc
 from ._settings import settings
+from .utils import DatasetCollection
 
 
 class DatabaseInterface(ABC):
-    priority = -1
 
     @abstractmethod
     def datasource_for_schema(schema: XeDoc):
@@ -17,7 +19,8 @@ class DatabaseInterface(ABC):
         if schema is None:
             raise KeyError(f"No schema named {key} found")
 
-        source = self.datasource_for_schema(key)
+        source = self.datasource_for_schema(schema)
+
         if source is None:
             raise KeyError(f"No datasource for {key} found")
 
@@ -31,6 +34,21 @@ class DatabaseInterface(ABC):
     def __dir__(self):
         return list(XeDoc._XEDOCS.keys()) + super().__dir__()
 
+
+class DatabasesCollection(UserDict):
+    def __getitem__(self, key):
+        if key in settings.DATABASES:
+            interfaces = settings.database_interfaces(key)
+            return DatasetCollection(interfaces)
+        raise KeyError(f"No database named {key} found.")
+
+    def __getattr__(self, attr):
+        if attr in settings.DATABASES:
+            return self[attr]
+        raise AttributeError(attr)
+
+    def __dir__(self) -> Iterable[str]:
+        return list(settings.DATABASES)
 
 def load_db_interfaces():
 

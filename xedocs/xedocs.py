@@ -11,6 +11,20 @@ from tqdm.auto import tqdm
 from ._settings import settings
 from .schemas import XeDoc
 
+__all__ = [
+    "help",
+    "get_accessor",
+    "find_docs",
+    "find_iter",
+    "find_df",
+    "find_one",
+    "insert_docs",
+    "list_schemas",
+    "all_schemas",
+    "schemas_by_category",
+    "find_schema",
+    "download_db",
+]
 
 def find_docs(schema, datasource=None, **labels):
     """find documents by labels
