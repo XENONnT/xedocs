@@ -1,4 +1,3 @@
-
 import rframe
 import datetime
 from typing import Optional
@@ -37,7 +36,7 @@ class PmtInstall(BasePmtData):
 
     digitizer_channel: Optional[int]
     digitizer_crate: Optional[int]
-    digitizer_module : Optional[int]
+    digitizer_module: Optional[int]
     digitizer_slot: Optional[int]
 
     high_voltage_crate: Optional[int]

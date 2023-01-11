@@ -50,7 +50,9 @@ def get_read_auth(db):
                 detail=f"Unauthorized: {e}",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
     return verfiy_read_auth
+
 
 def get_write_auth(db):
     def verfiy_write_auth(auth: str = Depends(token_auth_scheme)):
@@ -58,7 +60,7 @@ def get_write_auth(db):
             claims = xeauth.certs.extract_verified_claims(auth.credentials)
             assert "https://api.cmt.xenonnt.org" in claims.get("aud", [])
             scopes = claims.get("scope", "").split(" ")
-            assert "write:all" in scopes  or f"write:{db}" in scopes
+            assert "write:all" in scopes or f"write:{db}" in scopes
 
         except Exception as e:
             raise HTTPException(
@@ -66,6 +68,7 @@ def get_write_auth(db):
                 detail=f"Unauthorized: {e}",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
     return verfiy_write_auth
 
 

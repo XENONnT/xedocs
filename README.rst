@@ -57,13 +57,14 @@ Explore the available schemas
             Column fields: ['created_date', 'comments', 'value']
     
 
-Read/write data from the shared analyst database, this database is writable from the default analysis username/password
+Read/write data from the shared development database, 
+this database is writable from the default analysis username/password
 
 .. code-block:: python
 
     import xedocs
 
-    db = xedocs.analyst_db()
+    db = xedocs.development_db
 
     docs = db.pmt_gains.find_docs(version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
     gains = [doc.value for doc in docs]
@@ -78,12 +79,12 @@ Read from the straxen processing database, this database is read-only for the de
 
     import xedocs
 
-    db = xedocs.straxen_db()
+    db = xedocs.straxen_db
 
     ...
     
 You can also query documents directly from the schema class, 
-Schemas will query the mongodb analyst database by default, if no explicit datasource is given.
+Schemas will query the straxen database by default, if no explicit datasource is given.
 
 .. code-block:: python
 
@@ -129,6 +130,18 @@ Supported data sources
     - REST API clients
 
 Please open an issue on rframe_ if you want support for an additional data format.
+
+If you want a new datasource to be available from a schema class, you can register it to the class:
+
+.. code-block:: python
+
+    from xedocs.schemas import DetectorNumber
+    
+    DetectorNumber.register_datasource('github://org:repo@/path/to/file.csv', name='github_repo')
+
+    # The source will now be available under the given name:
+
+    g1_doc = DetectorNumber.github_repo.find_one(version='v1', field='g1')
 
 
 Documentation

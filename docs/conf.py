@@ -47,7 +47,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinxcontrib.autodoc_pydantic",
-    "jupyterlite_sphinx",
+    # "jupyterlite_sphinx",
     "sphinxext.rediraffe",
 ]
 

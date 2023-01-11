@@ -1,6 +1,5 @@
-
 # Entrypoint loading logic
-# Can be used to register schemas and data sources. 
+# Can be used to register schemas and data sources.
 # The nice optimization of the different import attempts
 # was copied from the hypothesis package
 # https://github.com/HypothesisWorks/hypothesis/blob/master/hypothesis-python/src/hypothesis/entry_points.py
@@ -14,14 +13,14 @@ try:
     except ImportError:
         import importlib_metadata  # type: ignore  # mypy thinks this is a redefinition
 
-    def get_entry_points():
+    def get_entry_points(name="xedocs"):
         try:
-            eps = importlib_metadata.entry_points(group="xedocs")
+            eps = importlib_metadata.entry_points(group=name)
         except TypeError:
             # Load-time selection requires Python >= 3.10 or importlib_metadata >= 3.6,
             # so we'll retain this fallback logic for some time to come.  See also
             # https://importlib-metadata.readthedocs.io/en/latest/using.html
-            eps = importlib_metadata.entry_points().get("xedocs", [])
+            eps = importlib_metadata.entry_points().get(name, [])
         yield from eps
 
 except ImportError:
@@ -37,22 +36,22 @@ except ImportError:
             "or setuptools package in order to load plugins via entrypoints.",
         )
 
-        def get_entry_points():
+        def get_entry_points(name):
             yield from ()
 
     else:
 
-        def get_entry_points():
-            yield from pkg_resources.iter_entry_points("xedocs")
+        def get_entry_points(name="xedocs"):
+            yield from pkg_resources.iter_entry_points(name)
 
 
-def load_entry_points():
-    datasource_hooks = {}
-    for entry in get_entry_points():  # pragma: no cover
+def load_entry_points(name):
+    hooks = {}
+    for entry in get_entry_points(name):  # pragma: no cover
         try:
             hook = entry.load()
             if callable(hook):
-                datasource_hooks[entry.name] = hook
+                hooks[entry.name] = hook
         except Exception as e:
-            warnings.warn(f'Could not import entrypoint {entry.name}. \n {e}')
-    return datasource_hooks
+            warnings.warn(f"Could not import entrypoint {entry.name}. \n {e}")
+    return hooks

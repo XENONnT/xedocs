@@ -1,4 +1,4 @@
-'''
+"""
 # Correction: Relative light yield
 # What is it correction: Corrected areas (cS1)
 
@@ -6,14 +6,15 @@
 
 # Latest wiki reference: 
 
-'''
+"""
 
 
 import rframe
 
 from .base_corrections import TimeSampledCorrection
 
+
 class RelativeLightYield(TimeSampledCorrection):
-    
+
     _ALIAS = "relative_light_yield"
-    value: float 
+    value: float

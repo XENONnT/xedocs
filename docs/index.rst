@@ -6,12 +6,12 @@ Welcome to xedocs's documentation!
    :caption: Contents:
 
    basic_usage
-   introduction
+   from_cmt
    installation
+   configuration
    advanced_usage
    corrections
    api_server
-   settings
    cli
    schemas
    contributing

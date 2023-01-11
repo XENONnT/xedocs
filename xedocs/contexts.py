@@ -10,8 +10,7 @@ class XedocsContext:
     _overrides: dict
     _db_name: str
 
-    def __init__(self, schemas: dict = None, 
-                db_name=None, overrides=None):
+    def __init__(self, schemas: dict = None, db_name=None, overrides=None):
 
         self._db_name = db_name
 
@@ -34,11 +33,11 @@ class XedocsContext:
         schema = self._schemas.get(key, None)
         if schema is None:
             raise KeyError(f"No schema named {key} found")
-        
+
         if isinstance(schema, dict):
-            return XedocsContext(schema, 
-                                db_name=self._db_name, 
-                                overrides=self._overrides)
+            return XedocsContext(
+                schema, db_name=self._db_name, overrides=self._overrides
+            )
 
         accessor = self.get_accessor(schema, name=key)
 
@@ -63,7 +62,7 @@ def straxen_db(schemas=None, datasource_overrides=None, by_category=False):
         else:
             schemas = all_schemas()
 
-    return XedocsContext(schemas, db_name='straxen_db', overrides=datasource_overrides)
+    return XedocsContext(schemas, db_name="straxen_db", overrides=datasource_overrides)
 
 
 def analyst_db(schemas=None, datasource_overrides=None, by_category=False):
@@ -73,4 +72,4 @@ def analyst_db(schemas=None, datasource_overrides=None, by_category=False):
         else:
             schemas = all_schemas()
 
-    return XedocsContext(schemas, db_name='analyst_db', overrides=datasource_overrides)
+    return XedocsContext(schemas, db_name="analyst_db", overrides=datasource_overrides)

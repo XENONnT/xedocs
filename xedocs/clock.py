@@ -4,6 +4,7 @@ import time
 import pytz
 import pandas as pd
 
+
 class SimpleClock:
     utc: bool
     cutoff_offset: float
