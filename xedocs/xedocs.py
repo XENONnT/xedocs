@@ -165,6 +165,15 @@ def default_datasource_for(schema):
 
     return settings.default_datasource_for_schema(schema)
 
+def get_api_client(schema, database='development_db'):
+    interface_class = settings._DATABASE_INTERFACE_CLASSES.get('api', None)
+    if interface_class is None:
+        raise ValueError('No API interface class found.')
+    interface = interface_class(database)
+    schema = find_schema(schema)
+    return interface.datasource_for_schema(schema)
+
+
 
 def download_db(
     db_name="straxen_db", schemas=None, path=None, batch_size=10_000, verbose=True

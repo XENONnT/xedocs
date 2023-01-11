@@ -1,7 +1,7 @@
-Introduction
-============
+Switching from using CMT
+========================
 
-CMT2.0 is a reimplementation from scratch of CMT.
+Xedocs is a reimplementation from scratch of CMT.
 
 XeDocs is a collections of rframe schemas and utilities to help analysts store and access shared data.
 The rframe framework was development to solve a number of issues that came up using the CMT tool.
