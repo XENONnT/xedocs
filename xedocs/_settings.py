@@ -36,7 +36,7 @@ class Settings(BaseSettings):
 
     _DATABASE_INTERFACE_CLASSES = {}
 
-    DATABASES = ["straxen_db", "development_db"]
+    DATABASES = ["development_db", "straxen_db"]
 
     clock = SimpleClock()
 

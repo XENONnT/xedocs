@@ -8,10 +8,10 @@ Welcome to xedocs's documentation!
    basic_usage
    introduction
    installation
+   configuration
    advanced_usage
    corrections
    api_server
-   settings
    cli
    schemas
    contributing

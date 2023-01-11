@@ -34,7 +34,7 @@ class GithubSettings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_GITHUB_"
 
-    PRIORITY: int = 2
+    PRIORITY: int = 3
     ORG: str = "XENONnT"
     REPO: str = "xedocs-data"
     URL_TEMPLATE: str = "github://{org}:{repo}@/{database}/{category}/{name}/*.json"
