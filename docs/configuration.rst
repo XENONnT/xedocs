@@ -9,9 +9,9 @@ Global settings
    :widths: 25 25 50
    :header-rows: 1
 
-* - Name, Description , Default value, Notes
-  - ``XEDOCS_ENV``, Path to a .env file to load. , ``~/.config/xedocs/config.env``., Requires python-dotenv package
-  - ``XEDOCS_DATABASES, List of database names, separated by commas. , ``development_db,straxen_db``., For advanced user only.
+    * - Name, Description , Default value, Notes
+    - ``XEDOCS_ENV``, Path to a .env file to load. , ``~/.config/xedocs/config.env``., Requires python-dotenv package
+    - ``XEDOCS_DATABASES, List of database names, separated by commas. , ``development_db,straxen_db``., For advanced user only.
 
 Database Interface settings
 ---------------------------
