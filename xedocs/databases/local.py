@@ -1,7 +1,6 @@
 import os
 import json
 import xedocs
-import appdirs
 import logging
 import fsspec
 
@@ -17,7 +16,6 @@ XEDOCS_LOCAL_REPO_ENV = os.getenv(
     "XEDOCS_LOCAL_REPO_ENV", os.path.join(xedocs.settings.CONFIG_DIR, "local_repo.env")
 )
 logger = logging.getLogger(__name__)
-dirs = appdirs.AppDirs("xedocs")
 
 
 class FsspecStorage(Storage):
@@ -59,7 +57,7 @@ class LocalRepoSettings(BaseSettings):
         env_file = XEDOCS_LOCAL_REPO_ENV
 
     PRIORITY: int = 3
-    PATH: str = dirs.user_data_dir
+    PATH: str = xedocs.settings.DATA_DIR
 
 
 class LocalRepoDatabase(DatabaseInterface):

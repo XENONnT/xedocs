@@ -177,7 +177,7 @@ def get_api_client(schema, database="development_db"):
 
 
 def download_db(
-    db_name="straxen_db", schemas=None, path=None, batch_size=10_000, verbose=True
+    dbname="straxen_db", schemas=None, path=None, batch_size=10_000, verbose=True
 ):
     """Download data from a remote database to a local database."""
     import tinydb
@@ -192,13 +192,20 @@ def download_db(
 
         for schema in schemas:
             schema = find_schema(schema)
-            accessor = get_accessor(schema, db_name)
+            accessor = get_accessor(schema, dbname)
             pbar.set_description(f"Downloading {schema._ALIAS}")
 
+            basepath = None
+
             if path is None:
-                basepath = settings.local_path_for_schema(schema, db=db_name)
+                path = settings.DATA_DIR 
+
+            interface = settings._database_interfaces.get(dbname, {}).get('local_repo', None)
+
+            if interface is None:
+                basepath = Path(path) / dbname / schema._CATEGORY / schema._ALIAS
             else:
-                basepath = Path(path) / db_name / schema._CATEGORY / schema._ALIAS
+                basepath = interface.base_path_for_schema(schema)
 
             def write_docs(docs, num=1):
                 fpath = basepath / f"{num}.json"
