@@ -1,6 +1,7 @@
 from pathlib import Path
 import appdirs
 
+import logging
 import fsspec
 import json
 
@@ -12,6 +13,7 @@ from xedocs.database_interface import DatabaseInterface
 from tinydb.storages import Storage
 
 
+logger = logging.getLogger(__name__)
 dirs = appdirs.AppDirs("xedocs")
 
 

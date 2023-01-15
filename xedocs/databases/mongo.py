@@ -1,9 +1,12 @@
 import pymongo
-
+import logging
 from xedocs.schemas import XeDoc
 from xedocs.database_interface import DatabaseInterface
 
 from pydantic import BaseSettings
+
+
+logger = logging.getLogger(__name__)
 
 
 class MongoSettings(BaseSettings):

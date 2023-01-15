@@ -96,7 +96,7 @@ class Settings(BaseSettings):
                 interface = interface_class(database=database)
                 self._database_interfaces[database][name] = interface
             except Exception as e:
-                logger.warning(f"Could not register {name} for {database}: {e}")
+                logger.debug(f"Could not register {database} interface for {name}. \n Error: {e}")
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:

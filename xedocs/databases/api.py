@@ -1,6 +1,10 @@
+import logging
 from rframe import BaseSchema
 from pydantic import BaseSettings
 from xedocs.database_interface import DatabaseInterface
+
+
+logger = logging.getLogger(__name__)
 
 
 class ApiSettings(BaseSettings):

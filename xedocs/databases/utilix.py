@@ -1,7 +1,11 @@
+import logging
 from utilix import xent_collection, uconfig
 
 from xedocs.database_interface import DatabaseInterface
 from pydantic import BaseSettings
+
+
+logger = logging.getLogger(__name__)
 
 
 class UtilixSettings(BaseSettings):

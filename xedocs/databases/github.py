@@ -1,11 +1,14 @@
 import tinydb
-
+import logging
 from xedocs.schemas import XeDoc
 
 from pydantic import BaseSettings
 from xedocs.database_interface import DatabaseInterface
 
 from .local import FsspecStorage
+
+
+logger = logging.getLogger(__name__)
 
 
 def default_github_username():
