@@ -1,17 +1,23 @@
+import os
+import xedocs
 import pymongo
 import logging
+
+from pydantic import BaseSettings
 from xedocs.schemas import XeDoc
 from xedocs.database_interface import DatabaseInterface
 
-from pydantic import BaseSettings
 
-
+XEDOCS_MONGO_ENV = os.getenv(
+    "XEDOCS_MONGO_ENV", os.path.join(xedocs.settings.CONFIG_DIR, "mongo.env")
+)
 logger = logging.getLogger(__name__)
 
 
 class MongoSettings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_MONGO_"
+        env_file = XEDOCS_MONGO_ENV
 
     PRIORITY: int = -1
     URL: str = "mongodb://localhost:27017"

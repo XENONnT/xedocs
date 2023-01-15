@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     _DATABASE_INTERFACE_CLASSES = {}
 
     DATABASES = ["development_db", "straxen_db"]
+    CONFIG_DIR = dirs.user_config_dir
 
     clock = SimpleClock()
 

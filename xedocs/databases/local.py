@@ -1,18 +1,21 @@
-from pathlib import Path
+import os
+import json
+import xedocs
 import appdirs
-
 import logging
 import fsspec
-import json
 
-from typing import Any, Dict, Optional
-
+from pathlib import Path
 from tinydb import TinyDB
 from pydantic import BaseSettings
-from xedocs.database_interface import DatabaseInterface
 from tinydb.storages import Storage
+from typing import Any, Dict, Optional
+from xedocs.database_interface import DatabaseInterface
 
 
+XEDOCS_LOCAL_REPO_ENV = os.getenv(
+    "XEDOCS_LOCAL_REPO_ENV", os.path.join(xedocs.settings.CONFIG_DIR, "local_repo.env")
+)
 logger = logging.getLogger(__name__)
 dirs = appdirs.AppDirs("xedocs")
 
@@ -53,6 +56,7 @@ class FsspecStorage(Storage):
 class LocalRepoSettings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_LOCAL_REPO_"
+        env_file = XEDOCS_LOCAL_REPO_ENV
 
     PRIORITY: int = 3
     PATH: str = dirs.user_data_dir

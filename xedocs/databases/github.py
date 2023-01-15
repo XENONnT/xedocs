@@ -1,13 +1,17 @@
+import os
+import xedocs
 import tinydb
 import logging
-from xedocs.schemas import XeDoc
 
 from pydantic import BaseSettings
+from xedocs.schemas import XeDoc
 from xedocs.database_interface import DatabaseInterface
 
 from .local import FsspecStorage
 
-
+XEDOCS_GITHUB_ENV = os.getenv(
+    "XEDOCS_GITHUB_ENV", os.path.join(xedocs.settings.CONFIG_DIR, "github.env")
+)
 logger = logging.getLogger(__name__)
 
 
@@ -36,6 +40,7 @@ def default_github_token():
 class GithubSettings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_GITHUB_"
+        env_file = XEDOCS_GITHUB_ENV
 
     PRIORITY: int = 3
     ORG: str = "XENONnT"
