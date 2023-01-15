@@ -29,14 +29,19 @@ from .clock import SimpleClock
 
 dirs = appdirs.AppDirs("xedocs")
 
+XEDOCS_ENV = os.getenv("XEDOCS_ENV", os.path.join(dirs.user_config_dir, "settings.env"))
+
 
 class Settings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_"
+        env_file = XEDOCS_ENV
+        env_file_encoding = "utf-8"
 
     _DATABASE_INTERFACE_CLASSES = {}
 
     DATABASES = ["development_db", "straxen_db"]
+    CONFIG_DIR = dirs.user_config_dir
 
     clock = SimpleClock()
 
@@ -96,7 +101,9 @@ class Settings(BaseSettings):
                 interface = interface_class(database=database)
                 self._database_interfaces[database][name] = interface
             except Exception as e:
-                logger.warning(f"Could not register {name} for {database}: {e}")
+                logger.debug(
+                    f"Could not register {database} interface for {name}. \n Error: {e}"
+                )
 
     def run_doc(self, run_id, fields=("start", "end")):
         if uconfig is None:

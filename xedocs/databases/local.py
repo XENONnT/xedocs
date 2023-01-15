@@ -1,17 +1,22 @@
-from pathlib import Path
-import appdirs
-
-import fsspec
+import os
 import json
+import xedocs
+import appdirs
+import logging
+import fsspec
 
-from typing import Any, Dict, Optional
-
+from pathlib import Path
 from tinydb import TinyDB
 from pydantic import BaseSettings
-from xedocs.database_interface import DatabaseInterface
 from tinydb.storages import Storage
+from typing import Any, Dict, Optional
+from xedocs.database_interface import DatabaseInterface
 
 
+XEDOCS_LOCAL_REPO_ENV = os.getenv(
+    "XEDOCS_LOCAL_REPO_ENV", os.path.join(xedocs.settings.CONFIG_DIR, "local_repo.env")
+)
+logger = logging.getLogger(__name__)
 dirs = appdirs.AppDirs("xedocs")
 
 
@@ -51,6 +56,7 @@ class FsspecStorage(Storage):
 class LocalRepoSettings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_LOCAL_REPO_"
+        env_file = XEDOCS_LOCAL_REPO_ENV
 
     PRIORITY: int = 3
     PATH: str = dirs.user_data_dir
@@ -75,14 +81,14 @@ class LocalRepoDatabase(DatabaseInterface):
             settings = LocalRepoSettings()
         self.settings = settings
 
-    def datasource_for_schema(self, schema):
-        path = (
-            Path(self.settings.PATH)
-            / self.database
-            / schema._CATEGORY
-            / schema._ALIAS
-            / "*.json"
+    def base_path_for_schema(self, schema):
+        return (
+            Path(self.settings.PATH) / self.database / schema._CATEGORY / schema._ALIAS
         )
+
+    def datasource_for_schema(self, schema):
+        path = self.base_path_for_schema(schema) / "*.json"
+
         if path.exists():
             db = TinyDB(path.absolute())
             return db.table(schema._ALIAS)

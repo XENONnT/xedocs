@@ -14,7 +14,7 @@ Global settings
      - Notes
    * - ``XEDOCS_ENV``
      - Path to a .env file to load.
-     - ``~/.config/xedocs/config.env``.
+     - ``~/.config/xedocs/settings.env``.
      - Requires python-dotenv package
    * - ``XEDOCS_DATABASES``
      - List of database names, comma separated.

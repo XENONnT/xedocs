@@ -1,11 +1,21 @@
+import os
+import logging
+import xedocs
 from rframe import BaseSchema
 from pydantic import BaseSettings
 from xedocs.database_interface import DatabaseInterface
 
 
+logger = logging.getLogger(__name__)
+XEDOCS_API_ENV = os.getenv(
+    "XEDOCS_API_ENV", os.path.join(xedocs.settings.CONFIG_DIR, "api.env")
+)
+
+
 class ApiSettings(BaseSettings):
     class Config:
         env_prefix = "XEDOCS_API_"
+        env_file = XEDOCS_API_ENV
 
     PRIORITY: int = 2
     URL_TEMPLATE: str = "{base_url}/{version}/{database}/{name}"

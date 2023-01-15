@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 from ._settings import settings
-from . import utils 
+from . import utils
 
 from . import schemas
 from . import xedocs
