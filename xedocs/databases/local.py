@@ -75,14 +75,17 @@ class LocalRepoDatabase(DatabaseInterface):
             settings = LocalRepoSettings()
         self.settings = settings
 
-    def datasource_for_schema(self, schema):
-        path = (
+    def base_path_for_schema(self, schema):
+        return (
             Path(self.settings.PATH)
             / self.database
             / schema._CATEGORY
             / schema._ALIAS
-            / "*.json"
         )
+
+    def datasource_for_schema(self, schema):
+        path = self.base_path_for_schema(schema) / "*.json"
+
         if path.exists():
             db = TinyDB(path.absolute())
             return db.table(schema._ALIAS)
