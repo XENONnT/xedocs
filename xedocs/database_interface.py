@@ -9,7 +9,6 @@ from .utils import DatasetCollection
 
 
 class DatabaseInterface(ABC):
-
     @abstractmethod
     def datasource_for_schema(schema: XeDoc):
         pass
@@ -49,6 +48,7 @@ class DatabasesCollection(UserDict):
 
     def __dir__(self) -> Iterable[str]:
         return list(settings.DATABASES)
+
 
 def load_db_interfaces():
 

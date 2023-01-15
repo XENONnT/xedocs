@@ -79,10 +79,7 @@ class LocalRepoDatabase(DatabaseInterface):
 
     def base_path_for_schema(self, schema):
         return (
-            Path(self.settings.PATH)
-            / self.database
-            / schema._CATEGORY
-            / schema._ALIAS
+            Path(self.settings.PATH) / self.database / schema._CATEGORY / schema._ALIAS
         )
 
     def datasource_for_schema(self, schema):
