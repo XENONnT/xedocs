@@ -85,8 +85,10 @@ class LocalRepoDatabase(DatabaseInterface):
         )
 
     def datasource_for_schema(self, schema):
-        basepath = self.base_path_for_schema(schema) 
-        if basepath.exists():
-            path = basepath / "*.json"
-            db = TinyDB(path.absolute(), storage=FsspecStorage)
-            return db.table(schema._ALIAS)
+        basepath = self.base_path_for_schema(schema)
+        basepath = basepath.expanduser().resolve()
+        if not basepath.exists():
+            basepath.mkdir(parents=True)
+        path = basepath / "*.json"
+        db = TinyDB(path.absolute(), storage=FsspecStorage)
+        return db.table(schema._ALIAS)
