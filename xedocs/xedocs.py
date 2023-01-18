@@ -198,9 +198,11 @@ def download_db(
             basepath = None
 
             if path is None:
-                path = settings.DATA_DIR 
+                path = settings.DATA_DIR
 
-            interface = settings._database_interfaces.get(dbname, {}).get('local_repo', None)
+            interface = settings._database_interfaces.get(dbname, {}).get(
+                "local_repo", None
+            )
 
             if interface is None:
                 basepath = Path(path) / dbname / schema._CATEGORY / schema._ALIAS

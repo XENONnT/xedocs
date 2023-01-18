@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import json
 import xedocs
@@ -19,8 +20,10 @@ logger = logging.getLogger(__name__)
 
 
 class FsspecStorage(Storage):
-    def __init__(self, path, **storage_kwargs):
+    def __init__(self, path, chunksize=1000, indent=4, **storage_kwargs):
         self.path = path
+        self.chunksize = chunksize
+        self.indent = indent
         self.storage_kwargs = storage_kwargs
 
     def read(self) -> Optional[Dict[str, Dict[str, Any]]]:
@@ -43,12 +46,28 @@ class FsspecStorage(Storage):
         return datasets
 
     def write(self, data: Dict[str, Dict[str, Any]]) -> None:
-        with fsspec.open(self.path, "rb", **self.storage_kwargs) as f:
+        filenum = 1
+        cnt = 0
+        docs = defaultdict(dict)
+        for name, table in data.items():
+            for num, doc in table.items():
+                docs[name][num] = doc
+                cnt += 1
+                if sum([len(d) for d in docs]) > self.chunksize:
+                    self._write_chunk(docs, filenum)
+                    filenum += 1
+                    docs = defaultdict(dict)
+        if sum([len(d) for d in docs]):
+            self._write_chunk(docs, filenum)
+
+    def _write_chunk(self, data, filenum):
+        path = os.path.join(self.path, f"{filenum}.json")
+        with fsspec.open(path, "wb", **self.storage_kwargs) as f:
             if not f.writable():
                 raise IOError(
                     f'Cannot write to the database. Access mode is "{f.mode}"'
                 )
-            json.dump(data, f)
+            json.dump(data, f, indent=self.indent)
 
 
 class LocalRepoSettings(BaseSettings):
@@ -85,8 +104,10 @@ class LocalRepoDatabase(DatabaseInterface):
         )
 
     def datasource_for_schema(self, schema):
-        basepath = self.base_path_for_schema(schema) 
-        if basepath.exists():
-            path = basepath / "*.json"
-            db = TinyDB(path.absolute(), storage=FsspecStorage)
-            return db.table(schema._ALIAS)
+        basepath = self.base_path_for_schema(schema)
+        basepath = basepath.expanduser().resolve()
+        if not basepath.exists():
+            basepath.mkdir(parents=True)
+        path = basepath / "*.json"
+        db = TinyDB(path.absolute(), storage=FsspecStorage)
+        return db.table(schema._ALIAS)
