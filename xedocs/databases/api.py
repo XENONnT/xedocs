@@ -17,7 +17,7 @@ class ApiSettings(BaseSettings):
         env_prefix = "XEDOCS_API_"
         env_file = XEDOCS_API_ENV
 
-    PRIORITY: int = 2
+    PRIORITY: int = -1
     URL_TEMPLATE: str = "{base_url}/{version}/{database}/{name}"
     BASE_URL: str = "https://api.xedocs.yossisprojects.com"
     VERSION: str = "v1"
