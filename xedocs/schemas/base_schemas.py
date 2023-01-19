@@ -38,7 +38,7 @@ class XeDoc(rframe.BaseSchema):
         """
         import xedocs
 
-        return xedocs.default_datasource_for(cls, databases=["straxen_db"])
+        return xedocs.default_datasource_for(cls)
 
     @classmethod
     def help(cls):

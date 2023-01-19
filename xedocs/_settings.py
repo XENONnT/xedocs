@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     _DATABASE_INTERFACE_CLASSES = {}
 
     DATABASES = ["development_db", "straxen_db"]
+    DEFAULT_DATABASE = "straxen_db"
     CONFIG_DIR = dirs.user_config_dir
     DATA_DIR = dirs.user_data_dir
 
@@ -81,6 +82,8 @@ class Settings(BaseSettings):
                 schema.register_datasource(source, name=name)
 
     def default_datasource_for_schema(self, schema, databases=None, interfaces=None):
+        if databases is None:
+            databases = [self.DEFAULT_DATABASE]
         for _, _, source in self.iter_sources_for_schema(
             schema, databases=databases, interfaces=interfaces
         ):

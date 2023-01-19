@@ -2,11 +2,12 @@
 is installed.
 """
 import straxen
+from xedocs import settings
 
 
 @straxen.URLConfig.register("xedocs")
 def xedocs_protocol(
-    name, db="straxen_db", sort=None, attr=None, as_list=False, **labels
+    name, db=settings.DEFAULT_DATABASE, sort=None, attr=None, as_list=False, **labels
 ):
     """URLConfig protocol for fetching values from
         a xedocs database.

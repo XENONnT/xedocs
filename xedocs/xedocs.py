@@ -138,7 +138,7 @@ def find_schema(name) -> Type[XeDoc]:
     raise KeyError(f"Correction with name {name} not found.")
 
 
-def get_accessor(schema, db="analyst_db"):
+def get_accessor(schema, db=settings.DEFAULT_DATABASE):
     schema = find_schema(schema)
 
     if not issubclass(schema, XeDoc):
@@ -146,7 +146,7 @@ def get_accessor(schema, db="analyst_db"):
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
     if db is None:
-        db = "analyst_db"
+        db = settings.DEFAULT_DATABASE
     if isinstance(db, str):
         accessor = getattr(schema, db)
     else:
@@ -167,7 +167,7 @@ def default_datasource_for(schema):
     return settings.default_datasource_for_schema(schema)
 
 
-def get_api_client(schema, database="development_db"):
+def get_api_client(schema, database=settings.DEFAULT_DATABASE):
     interface_class = settings._DATABASE_INTERFACE_CLASSES.get("api", None)
     if interface_class is None:
         raise ValueError("No API interface class found.")
@@ -177,7 +177,7 @@ def get_api_client(schema, database="development_db"):
 
 
 def download_db(
-    dbname="straxen_db", schemas=None, path=None, batch_size=10_000, verbose=True
+    dbname=settings.DEFAULT_DATABASE, schemas=None, path=None, batch_size=10_000, verbose=True
 ):
     """Download data from a remote database to a local database."""
     import tinydb
