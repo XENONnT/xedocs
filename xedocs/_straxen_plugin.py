@@ -25,10 +25,15 @@ def xedocs_protocol(
 
     accessor = getattr(schema, db)
 
-    if sort is not None:
-        labels["sort"] = sort
+    kwargs = straxen.filter_kwargs(labels, accessor.find_docs)
+    
+    if isinstance(sort, (str,list)):
+        kwargs["sort"] = sort
 
-    docs = accessor.find_docs(**labels)
+    if not as_list:
+        kwargs["limit"] = 1
+
+    docs = accessor.find_docs(**kwargs)
 
     if not docs:
         raise KeyError(f"No matching documents found for {name}.")
