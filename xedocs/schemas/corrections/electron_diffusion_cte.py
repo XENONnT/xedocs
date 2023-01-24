@@ -12,5 +12,5 @@ from .base_corrections import TimeSampledCorrection
 
 class ElectronDiffusionCte(TimeSampledCorrection):
 
-    _ALIAS = "electron_diffusion_cte"
+    _ALIAS = "electron_diffusion_ctes"
     value: float
