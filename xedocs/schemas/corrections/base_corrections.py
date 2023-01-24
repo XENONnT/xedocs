@@ -1,10 +1,11 @@
-import datetime
 import re
+import rframe
+import datetime
+import pandas as pd
+
 from typing import ClassVar, List
 from pydantic import validator, BaseModel, Field
-
-import pandas as pd
-import rframe
+from rframe.dispatchers import are_equal
 
 from ..._settings import settings
 
@@ -35,8 +36,9 @@ class BaseCorrectionSchema(VersionedXeDoc):
     _ALIAS: ClassVar = ""
     _CATEGORY = "corrections"
     _CORRECTIONS = {}
+    __MUTABLE__ = ('reviews', 'comments')
 
-    created_date: datetime.datetime = settings.clock.current_datetime()
+    created_date: datetime.datetime = Field(default_factory=settings.clock.current_datetime)
     comments: str = ""
     reviews: List[Review] = []
 
@@ -58,9 +60,11 @@ class BaseCorrectionSchema(VersionedXeDoc):
         Otherwise we raise an error, preventing the update.
         """
 
-        if not self.same_values(new):
-            index = ", ".join([f"{k}={v}" for k, v in self.index_labels.items()])
-            raise IndexError(f"Values already set for {index}")
+        for name, value in self.column_values.items():
+            if name in self.__MUTABLE__:
+                # This field is mutable, ignore.
+                continue
+            assert are_equal(value, getattr(new, name)), f"{name} field is immutable."
 
     def pre_delete(self, datasource, **kwargs):
         raise RuntimeError("Corrections are append only.")
@@ -140,8 +144,12 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
         ), f"Can only change endtime of existing interval. \
                                            start time must be {self.time.left}"
 
-        # Only allow changes to the interval, not the values
-        assert self.same_values(new), f"Values already set for {self.index_labels}."
+        for name, value in self.column_values.items():
+            if name in self.__MUTABLE__:
+                # This field is mutable, ignore.
+                continue
+            assert are_equal(value, getattr(new, name)), f"{name} field is immutable."
+
 
     def pre_delete(self, datasource, **kwargs):
         if settings.clock.after_cutoff(self.time.left):
