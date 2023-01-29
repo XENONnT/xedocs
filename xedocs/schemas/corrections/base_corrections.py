@@ -95,7 +95,7 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
         """Convert run id to time"""
         if isinstance(v, (str, int)):
             try:
-                v = settings.run_id_to_time(v)
+                v = settings.run_id_to_interval(v)
             except:
                 pass
         return v
@@ -111,12 +111,14 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
         to a point in the future since these values have not yet
         been used for processing.
         """
-        current_left = self.time.left
-        current_right = self.time.right
-        new_left = new.time.left
-        new_right = new.time.right
-
         clock = settings.clock
+
+        current_left = clock.normalize_tz(self.time.left)
+        current_right = clock.normalize_tz(self.time.right)
+        new_left = clock.normalize_tz(new.time.left)
+        new_right = clock.normalize_tz(new.time.right)
+
+        
         cutoff = clock.cutoff_datetime(buffer=60)
 
         if clock.after_cutoff(current_left) and clock.after_cutoff(new_left):
