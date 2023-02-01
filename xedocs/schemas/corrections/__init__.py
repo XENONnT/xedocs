@@ -7,7 +7,7 @@ from .field_distortion import *
 from .field_simulation import *
 from .hit_thresholds import *
 from .lone_hits import *
-from .pmt_gains import *
+from .pmt_area_to_pe import *
 from .position_reconstruction import *
 from .s1_aft_xyz import *
 from .s1_xyz import *
