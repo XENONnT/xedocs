@@ -28,15 +28,18 @@ def test_straxen_context():
 
 
 def test_find_schema():
-    from xedocs.schemas import PmtGain
+    from xedocs.schemas import XeDoc
 
-    schema = xedocs.find_schema("pmt_gains")
+    for name, schema in XeDoc._XEDOCS.items():
 
-    assert schema is PmtGain
+        found_schema = xedocs.find_schema(name)
+        assert schema is found_schema
 
-    schema = xedocs.find_schema(PmtGain)
+        found_schema = xedocs.find_schema(schema.__name__)
+        assert schema is found_schema
 
-    assert schema is PmtGain
+        found_schema = xedocs.find_schema(schema)
+        assert schema is found_schema
 
 
 def test_command_line_interface():

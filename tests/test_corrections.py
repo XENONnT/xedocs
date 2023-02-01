@@ -75,7 +75,7 @@ def non_overlapping_interval_ranges(draw, elements=st.datetimes(), min_size=2):
     return list(zip(elem[:-1], elem[1:]))
 
 
-def pmt_gain_space(datetime_range=datetime.timedelta(days=100)):
+def pmt_to_pe_space(datetime_range=datetime.timedelta(days=100)):
     utcnow = datetime.datetime.utcnow()
     data = dict(
         version=["ONLINE"] + ["v{i}" for i in range(10)],
