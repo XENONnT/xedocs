@@ -1,13 +1,11 @@
-from typing import Literal
-
 import rframe
 
 from .base_corrections import TimeSampledCorrection
 from ..constants import DETECTOR
 
 
-class PmtGain(TimeSampledCorrection):
-    _ALIAS = "pmt_gains"
+class PmtAreaToPE(TimeSampledCorrection):
+    _ALIAS = "pmt_area_to_pes"
 
     # Here we use a simple indexer (matches on exact value)
     # to define the pmt field
