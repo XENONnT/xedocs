@@ -71,7 +71,7 @@ def find_df(schema, datasource=None, **labels):
     """
 
     accessor = get_accessor(schema, datasource)
-
+    
     return accessor.find_df(**labels)
 
 
