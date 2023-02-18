@@ -25,7 +25,7 @@ def xedocs_protocol(
 
     accessor = getattr(schema, db)
 
-    kwargs = straxen.filter_kwargs(labels, accessor.find_docs)
+    kwargs = straxen.filter_kwargs(accessor.find_docs, labels)
     
     if isinstance(sort, (str,list)):
         kwargs["sort"] = sort
