@@ -24,6 +24,5 @@ class PosRecModel(BaseResourceReference):
     fmt = "binary"
 
     kind: Literal["cnn", "gcn", "mlp"] = rframe.Index()
-    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     value: str

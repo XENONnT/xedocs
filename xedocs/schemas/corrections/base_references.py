@@ -90,6 +90,5 @@ class BaseMap(BaseResourceReference):
     _ALIAS = ""
 
     algorithm: Literal["cnn", "gcn", "mlp"] = rframe.Index()
-    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     value: str

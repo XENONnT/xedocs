@@ -134,8 +134,8 @@ class Settings(BaseSettings):
 
     def run_id_to_interval(self, run_id):
         doc = self.run_doc(run_id)
-        start = self.clock.normalize_tz(doc["start"])
-        end = self.clock.normalize_tz(doc["end"])
+        start = self.clock.normalize_tz(doc["start"]+pd.Timedelta("1s"))
+        end = self.clock.normalize_tz(doc["end"]-pd.Timedelta("1s"))
         return start, end
 
     def extract_time(self, kwargs):

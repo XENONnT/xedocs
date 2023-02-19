@@ -12,5 +12,4 @@ class NaiveBayesClassifier(BaseResourceReference):
     _ALIAS = "bayes_models"
     fmt = "binary"
 
-    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
     value: str
