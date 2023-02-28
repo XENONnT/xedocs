@@ -30,7 +30,7 @@ try:
 
 except ImportError:
     logger.warning(
-        "Could not register straxen protocol, \
+        "XEDOCS: Could not register straxen protocol, \
                      most likely straxen not installed."
     )
 
@@ -42,7 +42,7 @@ try:
 
     gui = widgets.XedocsEditor()
 except ImportError:
-    logger.warning("Could not import editors, GUI not available.")
+    logger.debug("XEDOCS: Could not import editors, GUI not available.")
 
 try:
     from .entrypoints import load_entry_points
@@ -53,7 +53,7 @@ try:
         if callable(hook):
             hook()
 except Exception as e:
-    logger.warning(f"Could not load plugins. Failed with error: {e}")
+    logger.warning(f"XEDOCS: Could not load plugins. Failed with error: {e}")
 
 try:
     from .database_interface import load_db_interfaces
@@ -61,15 +61,15 @@ try:
     load_db_interfaces()
 
 except Exception as e:
-    logger.warning(f"Could not load database interfaces. Failed with error: {e}")
+    logger.debug(f"XEDOCS: Could not load database interfaces. Failed with error: {e}")
 
 
 for schema in xedocs.all_schemas().values():
     try:
         settings.register_databases(schema)
     except Exception as e:
-        logger.warning(
-            f"Could not load databases for {schema._ALIAS}. Failed with error: {e}"
+        logger.debug(
+            f"XEDOCS: Could not load databases for {schema._ALIAS}. Failed with error: {e}"
         )
 
 
