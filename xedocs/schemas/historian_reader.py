@@ -13,11 +13,14 @@ class HistorianTag(XeDoc):
 
     tag_name: str = rframe.Index() # this is the tag name to read from in the historian
     measurement_name: str = rframe.Index() # this is the measurement name to use in influxdb
+    bucket_name: str = rframe.Index() # this is the bucket name to use in influxdb
+    
     description: str = ""
     
     query_type: Literal["LAB","RAWBYTIME"] = "LAB"
     query_interval: int = 1 # in seconds
     
+    category: str = ""
     subsystem: str = ""
 
 
