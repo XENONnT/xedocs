@@ -22,7 +22,9 @@ __all__ = [
     "list_schemas",
     "all_schemas",
     "schemas_by_category",
+    "default_datasource_for",
     "find_schema",
+    "get_api_client",
     "download_db",
 ]
 
