@@ -1,3 +1,11 @@
+    # represents a correction factor for converting PMT
+    # (photomultiplier tube) area to photoelectrons (PE). It is a subclass of
+    # `TimeSampledCorrection`, which means that it is a correction that varies with time.
+    # The class has fields for `detector`, `pmt`, and `value`. The `detector` field is an
+    # index field that specifies the detector (tpc/neutron_veto/muon_veto), while the `pmt` field is an index field
+    # that specifies the PMT number. The `value` field is a float that represents the
+    # correction factor. (Previously known as gain_models)
+
 import rframe
 
 from .base_corrections import TimeSampledCorrection
