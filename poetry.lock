@@ -120,14 +120,14 @@ python-dateutil = ">=2.7.0"
 
 [[package]]
 name = "astroid"
-version = "2.15.2"
+version = "2.15.3"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
 python-versions = ">=3.7.2"
 files = [
-    {file = "astroid-2.15.2-py3-none-any.whl", hash = "sha256:dea89d9f99f491c66ac9c04ebddf91e4acf8bd711722175fe6245c0725cc19bb"},
-    {file = "astroid-2.15.2.tar.gz", hash = "sha256:6e61b85c891ec53b07471aec5878f4ac6446a41e590ede0f2ce095f39f7d49dd"},
+    {file = "astroid-2.15.3-py3-none-any.whl", hash = "sha256:f11e74658da0f2a14a8d19776a8647900870a63de71db83713a8e77a6af52662"},
+    {file = "astroid-2.15.3.tar.gz", hash = "sha256:44224ad27c54d770233751315fa7f74c46fa3ee0fab7beef1065f99f09897efe"},
 ]
 
 [package.dependencies]
@@ -140,22 +140,22 @@ wrapt = [
 
 [[package]]
 name = "attrs"
-version = "22.2.0"
+version = "23.1.0"
 description = "Classes Without Boilerplate"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "attrs-22.2.0-py3-none-any.whl", hash = "sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836"},
-    {file = "attrs-22.2.0.tar.gz", hash = "sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99"},
+    {file = "attrs-23.1.0-py3-none-any.whl", hash = "sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04"},
+    {file = "attrs-23.1.0.tar.gz", hash = "sha256:6279836d581513a26f1bf235f9acd333bc9115683f14f7e8fae46c98fc50e015"},
 ]
 
 [package.extras]
-cov = ["attrs[tests]", "coverage-enable-subprocess", "coverage[toml] (>=5.3)"]
-dev = ["attrs[docs,tests]"]
-docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope.interface"]
-tests = ["attrs[tests-no-zope]", "zope.interface"]
-tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy (>=0.971,<0.990)", "mypy (>=0.971,<0.990)", "pympler", "pympler", "pytest (>=4.3.0)", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-mypy-plugins", "pytest-xdist[psutil]", "pytest-xdist[psutil]"]
+cov = ["attrs[tests]", "coverage[toml] (>=5.3)"]
+dev = ["attrs[docs,tests]", "pre-commit"]
+docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope-interface"]
+tests = ["attrs[tests-no-zope]", "zope-interface"]
+tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
 name = "autodoc-pydantic"
@@ -828,14 +828,14 @@ tqdm = ["tqdm"]
 
 [[package]]
 name = "hypothesis"
-version = "6.71.0"
+version = "6.72.0"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "hypothesis-6.71.0-py3-none-any.whl", hash = "sha256:06235b8ab3c4090bec96b07dfc2347611c1392e5b4ffa48c069f2c1337968725"},
-    {file = "hypothesis-6.71.0.tar.gz", hash = "sha256:b2c3bbead72189c0bba6e12848b484ceafadb6e872ac31e40013228239366221"},
+    {file = "hypothesis-6.72.0-py3-none-any.whl", hash = "sha256:12d2a7d72eed477701f66ca48e5b212ea49e2e57ad63903d9bc36f08a5ca2bdb"},
+    {file = "hypothesis-6.72.0.tar.gz", hash = "sha256:1fb102fe1fdf5c00206507e2719ddfa118d84cf4b9799ef5c28e4aff020964e0"},
 ]
 
 [package.dependencies]
@@ -885,14 +885,14 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "6.3.0"
+version = "6.4.1"
 description = "Read metadata from Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "importlib_metadata-6.3.0-py3-none-any.whl", hash = "sha256:8f8bd2af397cf33bd344d35cfe7f489219b7d14fc79a3f854b75b8417e9226b0"},
-    {file = "importlib_metadata-6.3.0.tar.gz", hash = "sha256:23c2bcae4762dfb0bbe072d358faec24957901d75b6c4ab11172c0c982532402"},
+    {file = "importlib_metadata-6.4.1-py3-none-any.whl", hash = "sha256:63ace321e24167d12fbb176b6015f4dbe06868c54a2af4f15849586afb9027fd"},
+    {file = "importlib_metadata-6.4.1.tar.gz", hash = "sha256:eb1a7933041f0f85c94cd130258df3fb0dec060ad8c1c9318892ef4192c47ce1"},
 ]
 
 [package.dependencies]
@@ -1056,14 +1056,14 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jupyter-client"
-version = "8.1.0"
+version = "8.2.0"
 description = "Jupyter protocol implementation and client libraries"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jupyter_client-8.1.0-py3-none-any.whl", hash = "sha256:d5b8e739d7816944be50f81121a109788a3d92732ecf1ad1e4dadebc948818fe"},
-    {file = "jupyter_client-8.1.0.tar.gz", hash = "sha256:3fbab64100a0dcac7701b1e0f1a4412f1ccb45546ff2ad9bc4fcbe4e19804811"},
+    {file = "jupyter_client-8.2.0-py3-none-any.whl", hash = "sha256:b18219aa695d39e2ad570533e0d71fb7881d35a873051054a84ee2a17c4b7389"},
+    {file = "jupyter_client-8.2.0.tar.gz", hash = "sha256:9fe233834edd0e6c0aa5f05ca2ab4bdea1842bfd2d8a932878212fc5301ddaf0"},
 ]
 
 [package.dependencies]
@@ -1076,7 +1076,7 @@ traitlets = ">=5.3"
 
 [package.extras]
 docs = ["ipykernel", "myst-parser", "pydata-sphinx-theme", "sphinx (>=4)", "sphinx-autodoc-typehints", "sphinxcontrib-github-alt", "sphinxcontrib-spelling"]
-test = ["codecov", "coverage", "ipykernel (>=6.14)", "mypy", "paramiko", "pre-commit", "pytest", "pytest-cov", "pytest-jupyter[client] (>=0.4.1)", "pytest-timeout"]
+test = ["coverage", "ipykernel (>=6.14)", "mypy", "paramiko", "pre-commit", "pytest", "pytest-cov", "pytest-jupyter[client] (>=0.4.1)", "pytest-timeout"]
 
 [[package]]
 name = "jupyter-core"
@@ -1194,14 +1194,14 @@ files = [
 
 [[package]]
 name = "jupyterlab-server"
-version = "2.22.0"
+version = "2.22.1"
 description = "A set of server components for JupyterLab and JupyterLab like applications."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "jupyterlab_server-2.22.0-py3-none-any.whl", hash = "sha256:f4a7263ada89958854631a64bed45285caeac482925233159709f643c5871490"},
-    {file = "jupyterlab_server-2.22.0.tar.gz", hash = "sha256:0f9f6752b0c534a7b22a6542b984fa6a2c18ab4d4e0a4c79f191138506a9a75f"},
+    {file = "jupyterlab_server-2.22.1-py3-none-any.whl", hash = "sha256:1c8eb55c7cd70a50a51fef42a7b4e26ef2f7fc48728f0290604bd89b1dd156e6"},
+    {file = "jupyterlab_server-2.22.1.tar.gz", hash = "sha256:dfaaf898af84b9d01ae9583b813f378b96ee90c3a66f24c5186ea5d1bbdb2089"},
 ]
 
 [package.dependencies]
@@ -1217,7 +1217,7 @@ requests = ">=2.28"
 [package.extras]
 docs = ["autodoc-traits", "docutils (<0.20)", "jinja2 (<3.2.0)", "mistune (<3)", "myst-parser", "pydata-sphinx-theme", "sphinx", "sphinx-copybutton", "sphinxcontrib-openapi"]
 openapi = ["openapi-core (>=0.16.1,<0.17.0)", "ruamel-yaml"]
-test = ["codecov", "hatch", "ipykernel", "jupyterlab-server[openapi]", "openapi-spec-validator (>=0.5.1,<0.6.0)", "pytest (>=7.0)", "pytest-console-scripts", "pytest-cov", "pytest-jupyter[server] (>=0.6.2)", "pytest-timeout", "requests-mock", "sphinxcontrib-spelling", "strict-rfc3339", "werkzeug"]
+test = ["hatch", "ipykernel", "jupyterlab-server[openapi]", "openapi-spec-validator (>=0.5.1,<0.6.0)", "pytest (>=7.0)", "pytest-console-scripts", "pytest-cov", "pytest-jupyter[server] (>=0.6.2)", "pytest-timeout", "requests-mock", "sphinxcontrib-spelling", "strict-rfc3339", "werkzeug"]
 
 [[package]]
 name = "jupyterlite-core"
@@ -2186,14 +2186,14 @@ files = [
 
 [[package]]
 name = "pytest"
-version = "7.3.0"
+version = "7.3.1"
 description = "pytest: simple powerful testing with Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest-7.3.0-py3-none-any.whl", hash = "sha256:933051fa1bfbd38a21e73c3960cebdad4cf59483ddba7696c48509727e17f201"},
-    {file = "pytest-7.3.0.tar.gz", hash = "sha256:58ecc27ebf0ea643ebfdf7fb1249335da761a00c9f955bcd922349bcb68ee57d"},
+    {file = "pytest-7.3.1-py3-none-any.whl", hash = "sha256:3799fa815351fea3a5e96ac7e503a96fa51cc9942c3753cda7651b93c1cfa362"},
+    {file = "pytest-7.3.1.tar.gz", hash = "sha256:434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3"},
 ]
 
 [package.dependencies]
@@ -2515,14 +2515,14 @@ files = [
 
 [[package]]
 name = "rframe"
-version = "0.2.7"
+version = "0.2.8"
 description = "Top-level package for rframe."
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "rframe-0.2.7-py3-none-any.whl", hash = "sha256:bdb7cb08981a41a6e2dca80503ddb479a1ab3e0ccce0de288a3a495b1525577f"},
-    {file = "rframe-0.2.7.tar.gz", hash = "sha256:9d3e8974785a3545bd1617e14dee354ebdf247d7c672baa765a3b3e8c5c52892"},
+    {file = "rframe-0.2.8-py3-none-any.whl", hash = "sha256:f588911b1fd9e42a3064109e64cce1358d9c31a343f0635cb92fe0d24f8c9d33"},
+    {file = "rframe-0.2.8.tar.gz", hash = "sha256:871fb8ad7aa0f6c43a91bb5d45dc7b2f549b2dc2809606dfe8580306374376ef"},
 ]
 
 [package.dependencies]
@@ -2623,14 +2623,14 @@ files = [
 
 [[package]]
 name = "soupsieve"
-version = "2.4"
+version = "2.4.1"
 description = "A modern CSS selector implementation for Beautiful Soup."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "soupsieve-2.4-py3-none-any.whl", hash = "sha256:49e5368c2cda80ee7e84da9dbe3e110b70a4575f196efb74e51b94549d921955"},
-    {file = "soupsieve-2.4.tar.gz", hash = "sha256:e28dba9ca6c7c00173e34e4ba57448f0688bb681b7c5e8bf4971daafc093d69a"},
+    {file = "soupsieve-2.4.1-py3-none-any.whl", hash = "sha256:1c1bfee6819544a3447586c889157365a27e10d88cde3ad3da0cf0ddf646feb8"},
+    {file = "soupsieve-2.4.1.tar.gz", hash = "sha256:89d12b2d5dfcd2c9e8c22326da9d9aa9cb3dfab0a83a024f05704076ee8d35ea"},
 ]
 
 [[package]]
@@ -2924,21 +2924,21 @@ files = [
 
 [[package]]
 name = "tox"
-version = "4.4.11"
+version = "4.4.12"
 description = "tox is a generic virtualenv management and test command line tool"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tox-4.4.11-py3-none-any.whl", hash = "sha256:6fa4dbd933d0e335b5392c81e9cd467630119b3669705dbad47814a93b6c9586"},
-    {file = "tox-4.4.11.tar.gz", hash = "sha256:cd88e41aef9c71f0ba02b6d7939f102760b192b63458fbe04dbbaed82f7bf5f5"},
+    {file = "tox-4.4.12-py3-none-any.whl", hash = "sha256:d4be558809d86fad13f4553976b0500352630a8fbfa39ea4b1ce3bd945ba680b"},
+    {file = "tox-4.4.12.tar.gz", hash = "sha256:740f5209d0dec19451b951ee5b1cce4a207acdc7357af84dbc8ec35bcf2c454e"},
 ]
 
 [package.dependencies]
 cachetools = ">=5.3"
 chardet = ">=5.1"
 colorama = ">=0.4.6"
-filelock = ">=3.10.7"
+filelock = ">=3.11"
 packaging = ">=23"
 platformdirs = ">=3.2"
 pluggy = ">=1"
@@ -2948,7 +2948,7 @@ virtualenv = ">=20.21"
 
 [package.extras]
 docs = ["furo (>=2023.3.27)", "sphinx (>=6.1.3)", "sphinx-argparse-cli (>=1.11)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)", "sphinx-copybutton (>=0.5.1)", "sphinx-inline-tabs (>=2022.1.2b11)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=22.12)"]
-testing = ["build[virtualenv] (>=0.10)", "covdefaults (>=2.3)", "devpi-process (>=0.3)", "diff-cover (>=7.5)", "distlib (>=0.3.6)", "flaky (>=3.7)", "hatch-vcs (>=0.3)", "hatchling (>=1.13)", "psutil (>=5.9.4)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest-xdist (>=3.2.1)", "re-assert (>=1.1)", "time-machine (>=2.9)", "wheel (>=0.40)"]
+testing = ["build[virtualenv] (>=0.10)", "covdefaults (>=2.3)", "devpi-process (>=0.3)", "diff-cover (>=7.5)", "distlib (>=0.3.6)", "flaky (>=3.7)", "hatch-vcs (>=0.3)", "hatchling (>=1.14)", "psutil (>=5.9.4)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest-xdist (>=3.2.1)", "re-assert (>=1.1)", "time-machine (>=2.9)", "wheel (>=0.40)"]
 
 [[package]]
 name = "tqdm"
