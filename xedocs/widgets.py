@@ -572,6 +572,7 @@ class ModelTableEditor(pn.viewable.Viewer):
 
     query_editor = param.ClassSelector(QueryEditor)
     model_editor = param.ClassSelector(XeDocEditor)
+    editable = param.Boolean(default=True)
 
     query = param.Dict({})
 
@@ -632,7 +633,9 @@ class ModelTableEditor(pn.viewable.Viewer):
 
         self.query_editor = QueryEditor(class_=self.class_)
 
-        self.model_editor = XeDocEditor(class_=self.class_, allow_delete=False)
+        self.model_editor = XeDocEditor(class_=self.class_, 
+                                        allow_delete=self.editable, 
+                                        allow_save=self.editable)
         self.model_editor.post_save.append(self._update_docs)
 
     @param.depends("docs", watch=True)
@@ -741,7 +744,8 @@ class ModelTableEditor(pn.viewable.Viewer):
             value=doc,
             class_=self.class_,
             fields=columns,
-            allow_delete=True,
+            allow_delete=self.editable,
+            allow_save=self.editable,
         )
 
         editor.post_delete.append(self._update_docs)
@@ -869,6 +873,7 @@ class XedocsEditor(pn.viewable.Viewer):
 
     category = param.Selector(objects=list(_schemas_by_category))
     collection = param.Selector(objects=[None])
+    editable = param.List(default=[])
 
     editor = param.ClassSelector(ModelTableEditor)
 
@@ -912,7 +917,8 @@ class XedocsEditor(pn.viewable.Viewer):
     def _selection_changed(self):
         if self.collection is None:
             return
-        self.editor = ModelTableEditor(class_=self.collection)
+        editable = self.collection._ALIAS in self.editable or self.collection._CATEGORY in self.editable
+        self.editor = ModelTableEditor(class_=self.collection, editable=editable)
 
     @pn.depends("selection_layout")
     def selection_panel(self):
@@ -935,9 +941,9 @@ class XedocsEditor(pn.viewable.Viewer):
 
     @pn.depends("editor")
     def new_doc_panel(self):
-        if self.editor is None:
-            return pn.Column()
-        return pn.panel(self.editor.new_doc_panel)
+        if self.editor is not None and self.editor.editable:
+            return pn.panel(self.editor.new_doc_panel)
+        return pn.Column()
 
     @pn.depends("editor")
     def data_panel(self):
