@@ -140,21 +140,22 @@ def find_schema(name) -> Type[XeDoc]:
     raise KeyError(f"Correction with name {name} not found.")
 
 
-def get_accessor(schema, db=settings.DEFAULT_DATABASE):
+def get_accessor(schema, db=None):
+    import xedocs
+    
     schema = find_schema(schema)
-
     if not issubclass(schema, XeDoc):
         raise TypeError(
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
+    
     if db is None:
         db = settings.DEFAULT_DATABASE
     if isinstance(db, str):
-        accessor = getattr(schema, db)
-    else:
-        accessor = DataAccessor(schema, db)
-
-    return accessor
+        db = getattr(xedocs.databases, db)
+    if callable(db):
+        db = db()
+    return db[schema._ALIAS]
 
 
 def help(schema):
@@ -165,17 +166,19 @@ def help(schema):
 
 def default_datasource_for(schema):
     schema = find_schema(schema)
+    accessor = get_accessor(schema)
+    return accessor.storage
 
-    return settings.default_datasource_for_schema(schema)
 
-
-def get_api_client(schema, database=settings.DEFAULT_DATABASE):
-    interface_class = settings._DATABASE_INTERFACE_CLASSES.get("api", None)
-    if interface_class is None:
-        raise ValueError("No API interface class found.")
-    interface = interface_class(database)
+def get_api_client(schema):
+    from .databases import xedocs_api
     schema = find_schema(schema)
-    return interface.datasource_for_schema(schema)
+    if not issubclass(schema, XeDoc):
+        raise TypeError(
+            "Schema must be a subclass of XeDoc" "or the name of a known schema."
+        )
+    db = xedocs_api()
+    return db[schema._ALIAS]
 
 
 def download_db(

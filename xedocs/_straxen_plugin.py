@@ -2,12 +2,26 @@
 is installed.
 """
 import straxen
-from xedocs import settings
 
+import xedocs
+
+DB_CACHE = {}
+
+def get_accessor(name, db=None, **kwargs):
+    if db is None:
+        db = xedocs.settings.DEFAULT_DATABASE
+    db_func = getattr(xedocs.databases, db)
+    db_kwargs = {k[4:] : v for k,v in kwargs.items() if k.startswith("db__")}
+    db_key = (db, )
+    if len(db_kwargs):
+        db_key = db_key + tuple(sorted(db_kwargs.items()))
+    if db_key not in DB_CACHE:
+        DB_CACHE[db_key] = db_func(**db_kwargs)
+    return DB_CACHE[db_key][name]
 
 @straxen.URLConfig.register("xedocs")
 def xedocs_protocol(
-    name, db=settings.DEFAULT_DATABASE, sort=None, attr=None, as_list=False, **labels
+    name, db=None, sort=None, attr=None, as_list=False, **labels
 ):
     """URLConfig protocol for fetching values from
         a xedocs database.
@@ -18,12 +32,8 @@ def xedocs_protocol(
     ::param attr: Attribute of the documents to return.
     ::param labels: Label values to filter by to return.
     """
-    import xedocs
 
-    # Find the document schema
-    schema = xedocs.find_schema(name)
-
-    accessor = getattr(schema, db)
+    accessor = get_accessor(name, db=db, **labels)
 
     kwargs = straxen.filter_kwargs(accessor.find_docs, labels)
     

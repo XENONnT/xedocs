@@ -29,7 +29,6 @@ class XeDoc(rframe.BaseSchema):
 
         if cls._ALIAS and cls._ALIAS not in cls._XEDOCS:
             cls._XEDOCS[cls._ALIAS] = cls
-            settings.register_databases(cls)
 
     @classmethod
     def default_datasource(cls):
