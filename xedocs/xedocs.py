@@ -181,59 +181,18 @@ def get_api_client(schema):
     return db[schema._ALIAS]
 
 
-def download_db(
-    dbname=settings.DEFAULT_DATABASE, schemas=None, path=None, batch_size=10_000, verbose=True
-):
-    """Download data from a remote database to a local database."""
-    import tinydb
+def sync_dbs(from_db, to_db, schemas=None):
+    import xedocs
 
-    if schemas is None:
-        schemas = list_schemas()
+    if isinstance(from_db, str):
+        from_db = getattr(xedocs.databases, from_db)()
+    
+    if isinstance(to_db, str):
+        to_db = getattr(xedocs.databases, to_db)()
 
-    if not isinstance(schemas, list):
-        schemas = [schemas]
-
-    with tqdm(total=len(schemas)) as pbar:
-
-        for schema in schemas:
-            schema = find_schema(schema)
-            accessor = get_accessor(schema, dbname)
-            pbar.set_description(f"Downloading {schema._ALIAS}")
-
-            basepath = None
-
-            if path is None:
-                path = settings.DATA_DIR
-
-            interface = settings._database_interfaces.get(dbname, {}).get(
-                "local_repo", None
-            )
-
-            if interface is None:
-                basepath = Path(path) / dbname / schema._CATEGORY / schema._ALIAS
-            else:
-                basepath = interface.base_path_for_schema(schema)
-
-            def write_docs(docs, num=1):
-                fpath = basepath / f"{num}.json"
-                db = tinydb.TinyDB(fpath, create_dirs=True, indent=4)
-                table = db.table(schema._ALIAS)
-                table.truncate()
-                table.insert_multiple(docs)
-
-            filenum = 1
-            docs = []
-            with tqdm(
-                total=accessor.count(), desc=schema._ALIAS, leave=verbose
-            ) as pbar2:
-                for doc in accessor.find_iter():
-                    docs.append(doc.jsonable())
-                    pbar2.update(1)
-                    if len(docs) >= batch_size:
-                        write_docs(docs, filenum)
-                        docs = []
-                        filenum += 1
-                if len(docs) > 0:
-                    write_docs(docs, filenum)
-
-            pbar.update(1)
+    for name, accessor in tqdm(from_db.items(), desc="Syncing databases"):
+        if schemas is None or name in schemas:
+            docs = accessor.find_docs()
+            if name not in to_db:
+                continue
+            to_db[name].insert(docs)
