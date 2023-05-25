@@ -2,6 +2,7 @@ from typing import Any
 import pandas as pd
 
 from collections import UserDict
+from pydantic import ValidationError
 from rframe.data_accessor import DataAccessor
 
 
@@ -53,7 +54,26 @@ class LazyDataAccessor(DataAccessor):
     def storage(self):
         if self.__storage__ is None:
             self.__storage__ = self.get_storage(self.schema)
-        return self.__storage__
+        if not isinstance(self.__storage__, list):
+            return self.__storage__
+        docs = []
+        for doc in self.__storage__:
+            if not isinstance(doc, dict):
+                continue
+            try:
+                doc = self.schema(**doc).pandas_dict()
+                docs.append(doc)
+            except ValidationError:
+                continue
+
+        df = pd.DataFrame(docs, columns=list(self.schema.__fields__))
+        idx_names = list(self.schema.get_index_fields())
+        if not all([n in df.columns for n in idx_names]):
+            return df
+        if len(idx_names) == 1:
+            idx_names = idx_names[0]
+        df = df.set_index(idx_names)
+        return df
 
     @storage.setter
     def storage(self, value):
