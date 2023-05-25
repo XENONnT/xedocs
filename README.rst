@@ -64,7 +64,7 @@ this database is writable from the default analysis username/password
 
     import xedocs
 
-    db = xedocs.development_db
+    db = xedocs.development_db()
 
     docs = db.pmt_gains.find_docs(version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
     gains = [doc.value for doc in docs]
@@ -79,23 +79,20 @@ Read from the straxen processing database, this database is read-only for the de
 
     import xedocs
 
-    db = xedocs.straxen_db
+    db = xedocs.straxen_db()
 
     ...
-    
-You can also query documents directly from the schema class, 
-Schemas will query the straxen database by default, if no explicit datasource is given.
+
+Read from the the corrections gitub repository, this database is read-only
+
 
 .. code-block:: python
 
-    from xedocs.schemas import DetectorNumber
+    import xedocs
 
-    drift_velocity = DetectorNumber.straxen_db.find_one(field='drift_velocity', version='v1')
-    
-    # Returns a Bodega object with attributes value, description etc.
-    drift_velocity.value
+    db = xedocs.corrections_repo(branch="master")
 
-    all_v1_documents = DetectorNumber.straxen_db.find(version='v1')
+    ...
 
 
 
