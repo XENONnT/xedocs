@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @dispatch
-def read_records(obj: IOBase):
+def read_records(obj: IOBase) -> List[Dict]:
     """Reads a json file from an IOBase object"""
     if not obj.size:
         return []
@@ -25,7 +25,7 @@ def read_records(obj: IOBase):
 
 
 @dispatch
-def read_records(obj: List[IOBase]):
+def read_records(obj: List[IOBase]) -> List[Dict]:
     """Reads a json file from a ist of IOBase objects"""
     docs = []
     for f in obj:
@@ -34,20 +34,20 @@ def read_records(obj: List[IOBase]):
 
 
 @dispatch
-def read_records(obj: Path):
+def read_records(obj: Path) -> List[Dict]:
     """Reads a json file"""
     data = json.loads(obj.read_text())
     return data
 
 
 @dispatch
-def read_records(obj: List[Dict]):
+def read_records(obj: List[Dict]) -> List[Dict]:
     """This is the expected format for a list of documents"""
     return obj
 
 
 @dispatch
-def read_records(obj: Dict[str,List]):
+def read_records(obj: Dict[str,List]) -> List[Dict]:
     docs = []
     for _, data in obj.items():
         docs.extend(data)
@@ -55,7 +55,7 @@ def read_records(obj: Dict[str,List]):
 
 
 @dispatch
-def read_records(obj: Dict[str,Dict]):
+def read_records(obj: Dict[str,Dict]) -> List[Dict]:
     """Reads a dict of dicts, assume its tinydb format"""
     docs = []
     for data in obj.values():
@@ -69,7 +69,7 @@ class JsonLoader:
         self.path = path
         self.storage_kwargs = storage_kwargs
 
-    def read(self, schema=None) -> list[dict]:
+    def read(self, schema=None) -> List[dict]:
         with fsspec.open_files(self.path, **self.storage_kwargs) as fs:
             if len(fs):
                 docs = read_records(fs)
@@ -85,5 +85,5 @@ class JsonLoader:
             return df
         return docs
 
-    def __call__(self, schema=None) -> list[dict]:
+    def __call__(self, schema=None) -> List[dict]:
         return self.read(schema)
