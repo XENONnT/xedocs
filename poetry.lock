@@ -2449,7 +2449,7 @@ files = [
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -3401,4 +3401,4 @@ db = ["pymongo"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "781c3aca233cba963f0bd50e7bf1e0c633225141836fbf6e84660bef486e5b87"
+content-hash = "675b40039808e69bb8c27f7614a614e05e6a29b93babe76b655d25cc9c65d60e"
