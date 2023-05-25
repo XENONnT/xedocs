@@ -40,3 +40,18 @@ def xedocs_api(login=True):
 
 def default_db():
     return straxen_db()
+
+
+def development_db():
+    schemas = all_schemas()
+    db = MongoDB.from_utilix(db_name='xedocs-dev')
+    accessors = {name: db.data_accessor(schema) for name, schema in schemas.items()}
+    return Database(accessors)
+
+
+def local_mongo_db(**kwargs):
+    schemas = all_schemas()
+    db = MongoDB(**kwargs)
+    accessors = {name: db.data_accessor(schema) for name, schema in schemas.items()}
+    return Database(accessors)
+

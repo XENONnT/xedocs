@@ -12,7 +12,7 @@ class MongoDB(BaseSettings):
     password: str = None
     db_name: str = "xedocs"
     auth_db: str = "admin"
-    host: str = None
+    host: str = "localhost"
     connection_uri: str = None
 
     @property
@@ -28,16 +28,17 @@ class MongoDB(BaseSettings):
         return pymongo.MongoClient(connection_uri)
 
     @classmethod
-    def from_utilix(cls):
+    def from_utilix(cls, **kwargs):
         from utilix import uconfig
         host = uconfig.get('RunDB', 'xent_url')
         username = uconfig.get('RunDB', 'xent_user')
         password = uconfig.get('RunDB', 'xent_password')
         auth_db = uconfig.get('RunDB', 'xent_database')
-        return cls(host=host, username=username, 
-                   password=password, auth_db=auth_db)
+        config = dict(host=host, username=username,
+                           password=password, auth_db=auth_db)
+        config.update(kwargs)
+        return cls(**config)
 
     def data_accessor(self, schema):
         datasource = self.client[self.db_name][schema._ALIAS]
         return DataAccessor(schema, datasource)
-
