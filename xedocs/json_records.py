@@ -77,8 +77,10 @@ class JsonLoader:
                 docs =[]
         if schema is not None:
             docs = [schema(**doc).pandas_dict() for doc in docs]
-            df = pd.DataFrame(docs)
+            df = pd.DataFrame(docs, columns=list(schema.__fields__))
             idx_names = list(schema.get_index_fields())
+            if not all([n in df.columns for n in idx_names]):
+                return df
             if len(idx_names) == 1:
                 idx_names = idx_names[0]
             df = df.set_index(idx_names)

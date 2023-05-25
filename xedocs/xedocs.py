@@ -173,9 +173,15 @@ def sync_dbs(from_db, to_db, schemas=None):
     if isinstance(to_db, str):
         to_db = getattr(xedocs.databases, to_db)()
 
+    results = {}
     for name, accessor in tqdm(from_db.items(), desc="Syncing databases"):
         if schemas is None or name in schemas:
-            docs = accessor.find_docs()
+            sort=None
+            if "time" in accessor.schema.get_index_fields():
+                sort = "time"
+            docs = accessor.find_docs(sort=sort)
             if name not in to_db:
                 continue
-            to_db[name].insert(docs)
+            results[name] = to_db[name].insert(docs, raise_on_error=False)
+
+    return results
