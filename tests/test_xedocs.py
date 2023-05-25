@@ -8,7 +8,15 @@ from click.testing import CliRunner
 import xedocs
 from xedocs import cli
 
+HAVE_UTILIX = False
+try:
+    import utilix
+    HAVE_UTILIX = True
+except ImportError:
+    pass
 
+
+@pytest.mark.skipif(not HAVE_UTILIX, reason='utilix not installed')
 def test_straxen_database():
     from xedocs.databases import straxen_db
 
