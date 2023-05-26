@@ -53,7 +53,7 @@ class LazyDataAccessor(DataAccessor):
     @property
     def storage(self):
         if self.__storage__ is None:
-            self.__storage__ = self.get_storage(self.schema)
+            self.__storage__ = self.get_storage()
         if not isinstance(self.__storage__, list):
             return self.__storage__
         docs = []

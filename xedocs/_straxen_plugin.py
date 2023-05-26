@@ -9,7 +9,7 @@ DB_CACHE = {}
 
 def get_accessor(name, db=None, **kwargs):
     if db is None:
-        db = xedocs.settings.DEFAULT_DATABASE
+        db = "straxen_db"
     db_func = getattr(xedocs.databases, db)
     db_kwargs = {k[4:] : v for k,v in kwargs.items() if k.startswith("db__")}
     db_key = (db, )
@@ -17,7 +17,11 @@ def get_accessor(name, db=None, **kwargs):
         db_key = db_key + tuple(sorted(db_kwargs.items()))
     if db_key not in DB_CACHE:
         DB_CACHE[db_key] = db_func(**db_kwargs)
-    return DB_CACHE[db_key][name]
+    db = DB_CACHE[db_key]
+    if name not in db:
+        raise KeyError(f"{db_key} database has no such collection: {name}")
+    return [name]
+
 
 @straxen.URLConfig.register("xedocs")
 def xedocs_protocol(

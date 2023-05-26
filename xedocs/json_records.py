@@ -69,7 +69,7 @@ class JsonLoader:
         self.path = path
         self.storage_kwargs = storage_kwargs
 
-    def read(self, schema=None) -> List[dict]:
+    def read(self) -> List[dict]:
         with fsspec.open_files(self.path, **self.storage_kwargs) as fs:
             if len(fs):
                 docs = read_records(fs)
@@ -77,5 +77,5 @@ class JsonLoader:
                 docs =[]
         return docs
 
-    def __call__(self, schema=None) -> List[dict]:
-        return self.read(schema)
+    def __call__(self) -> List[dict]:
+        return self.read()
