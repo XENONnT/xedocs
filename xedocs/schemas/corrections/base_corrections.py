@@ -4,11 +4,11 @@ import datetime
 import pandas as pd
 
 from typing import ClassVar, List
-from pydantic import validator, BaseModel, Field
+from pydantic import validator, BaseModel, Field, root_validator
 from rframe.dispatchers import are_equal
+from rframe.types import TimeInterval
 
 from ..._settings import settings
-
 from ..base_schemas import VersionedXeDoc
 
 
@@ -36,11 +36,10 @@ class BaseCorrectionSchema(VersionedXeDoc):
     _ALIAS: ClassVar = ""
     _CATEGORY = "corrections"
     _CORRECTIONS = {}
-    __MUTABLE__ = ('reviews', 'comments')
+    __MUTABLE__ = ('comments',)
 
     created_date: datetime.datetime = Field(default_factory=settings.clock.current_datetime)
     comments: str = ""
-    reviews: List[Review] = []
 
     def __init_subclass__(cls) -> None:
 
@@ -88,17 +87,32 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
 
     _ALIAS = ""
 
-    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex(alias="run_id")
+    time: rframe.Interval[datetime.datetime] = rframe.IntervalIndex()
 
     @validator("time", pre=True)
-    def run_id_to_time(cls, v):
-        """Convert run id to time"""
-        if isinstance(v, (str, int)):
+    def time_string_to_interval(cls, v):
+        """Convert str to time interval"""
+        if isinstance(v, str):
             try:
-                v = settings.run_id_to_interval(v)
+                if "," in v:
+                    left, right = v.split(",")
+                    left, right = pd.to_datetime(left), pd.to_datetime(right)
+                    v = TimeInterval(left=left, right=right)
+                else:
+                    v = pd.to_datetime(v)
             except:
                 pass
         return v
+
+    @root_validator(pre=True)
+    def run_id_to_time_interval(cls, values):
+        if "run_id" in values:
+            run_id = values.pop("run_id")
+            try:
+                values["time"] = settings.run_id_to_interval(run_id)
+            except:
+                values["time"] = run_id
+        return values
 
     @classmethod
     def url_protocol(cls, attr, **labels):
@@ -212,18 +226,28 @@ class TimeSampledCorrection(BaseCorrectionSchema):
     _ALIAS = ""
 
     time: datetime.datetime = rframe.InterpolatingIndex(
-        extrapolate=can_extrapolate, alias="run_id"
+        extrapolate=can_extrapolate,
     )
 
     @validator("time", pre=True)
-    def run_id_to_time(cls, v):
+    def string_to_time(cls, v):
         """Convert run id to time"""
-        if isinstance(v, (str, int)):
+        if isinstance(v, str):
             try:
-                v = settings.run_id_to_time(v)
+                v = pd.to_datetime(v)
             except:
                 pass
         return v
+
+    @root_validator(pre=True)
+    def run_id_to_time(cls, values):
+        if "run_id" in values:
+            try:
+                run_id = values.pop("run_id")
+                values["time"] = settings.run_id_to_time(run_id)
+            except:
+                values["time"] = run_id
+        return values
 
     @classmethod
     def url_protocol(cls, attr, **labels):

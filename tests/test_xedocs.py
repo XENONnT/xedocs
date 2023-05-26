@@ -8,23 +8,20 @@ from click.testing import CliRunner
 import xedocs
 from xedocs import cli
 
-
-def test_analyst_context():
-    from xedocs.contexts import analyst_db
-
-    ctx = analyst_db()
-    assert ctx is not None
-    ctx = analyst_db(by_category=False)
-    assert ctx is not None
+HAVE_UTILIX = False
+try:
+    import utilix
+    HAVE_UTILIX = True
+except ImportError:
+    pass
 
 
-def test_straxen_context():
-    from xedocs.contexts import straxen_db
+@pytest.mark.skipif(not HAVE_UTILIX, reason='utilix not installed')
+def test_straxen_database():
+    from xedocs.databases import straxen_db
 
-    ctx = straxen_db()
-    assert ctx is not None
-    ctx = straxen_db(by_category=False)
-    assert ctx is not None
+    db = straxen_db()
+    assert db is not None
 
 
 def test_find_schema():

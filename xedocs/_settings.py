@@ -5,7 +5,7 @@ import logging
 import pandas as pd
 
 from rframe import BaseSchema
-
+from rframe.types import TimeInterval
 
 logger = logging.getLogger(__name__)
 
@@ -39,77 +39,20 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
 
     _DATABASE_INTERFACE_CLASSES = {}
+    _RUNDOC_CACHE = {}
 
-    DATABASES = ["development_db", "straxen_db"]
-    DEFAULT_DATABASE = "straxen_db"
     CONFIG_DIR = dirs.user_config_dir
     DATA_DIR = dirs.user_data_dir
+    DEFAULT_DATABASE = "straxen_db"
+    GITHUB_TOKEN: str = None
 
-    clock = SimpleClock()
-
-    _database_interfaces = {}
-
-    def database_interfaces(self, database: str):
-        interfaces = self._database_interfaces.get(database, {})
-        interfaces = dict(
-            sorted(interfaces.items(), key=lambda x: x[1].settings.PRIORITY)
-        )
-
-        return interfaces
-
-    def iter_sources_for_schema(
-        self, schema: BaseSchema, interfaces=None, databases=None
-    ):
-        if databases is None:
-            databases = self.DATABASES
-        for dbname in databases:
-            interfaces = self.database_interfaces(dbname)
-            for iname, interface in interfaces.items():
-                if interfaces is not None and iname not in interfaces:
-                    continue
-                source = interface.datasource_for_schema(schema)
-                if source is None:
-                    continue
-                yield (dbname, iname, source)
-
-    def register_databases(self, schema: BaseSchema, databases=None, interfaces=None):
-        for dbname, iname, source in self.iter_sources_for_schema(
-            schema, interfaces=interfaces, databases=databases
-        ):
-            for name in (dbname, f"{dbname}_{iname}"):
-                if hasattr(schema, name):
-                    continue
-                schema.register_datasource(source, name=name)
-
-    def default_datasource_for_schema(self, schema, databases=None, interfaces=None):
-        if databases is None:
-            databases = [self.DEFAULT_DATABASE]
-        for _, _, source in self.iter_sources_for_schema(
-            schema, databases=databases, interfaces=interfaces
-        ):
-            return source
-
-    def register_database_interface_class(self, name: str, interface_class):
-        self._DATABASE_INTERFACE_CLASSES[name] = interface_class
-
-        if not hasattr(interface_class, "settings"):
-            return
-
-        if interface_class.settings.PRIORITY == -1:
-            return
-
-        for database in self.DATABASES:
-            if database not in self._database_interfaces:
-                self._database_interfaces[database] = {}
-            try:
-                interface = interface_class(database=database)
-                self._database_interfaces[database][name] = interface
-            except Exception as e:
-                logger.debug(
-                    f"Could not register {database} interface for {name}. \n Error: {e}"
-                )
+    clock = SimpleClock()        
 
     def run_doc(self, run_id, fields=("start", "end")):
+        key = (run_id,) + tuple(fields)
+        if key in self._RUNDOC_CACHE:
+            return self._RUNDOC_CACHE[key]
+        
         if uconfig is None:
             raise KeyError(f"Rundb not configured.")
 
@@ -123,6 +66,8 @@ class Settings(BaseSettings):
         doc = rundb.find_one(query, projection={f: 1 for f in fields})
         if not doc:
             raise KeyError(f"Run {run_id} not found.")
+        
+        self._RUNDOC_CACHE[key] = doc
 
         return doc
 
@@ -136,7 +81,8 @@ class Settings(BaseSettings):
         doc = self.run_doc(run_id)
         start = self.clock.normalize_tz(doc["start"]+pd.Timedelta("1s"))
         end = self.clock.normalize_tz(doc["end"]-pd.Timedelta("1s"))
-        return start, end
+        
+        return TimeInterval(left=start, right=end)
 
     def extract_time(self, kwargs):
         if "time" in kwargs:

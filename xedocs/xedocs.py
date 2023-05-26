@@ -11,23 +11,6 @@ from tqdm.auto import tqdm
 from ._settings import settings
 from .schemas import XeDoc
 
-__all__ = [
-    "help",
-    "get_accessor",
-    "find_docs",
-    "find_iter",
-    "find_df",
-    "find_one",
-    "insert_docs",
-    "list_schemas",
-    "all_schemas",
-    "schemas_by_category",
-    "default_datasource_for",
-    "find_schema",
-    "get_api_client",
-    "download_db",
-]
-
 
 def find_docs(schema, datasource=None, **labels):
     """find documents by labels
@@ -140,21 +123,22 @@ def find_schema(name) -> Type[XeDoc]:
     raise KeyError(f"Correction with name {name} not found.")
 
 
-def get_accessor(schema, db=settings.DEFAULT_DATABASE):
+def get_accessor(schema, db=None):
+    import xedocs
+    
     schema = find_schema(schema)
-
     if not issubclass(schema, XeDoc):
         raise TypeError(
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
+    
     if db is None:
         db = settings.DEFAULT_DATABASE
     if isinstance(db, str):
-        accessor = getattr(schema, db)
-    else:
-        accessor = DataAccessor(schema, db)
-
-    return accessor
+        db = getattr(xedocs.databases, db)
+    if callable(db):
+        db = db()
+    return db[schema._ALIAS]
 
 
 def help(schema):
@@ -165,72 +149,39 @@ def help(schema):
 
 def default_datasource_for(schema):
     schema = find_schema(schema)
+    accessor = get_accessor(schema)
+    return accessor.storage
 
-    return settings.default_datasource_for_schema(schema)
 
-
-def get_api_client(schema, database=settings.DEFAULT_DATABASE):
-    interface_class = settings._DATABASE_INTERFACE_CLASSES.get("api", None)
-    if interface_class is None:
-        raise ValueError("No API interface class found.")
-    interface = interface_class(database)
+def get_api_client(schema):
+    from .databases import xedocs_api
     schema = find_schema(schema)
-    return interface.datasource_for_schema(schema)
+    if not issubclass(schema, XeDoc):
+        raise TypeError(
+            "Schema must be a subclass of XeDoc" "or the name of a known schema."
+        )
+    db = xedocs_api()
+    return db[schema._ALIAS]
 
 
-def download_db(
-    dbname=settings.DEFAULT_DATABASE, schemas=None, path=None, batch_size=10_000, verbose=True
-):
-    """Download data from a remote database to a local database."""
-    import tinydb
+def sync_dbs(from_db, to_db, schemas=None):
+    import xedocs
 
-    if schemas is None:
-        schemas = list_schemas()
+    if isinstance(from_db, str):
+        from_db = getattr(xedocs.databases, from_db)()
+    
+    if isinstance(to_db, str):
+        to_db = getattr(xedocs.databases, to_db)()
 
-    if not isinstance(schemas, list):
-        schemas = [schemas]
+    results = {}
+    for name, accessor in tqdm(from_db.items(), desc="Syncing databases"):
+        if schemas is None or name in schemas:
+            sort=None
+            if "time" in accessor.schema.get_index_fields():
+                sort = "time"
+            docs = accessor.find_docs(sort=sort)
+            if name not in to_db:
+                continue
+            results[name] = to_db[name].insert(docs, raise_on_error=False)
 
-    with tqdm(total=len(schemas)) as pbar:
-
-        for schema in schemas:
-            schema = find_schema(schema)
-            accessor = get_accessor(schema, dbname)
-            pbar.set_description(f"Downloading {schema._ALIAS}")
-
-            basepath = None
-
-            if path is None:
-                path = settings.DATA_DIR
-
-            interface = settings._database_interfaces.get(dbname, {}).get(
-                "local_repo", None
-            )
-
-            if interface is None:
-                basepath = Path(path) / dbname / schema._CATEGORY / schema._ALIAS
-            else:
-                basepath = interface.base_path_for_schema(schema)
-
-            def write_docs(docs, num=1):
-                fpath = basepath / f"{num}.json"
-                db = tinydb.TinyDB(fpath, create_dirs=True, indent=4)
-                table = db.table(schema._ALIAS)
-                table.truncate()
-                table.insert_multiple(docs)
-
-            filenum = 1
-            docs = []
-            with tqdm(
-                total=accessor.count(), desc=schema._ALIAS, leave=verbose
-            ) as pbar2:
-                for doc in accessor.find_iter():
-                    docs.append(doc.jsonable())
-                    pbar2.update(1)
-                    if len(docs) >= batch_size:
-                        write_docs(docs, filenum)
-                        docs = []
-                        filenum += 1
-                if len(docs) > 0:
-                    write_docs(docs, filenum)
-
-            pbar.update(1)
+    return results

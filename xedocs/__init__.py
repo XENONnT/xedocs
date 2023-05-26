@@ -12,22 +12,15 @@ logger = logging.getLogger(__name__)
 
 from ._settings import settings
 from . import utils
-
 from . import schemas
-from . import xedocs
+from . import data_locations
+from . import databases
 from .xedocs import *
-from . import api
-from . import database_interface
-
-__all__ = [
-    "settings",
-    "utils",
-    "schemas",
-] + xedocs.__all__
+from .databases import *
 
 try:
     from . import _straxen_plugin
-
+    del _straxen_plugin
 except ImportError:
     logger.warning(
         "XEDOCS: Could not register straxen protocol, \
@@ -54,31 +47,3 @@ try:
             hook()
 except Exception as e:
     logger.warning(f"XEDOCS: Could not load plugins. Failed with error: {e}")
-
-try:
-    from .database_interface import load_db_interfaces
-
-    load_db_interfaces()
-
-except Exception as e:
-    logger.debug(f"XEDOCS: Could not load database interfaces. Failed with error: {e}")
-
-
-for schema in xedocs.all_schemas().values():
-    try:
-        settings.register_databases(schema)
-    except Exception as e:
-        logger.debug(
-            f"XEDOCS: Could not load databases for {schema._ALIAS}. Failed with error: {e}"
-        )
-
-
-def __getattr__(name: str):
-    if name in settings.DATABASES:
-        interfaces = settings.database_interfaces(name)
-        return utils.DatasetCollection(interfaces)
-    raise AttributeError(name)
-
-
-def __dir__():
-    return list(settings.DATABASES) + __all__
