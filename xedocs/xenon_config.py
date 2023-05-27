@@ -36,18 +36,18 @@ class BasicConfig(BaseModel):
 class RunDBConfig(BaseModel):
     rundb_api_url: str = ""
     rundb_api_user: str = ""
-    rundb_api_password: SecretStr = ""
+    rundb_api_password: str = ""
     pymongo_url: str = ""
     pymongo_user: str = ""
-    pymongo_password: SecretStr = ""
+    pymongo_password: str = ""
     pymongo_database: str = ""
     xent_url: str = ""
     xent_user: str = ""
-    xent_password: SecretStr = ""
+    xent_password: str = ""
     xent_database: str = ""
     xe1t_url: str = ""
     xe1t_user: str = ""
-    xe1t_password: SecretStr = ""
+    xe1t_password: str = ""
     xe1t_database: str = ""
 
     max_pool_size: int = 100
@@ -58,7 +58,7 @@ class RunDBConfig(BaseModel):
 
 class StraxenConfig(BaseModel):
     s3_access_key_id: str = ""
-    s3_secret_access_key: SecretStr = ""
+    s3_secret_access_key: str = ""
 
 
 class ScadaConfig(BaseModel):
@@ -66,7 +66,7 @@ class ScadaConfig(BaseModel):
     scdata_url: str = ""
     sclastvalue_url: str = ""
     straxen_username: str = ""
-    straxen_password: SecretStr = ""
+    straxen_password: str = ""
     pmt_parameter_names: str = ""
 
 
