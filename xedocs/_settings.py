@@ -1,9 +1,7 @@
 import os
-from pathlib import Path
 import appdirs
 import logging
 import pandas as pd
-from rframe import BaseSchema
 from rframe.types import TimeInterval
 
 from .xenon_config import XenonConfig

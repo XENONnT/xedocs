@@ -51,7 +51,6 @@ class RunDBConfig(BaseModel):
     xe1t_database: str = ""
 
     max_pool_size: int = 100
-
     socket_timeout: int = 60000
     connect_timeout: int = 60000
 
@@ -78,6 +77,14 @@ class XenonConfig(BaseSettings):
 
     class Config:
         extra = "ignore"
+        env_prefix = "XENON_CONFIG_"
+        env_nested_delimiter = '__'
+        case_sensitive = False
+
+        @classmethod
+        def parse_env_var(cls, field_name: str, raw_val: str) -> Any:
+            print(f"Parsing {field_name} from {raw_val}")
+            return raw_val
 
         @classmethod
         def customise_sources(
