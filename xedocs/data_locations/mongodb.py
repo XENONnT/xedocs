@@ -1,5 +1,23 @@
+import os
+from typing import Any, Dict
 from pydantic import BaseSettings
 from rframe import DataAccessor
+
+
+def xenon_config_source(settings: BaseSettings) -> Dict[str, Any]:
+    from xedocs import settings
+
+    cfg = settings.xenon_config.RunDB
+    data = {}
+    if cfg.xent_url:
+        data['host'] = cfg.xent_url
+    if cfg.xent_user:
+        data['username'] = cfg.xent_user
+    if cfg.xent_password:
+        data['password'] = cfg.xent_password
+    if cfg.xent_database:
+        data['auth_db'] = cfg.xent_database
+    return data
 
 
 class MongoDB(BaseSettings):
@@ -7,7 +25,24 @@ class MongoDB(BaseSettings):
 
     class Config:
         env_prefix = "xedocs_mongo_"
+        secrets_dir = '/run/secrets'
 
+        @classmethod
+        def customise_sources(
+            cls,
+            init_settings,
+            env_settings,
+            file_secret_settings,
+        ):
+            sources = (
+                init_settings,
+                env_settings,
+                xenon_config_source,
+            )
+            if os.path.isdir("/run/secrets"):
+                sources = sources + (file_secret_settings,)
+            return sources
+        
     username: str = None
     password: str = None
     db_name: str = "xedocs"

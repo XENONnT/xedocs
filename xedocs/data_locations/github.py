@@ -1,4 +1,5 @@
 
+import os
 import fsspec
 from pydantic import BaseSettings, root_validator
 import yaml
@@ -7,9 +8,43 @@ from ..utils import Database, LazyDataAccessor
 from ..json_records import JsonLoader
 
 
+def git_config_source(cls, **kwargs):
+    """
+    Get github credentials from git config
+    """
+    try:
+        from git import config
+
+        cfg_path = config.get_config_path("global")
+        cfg = config.GitConfigParser(cfg_path)
+        return dict(username=cfg.get("github", "user"),
+                    token=cfg.get("github", "token"))
+    except:
+        return {}
+
+
 class GithubCredentials(BaseSettings):
     class Config:
         env_prefix = "github_"
+        secrets_dir = '/run/secrets'
+
+        @classmethod
+        def customise_sources(
+            cls,
+            init_settings,
+            env_settings,
+            file_secret_settings,
+        ):
+
+            sources = (
+                init_settings,
+                env_settings,
+                git_config_source,
+            )
+            if os.path.isdir("/run/secrets"):
+                sources = sources + (file_secret_settings,)
+            return sources
+
 
     username: str = "__token__"
     token: str = None
@@ -18,28 +53,11 @@ class GithubCredentials(BaseSettings):
     def find(cls, **kwargs):
         inst = cls(**kwargs)
         if inst.token is None:
-            inst = cls.from_git_config()
-        if inst.token is None:
             inst = cls.from_login()
         if inst.token is None:
             raise RuntimeError("Could not find github credentials.")
         return inst
 
-    @classmethod
-    def from_git_config(cls, **kwargs):
-        """
-        Get github credentials from git config
-        """
-        try:
-            from git import config
-
-            cfg_path = config.get_config_path("global")
-            cfg = config.GitConfigParser(cfg_path)
-            return cls(username=cfg.get("github", "user"),
-                       token=cfg.get("github", "token"))
-        except:
-            return cls()
-    
     @classmethod
     def from_login(cls):
         from xeauth.github import GitHubAuth
