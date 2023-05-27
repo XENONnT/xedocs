@@ -20,7 +20,7 @@ def get_accessor(name, db=None, **kwargs):
     db = DB_CACHE[db_key]
     if name not in db:
         raise KeyError(f"{db_key} database has no such collection: {name}")
-    return [name]
+    return db
 
 
 @straxen.URLConfig.register("xedocs")
