@@ -73,6 +73,7 @@ class LazyDataAccessor(DataAccessor):
         if len(idx_names) == 1:
             idx_names = idx_names[0]
         df = df.set_index(idx_names)
+        self.__storage__ = df
         return df
 
     @storage.setter
