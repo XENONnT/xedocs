@@ -3,6 +3,7 @@ from .xedocs import schemas_by_category, all_schemas
 from .data_locations.mongodb import MongoDB
 from .data_locations.corrections_repo import CorrectionsRepo
 from .data_locations.api import XedocsApi
+from .data_locations.data_folder import DataFolder
 
 
 def straxen_db():
@@ -55,3 +56,7 @@ def local_mongo_db(**kwargs):
     accessors = {name: db.data_accessor(schema) for name, schema in schemas.items()}
     return Database(accessors)
 
+
+def local_folder(path: str, **kwargs):
+    repo = DataFolder(root=path, **kwargs)
+    return repo.get_datasets()

@@ -1,9 +1,11 @@
-from typing import Any
+from typing import Any, Union
 import pandas as pd
 
 from collections import UserDict
 from pydantic import ValidationError
 from rframe.data_accessor import DataAccessor
+from typing import List
+from plum import dispatch
 
 
 def docs_to_wiki(schema, docs, title=None, columns=None):

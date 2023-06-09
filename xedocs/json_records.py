@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Dict, List
 
 from io import IOBase
-import pandas as pd
 from plum import dispatch
 
 
@@ -21,7 +20,7 @@ def read_records(obj: IOBase) -> List[Dict]:
     if not obj.readable():
         return []
     data = json.loads(obj.read())
-    return data
+    return read_records(data)
 
 
 @dispatch
@@ -37,7 +36,7 @@ def read_records(obj: List[IOBase]) -> List[Dict]:
 def read_records(obj: Path) -> List[Dict]:
     """Reads a json file"""
     data = json.loads(obj.read_text())
-    return data
+    return read_records(data)
 
 
 @dispatch

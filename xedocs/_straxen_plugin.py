@@ -30,7 +30,7 @@ def xedocs_protocol(
     """URLConfig protocol for fetching values from
         a xedocs database.
     ::param name: Name of the schema.
-    ::param context: Context of the document.
+    ::param db: Database to load the data from.
     ::param version: Version of the documents to filter by.
     ::param sort: Attribute of the documents to sort on.
     ::param attr: Attribute of the documents to return.
