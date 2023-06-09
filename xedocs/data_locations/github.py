@@ -5,7 +5,8 @@ from pydantic import BaseSettings, root_validator
 import yaml
 
 from ..utils import Database, LazyDataAccessor
-from ..json_records import JsonLoader
+from .data_folder import DataFolder
+
 
 
 def git_config_source(cls, **kwargs):
@@ -65,16 +66,27 @@ class GithubCredentials(BaseSettings):
         return cls(username=auth.api.username, token=auth.oauth_token)
 
 
-class GithubRepo(BaseSettings):
+class GithubRepo(DataFolder):
     class Config:
         env_prefix = "XEDOCS_GITHUB_REPO_"
     
     org: str = "XENONnT"
     repo: str = "xedocs-data"
-    config_path: str = "datasets.yml"
     username: str = "__token__"
     token: str = None
     branch: str = None
+    
+    def abs_path(self, path):
+        if isinstance(path, list):
+            return [self.abs_path(p) for p in path]
+        return f"github://{self.org}:{self.repo}@/{path.lstrip('/')}"
+
+    def storage_kwargs(self, path):
+        return {
+            "username": self.username,
+            "token": self.token,
+            "sha": self.branch,
+        }
 
     @root_validator
     def get_token(cls, values):
@@ -89,22 +101,3 @@ class GithubRepo(BaseSettings):
     def datasets_config(self):
         return self.read_config()
 
-    def get_datasets(self):
-        import xedocs
-
-        dsets = {}
-
-        for name, cfg in self.datasets_config.items():
-            schema = xedocs.find_schema(cfg['schema'])
-            url = f"github://{self.org}:{self.repo}@/{cfg['path']}"
-            datasource = JsonLoader(url, sha=self.branch,
-                                     username=self.username, token=self.token)
-            dsets[schema._ALIAS] = LazyDataAccessor(schema, datasource=datasource)
-        return Database(dsets)
-    
-    def read_config(self):
-        URL = f"github://{self.org}:{self.repo}@/{self.config_path}"
-        with fsspec.open(URL, sha=self.branch,
-                          username=self.username, token=self.token) as f:
-            config = yaml.safe_load(f)
-        return config

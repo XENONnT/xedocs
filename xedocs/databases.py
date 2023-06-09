@@ -55,3 +55,7 @@ def local_mongo_db(**kwargs):
     accessors = {name: db.data_accessor(schema) for name, schema in schemas.items()}
     return Database(accessors)
 
+
+def local_folder(path: str, **kwargs):
+    repo = CorrectionsRepo(root=path, **kwargs)
+    return repo.get_datasets()
