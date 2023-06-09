@@ -57,6 +57,8 @@ def local_mongo_db(**kwargs):
     return Database(accessors)
 
 
-def local_folder(path: str, **kwargs):
+def local_folder(path: str = None, **kwargs):
+    if path is None:
+        raise ValueError("Path must be set")
     repo = DataFolder(root=path, **kwargs)
     return repo.get_datasets()
