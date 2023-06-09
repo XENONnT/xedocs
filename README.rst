@@ -44,15 +44,15 @@ Explore the available schemas
         'fax_configs',
         'plugin_lineages',
         'context_lineages',
-        'pmt_gains',
+        'pmt_area_to_pes',
         'global_versions',
         'electron_drift_velocities',
         ...]
 
-    >>> xedocs.help('pmt_gains')
+    >>> xedocs.help('pmt_area_to_pes')
 
     >>>
-            Schema name: pmt_gains
+            Schema name: pmt_area_to_pes
             Index fields: ['version', 'time', 'detector', 'pmt']
             Column fields: ['created_date', 'comments', 'value']
     
@@ -66,11 +66,12 @@ this database is writable from the default analysis username/password
 
     db = xedocs.development_db()
 
-    docs = db.pmt_gains.find_docs(version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
-    gains = [doc.value for doc in docs]
-
-    doc = db.pmt_gains.find_one(version='v1', pmt=1, time='2021-01-01T00:00:00', detector='tpc')
-    pmt1_gain = doc.value
+    docs = db.pmt_area_to_pes.find_docs(version='v1', pmt=[1,2,3,5], time='2021-01-01T00:00:00', detector='tpc')
+    to_pes = [doc.value for doc in docs]
+    
+    # passing a run_id will attempt to fetch the center time of that run from the runs db
+    doc = db.pmt_area_to_pes.find_one(version='v1', pmt=1, run_id=25000, detector='tpc')
+    to_pe = doc.value
 
 Read from the straxen processing database, this database is read-only for the default analysis username/password
 
@@ -94,6 +95,16 @@ Read from the the corrections gitub repository, this database is read-only
 
     ...
 
+If you cloned the corrections gitub repo to a local folder, this database can be read too
+
+
+.. code-block:: python
+
+    import xedocs
+
+    db = xedocs.local_folder(PATH_TO_REPO_FOLDER)
+
+    ...
 
 
 Read data from alternative data sources specified by path, 
