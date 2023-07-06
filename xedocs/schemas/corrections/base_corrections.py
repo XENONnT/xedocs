@@ -41,6 +41,13 @@ class BaseCorrectionSchema(VersionedXeDoc):
     created_date: datetime.datetime = Field(default_factory=settings.clock.current_datetime)
     comments: str = ""
 
+    @validator("created_date")
+    def normalize_tz(cls, v):
+        """Normalize timezone info.
+        Pandas requires uniform timezone awareness
+        """
+        return settings.clock.normalize_tz(v)
+    
     def __init_subclass__(cls) -> None:
 
         if cls._ALIAS in cls.__dict__ and cls._ALIAS not in cls._CORRECTIONS:
@@ -69,6 +76,7 @@ class BaseCorrectionSchema(VersionedXeDoc):
         raise RuntimeError("Corrections are append only.")
 
 
+
 class TimeIntervalCorrection(BaseCorrectionSchema):
     """Base class for time-interval corrections
 
@@ -95,11 +103,12 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
         if isinstance(v, str):
             try:
                 if "," in v:
+                    utc = settings.clock.utc
                     left, right = v.split(",")
-                    left, right = pd.to_datetime(left), pd.to_datetime(right)
+                    left, right = pd.to_datetime(left, utc=utc), pd.to_datetime(right, utc=utc)
                     v = TimeInterval(left=left, right=right)
                 else:
-                    v = pd.to_datetime(v)
+                    v = pd.to_datetime(v, utc=utc)
             except:
                 pass
         return v
@@ -230,15 +239,10 @@ class TimeSampledCorrection(BaseCorrectionSchema):
     )
 
     @validator("time", pre=True)
-    def string_to_time(cls, v):
-        """Convert run id to time"""
-        if isinstance(v, str):
-            try:
-                v = pd.to_datetime(v)
-            except:
-                pass
-        return v
-
+    def normalize_time(cls, v):
+        """Normalize time"""
+        return settings.clock.normalize_tz(v)
+    
     @root_validator(pre=True)
     def run_id_to_time(cls, values):
         if "run_id" in values:

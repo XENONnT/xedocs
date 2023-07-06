@@ -7,10 +7,12 @@ import pandas as pd
 
 class SimpleClock:
     utc: bool
+    tz_aware: bool
     cutoff_offset: float
 
-    def __init__(self, utc=True, cutoff_offset=3600) -> None:
+    def __init__(self, utc=True, tz_aware=True, cutoff_offset=3600) -> None:
         self.utc = utc
+        self.tz_aware = tz_aware
         self.cutoff_offset = cutoff_offset
 
     def current_datetime(self):
@@ -25,13 +27,20 @@ class SimpleClock:
         return self.current_datetime() + offset
 
     def normalize_tz(self, dt: datetime.datetime) -> datetime.datetime:
+        if isinstance(dt, str):
+            dt = pd.to_datetime(dt, utc=self.utc)
         if isinstance(dt, pd.Timestamp):
             dt = dt.to_pydatetime()
         if dt.tzinfo is not None:
-            if dt.tzinfo.utcoffset(dt) is not None:
+            if dt.tzinfo.utcoffset(dt) is not None and self.utc:
                 dt = dt.astimezone(pytz.utc)
+        elif self.utc:
+            dt = dt.replace(tzinfo=pytz.utc)
+        if not self.tz_aware:
             dt = dt.replace(tzinfo=None)
+            
         dt = dt.replace(microsecond=int(dt.microsecond / 1000) * 1000)
+    
         return dt
 
     def after_cutoff(self, dt, buffer=0.0):
