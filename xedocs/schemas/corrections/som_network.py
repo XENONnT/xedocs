@@ -8,7 +8,7 @@ from .base_references import BaseResourceReference
 
 
 class SOMClassifier(BaseResourceReference):
-    _Alias = 'som_classification'
+    _Alias = 'som_classifiers'
     fmt = 'binary'
     
     value: str
