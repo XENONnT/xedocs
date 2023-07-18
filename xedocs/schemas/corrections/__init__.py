@@ -20,4 +20,4 @@ from .s1_aft_xyz import *
 from .avg_se_gain import *
 from .bayes_model import *
 from .som_network import *
-from .hotspot_veto import *
+from .hotspot_veto_cut import *
