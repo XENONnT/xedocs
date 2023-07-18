@@ -7,5 +7,5 @@ Reference: xenon:xenonnt:analysis:hot_spot_cut_summary
 from .base_corrections import TimeIntervalCorrection
 
 class HotspotVetoThreshold(TimeIntervalCorrection):
-    _ALIAS = 'hotspot_veto_threshold'
+    _ALIAS = 'hotspot_veto_thresholds'
     value: float
