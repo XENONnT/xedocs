@@ -76,14 +76,14 @@ def find_one(schema, datasource=None, **labels):
     return accessor.find_one(**labels)
 
 
-def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None):
+def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None, dry=False):
     if isinstance(docs, pd.DataFrame):
         docs = docs.reset_index().to_dict(orient="records")
     if not isinstance(docs, list):
         docs = [docs]
     accessor = get_accessor(schema, datasource)
 
-    return accessor.insert(docs)
+    return accessor.insert(docs, dry=dry)
 
 
 def list_schemas() -> List[str]:
@@ -164,7 +164,7 @@ def get_api_client(schema):
     return db[schema._ALIAS]
 
 
-def sync_dbs(from_db, to_db, schemas=None):
+def sync_dbs(from_db, to_db, schemas=None, dry=False):
     import xedocs
 
     if isinstance(from_db, str):
@@ -182,6 +182,6 @@ def sync_dbs(from_db, to_db, schemas=None):
             docs = accessor.find_docs(sort=sort)
             if name not in to_db:
                 continue
-            results[name] = to_db[name].insert(docs, raise_on_error=False)
+            results[name] = to_db[name].insert(docs, raise_on_error=False, dry=dry)
 
     return results
