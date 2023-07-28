@@ -7,5 +7,5 @@ from .base_corrections import TimeSampledCorrection
 
 
 class PhotoionizationStrength(TimeSampledCorrection):
-    _ALIAS = "photoionization_strength"
+    _ALIAS = "photoionization_strengths"
     value: float
