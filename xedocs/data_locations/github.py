@@ -69,7 +69,9 @@ class GithubCredentials(BaseSettings):
 class GithubRepo(DataFolder):
     class Config:
         env_prefix = "XEDOCS_GITHUB_REPO_"
-    
+
+    protocol: str = "github"
+    root: str = ""
     org: str = "XENONnT"
     repo: str = "xedocs-data"
     username: str = "__token__"
@@ -100,4 +102,3 @@ class GithubRepo(DataFolder):
     @property
     def datasets_config(self):
         return self.read_config()
-
