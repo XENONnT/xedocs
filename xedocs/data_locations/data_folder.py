@@ -26,7 +26,6 @@ class DataFolder(BaseSettings):
             return [self.abs_path(p) for p in path]
         if not os.path.isabs(path) and self.root is not None:
             path = os.path.join(self.root, path)
-        path = "file://" + path if not path.startswith("file://") else path
         return path
 
     @property
@@ -46,12 +45,11 @@ class DataFolder(BaseSettings):
             if path is None:
                 continue
             path = self.abs_path(path)
-            pattern = cfg.get('pattern', None)
+
             kwargs = self.storage_kwargs(path)
-            dsets[schema._ALIAS] = LazyFileAccessor(schema, path, 
-                                                    root=self.root,
-                                                    protocol=self.protocol,
-                                                    pattern=pattern, **kwargs)
+            dsets[schema._ALIAS] = LazyFileAccessor(schema,
+                                                    path, 
+                                                    **kwargs)
         return Database(dsets)
 
     def read_config(self):
