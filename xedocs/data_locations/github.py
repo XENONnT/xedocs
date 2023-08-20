@@ -69,7 +69,8 @@ class GithubCredentials(BaseSettings):
 class GithubRepo(DataFolder):
     class Config:
         env_prefix = "XEDOCS_GITHUB_REPO_"
-    
+
+    protocol: str = "github"
     org: str = "XENONnT"
     repo: str = "xedocs-data"
     username: str = "__token__"
@@ -79,10 +80,12 @@ class GithubRepo(DataFolder):
     def abs_path(self, path):
         if isinstance(path, list):
             return [self.abs_path(p) for p in path]
-        return f"github://{self.org}:{self.repo}@/{path.lstrip('/')}"
+        return f"github://{path.lstrip('/')}"
 
     def storage_kwargs(self, path):
         return {
+            "org": self.org,
+            "repo": self.repo,
             "username": self.username,
             "token": self.token,
             "sha": self.branch,
@@ -100,4 +103,3 @@ class GithubRepo(DataFolder):
     @property
     def datasets_config(self):
         return self.read_config()
-
