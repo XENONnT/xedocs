@@ -24,6 +24,7 @@ class DataFolder(BaseSettings):
     def abs_path(self, path):
         if isinstance(path, list):
             return [self.abs_path(p) for p in path]
+        path = os.path.expanduser(path)
         if not os.path.isabs(path) and self.root is not None:
             path = os.path.join(self.root, path)
         return path
