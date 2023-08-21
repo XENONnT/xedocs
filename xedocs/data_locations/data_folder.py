@@ -18,8 +18,10 @@ class DataFolder(BaseSettings):
     config_path: str = "datasets.yml"
 
     @validator("root", pre=True)
-    def exapnd_user(cls, value):
-        return os.path.expanduser(value)
+    def expand_user(cls, value):
+        if isinstance(value, str):
+            value = os.path.expanduser(value)
+        return value
 
     def storage_kwargs(self, path):
         return {}
