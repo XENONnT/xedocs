@@ -3,7 +3,7 @@ import os
 import yaml
 import fsspec
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, validator
 
 from ..utils import Database, LazyFileAccessor
 
@@ -17,6 +17,11 @@ class DataFolder(BaseSettings):
     protocol: str = "file"
     config_path: str = "datasets.yml"
 
+    @validator("root", pre=True)
+    def expand_user(cls, value):
+        if isinstance(value, str):
+            value = os.path.expanduser(value)
+        return value
 
     def storage_kwargs(self, path):
         return {}
@@ -24,6 +29,7 @@ class DataFolder(BaseSettings):
     def abs_path(self, path):
         if isinstance(path, list):
             return [self.abs_path(p) for p in path]
+        path = os.path.expanduser(path)
         if not os.path.isabs(path) and self.root is not None:
             path = os.path.join(self.root, path)
         return path
