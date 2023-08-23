@@ -22,4 +22,4 @@ from .bayes_model import *
 from .som_network import *
 from .hotspot_veto_cut import *
 from .photoionization_strength import *
-from .s2_pattern_map import *
+from .s2_pattern_maps import *
