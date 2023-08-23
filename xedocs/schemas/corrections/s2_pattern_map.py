@@ -9,7 +9,7 @@ parameters for each PMT the S2 pattern likelihood needs to be retrained to refle
 SR0 S2 pattern map note
 https://xe1t-wiki.lngs.infn.it/doku.php?id=shenyang:s2_pattern_likelihood (Shenyang)
 
-SR2 S2 pattern map note
+SR1 S2 pattern map note
 https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenon1t:jacques:nt_sr1_s2pl (Jacques)
 
 
