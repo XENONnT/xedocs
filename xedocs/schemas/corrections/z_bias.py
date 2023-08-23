@@ -8,4 +8,5 @@ Reference: xenon:xenonnt:terliuk:drift_field_z_bias_correction
 from .base_corrections import TimeIntervalCorrection
 
 class ZBias(TimeIntervalCorrection):
-    _ALIAS = 'z_bias_map'
+    _ALIAS = 'z_bias_maps'
+    value: str
