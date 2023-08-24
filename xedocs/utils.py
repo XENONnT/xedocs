@@ -131,21 +131,17 @@ class LazyFileAccessor(DataAccessor):
     def glob_to_format(self, path):
         return path.replace("*", "{}")
 
-    def load_files(self, **labels):
-        dfs = []
-        index_fields = list(self.schema.get_index_fields())
-        if len(index_fields) == 1:
-            index_fields = index_fields[0]
-
+    def iter_path_records(self, ignore_paths=(), **labels):
         for path in self.urlpaths:
-            
             glob_patttern = self.format_to_glob(path)
             fs, _, fpaths = fsspec.get_fs_token_paths(glob_patttern,
                                                    storage_options=self.storage_options)
             pattern = path.replace(f"{fs.protocol}://", "")
             pattern = parse.compile(self.glob_to_format(pattern))
+            loaded = set(ignore_paths)
+
             for fpath in fpaths:
-                if fpath in self.loaded:
+                if fpath in loaded:
                     continue
                 r = pattern.parse(fpath)
                 if r is None:
@@ -169,20 +165,27 @@ class LazyFileAccessor(DataAccessor):
                         break
                 else:
                     records = read_files(fpath, protocol=fs.protocol, **fs.storage_options)
-                    docs = []
-                    for doc in records:
-                        if not isinstance(doc, dict):
-                            continue
-                        try:
-                            doc = self.schema(**doc).pandas_dict()
-                            docs.append(doc)
-                        except ValidationError as e:
-                            continue
-                    df = pd.DataFrame(docs, columns=list(self.schema.__fields__))
-                    df = df.set_index(index_fields)
-                    dfs.append(df)
+                    yield fpath, records
                     self.loaded.add(fpath)
-        self.storage = pd.concat([self.storage] + dfs).sort_values(index_fields)
+
+    def load_files(self, **labels):
+        index_fields = list(self.schema.get_index_fields())
+        if len(index_fields) == 1:
+            index_fields = index_fields[0]
+        docs = []
+        for fpath, records in self.iter_path_records(ignore_paths=self.loaded, **labels):
+            for doc in records:
+                if not isinstance(doc, dict):
+                    continue
+                try:
+                    doc = self.schema(**doc).pandas_dict()
+                    docs.append(doc)
+                except ValidationError as e:
+                    continue
+            self.loaded.add(fpath)
+        df = pd.DataFrame(docs, columns=list(self.schema.__fields__))
+        df = df.set_index(index_fields)
+        self.storage = pd.concat([self.storage, df]).sort_values(index_fields)
 
     def _min(self, **kwargs):
         self.load_files()
