@@ -12,4 +12,3 @@ from .base_corrections import TimeSampledCorrection
 class cS2BottomTopRatioCorrection(TimeSampledCorrection):
     _ALIAS = "cs2_bottom_top_ratio_correction"
     value: float
-    
