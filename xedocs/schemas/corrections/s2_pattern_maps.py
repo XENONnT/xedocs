@@ -20,3 +20,4 @@ from .base_references import BaseMap
 
 class S2PatternMap(BaseMap):
     _ALIAS = "s2_pattern_maps"
+    fmt = "binary"
