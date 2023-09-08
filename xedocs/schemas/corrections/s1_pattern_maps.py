@@ -10,3 +10,4 @@ from .base_references import BaseMap
 
 class S1PatternMap(BaseMap):
     _ALIAS = "s1_pattern_maps"
+    fmt = "pkl"
