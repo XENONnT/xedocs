@@ -2,7 +2,6 @@ import datetime
 from typing import ClassVar, Literal
 from pydantic import constr
 import rframe
-import straxen
 
 from xedocs import settings
 
