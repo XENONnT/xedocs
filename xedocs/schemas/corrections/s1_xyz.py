@@ -11,6 +11,8 @@ The jupyter notebook in this folder is replaced by [this](https://github.com/XEN
 from .base_references import BaseMap
 
 
+
 class S1XYZMap(BaseMap):
     _ALIAS = "s1_xyz_maps"
-    fmt = "binary"
+    _ALLOWED_FORMATS = ["json.gz", "json"]
+
