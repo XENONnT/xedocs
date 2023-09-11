@@ -2,6 +2,7 @@ import datetime
 from typing import ClassVar, Literal
 from pydantic import constr
 import rframe
+import straxen
 
 from xedocs import settings
 
@@ -88,6 +89,16 @@ class BaseResourceReference(TimeIntervalCorrection):
 
 class BaseMap(BaseResourceReference):
     _ALIAS = ""
+    _ALLOWED_FORMATS = [
+        "json.gz",
+        "json",
+        "tar.gz",
+        "tar",
+        "pkl.gz",
+        "pkl",
+        "npy",
+        "binary",
+    ]
 
     algorithm: Literal["cnn", "gcn", "mlp"] = rframe.Index()
 
@@ -104,7 +115,6 @@ class BaseMap(BaseResourceReference):
 
     @property
     def file(self):
-        import straxen
         file = straxen.get_resource(self.value, fmt=self.fmt)
         return file
 
