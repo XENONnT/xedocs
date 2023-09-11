@@ -16,18 +16,3 @@ class S1XYZMap(BaseMap):
     _ALIAS = "s1_xyz_maps"
     _ALLOWED_FORMATS = ["json.gz", "json"]
 
-    @property
-    def fmt(self):
-        for fmt in self._ALLOWED_FORMATS:
-            if self.value.endswith(fmt):
-                break
-        else:
-            raise ValueError(f"Unknown format for {self.value}")
-        return fmt
-
-    @property
-    def map(self):
-        import straxen
-
-        map_file = straxen.get_resource(self.value, fmt=self.fmt)
-        return straxen.InterpolatingMap(map_file)
