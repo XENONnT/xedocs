@@ -89,16 +89,10 @@ class BaseResourceReference(TimeIntervalCorrection):
 
 class BaseMap(BaseResourceReference):
     _ALIAS = ""
-    _ALLOWED_FORMATS = [
-        "json.gz",
-        "json",
-        "tar.gz",
-        "tar",
-        "pkl.gz",
-        "pkl",
-        "npy",
-        "binary",
-    ]
+    _ALLOWED_FORMATS = ['json.gz', 'json', 'tar.gz',
+                        'tar', 'pkl.gz', 'pkl', 'npy',
+                        'dill.gz','dill', 'npy_pickle',
+                        'binary', 'text', 'txt', 'csv']
 
     algorithm: Literal["cnn", "gcn", "mlp"] = rframe.Index()
 
@@ -114,10 +108,18 @@ class BaseMap(BaseResourceReference):
         return fmt
 
     @property
+    def local_file(self):
+        import straxen
+        downloader = straxen.MongoDownloader()
+        return downloader.download_single(self.value)
+
+    @property
     def file(self):
+        import straxen
         file = straxen.get_resource(self.value, fmt=self.fmt)
         return file
 
     @property
     def map(self):
+        import straxen
         return straxen.InterpolatingMap(self.file)
