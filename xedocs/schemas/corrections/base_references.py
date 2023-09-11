@@ -103,8 +103,11 @@ class BaseMap(BaseResourceReference):
         return fmt
 
     @property
-    def map(self):
+    def file(self):
         import straxen
+        file = straxen.get_resource(self.value, fmt=self.fmt)
+        return file
 
-        map_file = straxen.get_resource(self.value, fmt=self.fmt)
-        return straxen.InterpolatingMap(map_file)
+    @property
+    def map(self):
+        return straxen.InterpolatingMap(self.file)
