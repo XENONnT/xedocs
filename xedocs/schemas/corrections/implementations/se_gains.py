@@ -13,8 +13,8 @@ Wiki:
 
 import rframe
 
-from .base_corrections import TimeSampledCorrection
-from ..constants import PARTITION
+from ..base_corrections import TimeSampledCorrection
+from ...constants import PARTITION
 
 
 class SingleElectronGain(TimeSampledCorrection):

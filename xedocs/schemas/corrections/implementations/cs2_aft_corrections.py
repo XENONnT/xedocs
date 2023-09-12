@@ -6,7 +6,7 @@ https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:zihao:sr1_s2aft_photoni
 
 """
 
-from .base_corrections import TimeSampledCorrection
+from ..base_corrections import TimeSampledCorrection
 
 
 class cS2BottomTopRatioCorrection(TimeSampledCorrection):

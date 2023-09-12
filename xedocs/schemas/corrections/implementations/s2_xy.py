@@ -19,7 +19,7 @@ See [description in the Team C overview page](https://xe1t-wiki.lngs.infn.it/dok
 
 """
 
-from .base_references import BaseMap
+from ..base_references import BaseMap
 
 
 class S2XYMap(BaseMap):

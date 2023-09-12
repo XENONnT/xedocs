@@ -6,8 +6,8 @@
 
 import rframe
 
-from .base_corrections import TimeSampledCorrection
-from ..constants import DETECTOR
+from ..base_corrections import TimeSampledCorrection
+from ...constants import DETECTOR
 
 
 class HitThreshold(TimeSampledCorrection):

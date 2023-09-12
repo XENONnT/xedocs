@@ -8,7 +8,7 @@ The jupyter notebook in this folder is replaced by [this](https://github.com/XEN
 
 """
 
-from .base_references import BaseMap
+from ..base_references import BaseMap
 
 
 

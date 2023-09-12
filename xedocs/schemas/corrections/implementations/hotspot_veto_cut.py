@@ -4,7 +4,7 @@ which vetos the events with local single electron rate above the threshold in ea
 Reference: xenon:xenonnt:analysis:hot_spot_cut_summary
 """
 
-from .base_corrections import TimeIntervalCorrection
+from ..base_corrections import TimeIntervalCorrection
 
 class HotspotVetoThreshold(TimeIntervalCorrection):
     _ALIAS = 'hotspot_veto_thresholds'

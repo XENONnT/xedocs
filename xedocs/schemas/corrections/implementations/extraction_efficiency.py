@@ -13,8 +13,8 @@ Time dependence of Extraction Efficiency generated from Kr83m calibration data a
 """
 import rframe
 
-from .base_corrections import TimeSampledCorrection
-from ..constants import PARTITION
+from ..base_corrections import TimeSampledCorrection
+from ...constants import PARTITION
 
 
 class RelExtractionEff(TimeSampledCorrection):

@@ -16,7 +16,7 @@ from typing import Literal
 
 import rframe
 
-from .base_references import BaseResourceReference
+from ..base_references import BaseResourceReference
 
 
 class PosRecModel(BaseResourceReference):

@@ -11,7 +11,7 @@
 
 import rframe
 
-from .base_corrections import TimeSampledCorrection
+from ..base_corrections import TimeSampledCorrection
 
 
 class RelativeLightYield(TimeSampledCorrection):

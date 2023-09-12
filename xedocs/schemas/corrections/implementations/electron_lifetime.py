@@ -8,7 +8,7 @@ See [description in the Team C overview page](https://xe1t-wiki.lngs.infn.it/dok
 
 """
 
-from .base_corrections import TimeSampledCorrection
+from ..base_corrections import TimeSampledCorrection
 
 
 class ElectronLifetime(TimeSampledCorrection):
