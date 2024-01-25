@@ -78,26 +78,35 @@ def find_one(schema, datasource=None, **labels):
 
 
 def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None, dry=False):
-
+    # Currently stuck on how to deal with instances of schemas
     if datasource == 'development_db': # switch to straxen_db
         mongo_username = MongoDB().username
         if mongo_username == 'nt_analysis':
             target_version = "ONLINE"
-            # Need to hanfle is instance of list, dicts or pd.DataFrame
-            # and figure out how to check the cases for all
+            # Note to self: This is done in a very dumb way, fix later
             ONLINE_check = True
             if isinstance(docs, pd.DataFrame):
-                ONLINE_check = (docs['version'] == 'ONLINE').all()
+                ONLINE_check = (docs['version'] == target_version).all()
 
-            if isinstance(docs, dict):
-                for item in docs.values():
-                    if item['version'] != target_version:
-                        ONLINE_check = False
-            if isinstance(docs, list):
-                ONLINE_check = all(item['version'] == "ONLINE" for item in docs)
+            elif isinstance(docs, dict):
+                ONLINE_check = all(item['version'] == target_version for item in docs)
+
+            else:
+                if isinstance(docs, list):
+                    if isinstance(docs[0], list) or isinstance(docs[0], dict):
+                        # It could be a list of dicts, or list or schemas...
+                        # This can be an actual list or a list of docs
+                        # these cannot be treated the same
+                        ONLINE_check = all(item['version'] == target_version for item in docs)
+                    else:
+                        # This assumes the last choice is a schema, if not other things will yield errors?
+                        # This is kinda sloppy...
+                        ONLINE_check = all(item.version == target_version for item in docs)
+                else:
+                    ONLINE_check = all(item.version == target_version for item in docs)
 
             if not ONLINE_check:
-                ValueError("You are attempting to modify the a straxen_db correction whose version is not ONLINE")
+                raise ValueError("You are attempting to modify the a straxen_db correction whose version is not ONLINE")
 
     if isinstance(docs, pd.DataFrame):
         docs = docs.reset_index().to_dict(orient="records")
