@@ -10,6 +10,7 @@ from tqdm.auto import tqdm
 
 from ._settings import settings
 from .schemas import XeDoc
+from .data_locations.mongodb import MongoDB
 
 
 def find_docs(schema, datasource=None, **labels):
@@ -77,6 +78,27 @@ def find_one(schema, datasource=None, **labels):
 
 
 def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None, dry=False):
+
+    if datasource == 'development_db': # switch to straxen_db
+        mongo_username = MongoDB().username
+        if mongo_username == 'nt_analysis':
+            target_version = "ONLINE"
+            # Need to hanfle is instance of list, dicts or pd.DataFrame
+            # and figure out how to check the cases for all
+            ONLINE_check = True
+            if isinstance(docs, pd.DataFrame):
+                ONLINE_check = (docs['version'] == 'ONLINE').all()
+
+            if isinstance(docs, dict):
+                for item in docs.values():
+                    if item['version'] != target_version:
+                        ONLINE_check = False
+            if isinstance(docs, list):
+                ONLINE_check = all(item['version'] == "ONLINE" for item in docs)
+
+            if not ONLINE_check:
+                ValueError("You are attempting to modify the a straxen_db correction whose version is not ONLINE")
+
     if isinstance(docs, pd.DataFrame):
         docs = docs.reset_index().to_dict(orient="records")
     if not isinstance(docs, list):
@@ -125,13 +147,13 @@ def find_schema(name) -> Type[XeDoc]:
 
 def get_accessor(schema, db=None):
     import xedocs
-    
+
     schema = find_schema(schema)
     if not issubclass(schema, XeDoc):
         raise TypeError(
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
-    
+
     if db is None:
         db = settings.DEFAULT_DATABASE
     if isinstance(db, str):
@@ -169,7 +191,7 @@ def sync_dbs(from_db, to_db, schemas=None, dry=False):
 
     if isinstance(from_db, str):
         from_db = getattr(xedocs.databases, from_db)()
-    
+
     if isinstance(to_db, str):
         to_db = getattr(xedocs.databases, to_db)()
 
