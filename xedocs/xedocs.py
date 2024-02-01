@@ -82,6 +82,7 @@ def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=N
     if datasource == 'development_db': # switch to straxen_db
         mongo_username = MongoDB().username
         if mongo_username == 'nt_analysis':
+            # If statements only trigger
             target_version = "ONLINE"
             # Note to self: This is done in a very dumb way, fix later
             ONLINE_check = True
@@ -102,6 +103,9 @@ def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=N
                         # This assumes the last choice is a schema, if not other things will yield errors?
                         # This is kinda sloppy...
                         ONLINE_check = all(item.version == target_version for item in docs)
+                elif hasattr(docs, 'version'):
+                    if docs.version != target_version: # if version isnt ONLINE
+                        ONLINE_check = False
                 else:
                     ONLINE_check = all(item.version == target_version for item in docs)
 
