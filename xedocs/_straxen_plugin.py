@@ -50,7 +50,10 @@ def xedocs_protocol(
     docs = accessor.find_docs(**kwargs)
 
     if not docs:
-        raise KeyError(f"No matching documents found for {name}.")
+        raise KeyError(
+            f"No matching documents found for {name}. "
+            "It is possible that there is no corresponding data."
+        )
 
     if isinstance(sort, str):
         docs = sorted(docs, key=lambda x: getattr(x, sort))
