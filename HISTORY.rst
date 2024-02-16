@@ -6,7 +6,6 @@ History
 ------------------
 * Minor change of error message for unavailable docs by @dachengx in https://github.com/XENONnT/xedocs/pull/114
 
-
 **Full Changelog**: https://github.com/XENONnT/xedocs/compare/v0.2.25...v0.2.26
 
 
