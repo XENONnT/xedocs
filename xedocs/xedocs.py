@@ -79,9 +79,9 @@ def find_one(schema, datasource=None, **labels):
 
 def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None, dry=False):
     # Currently stuck on how to deal with instances of schemas
-    if datasource == 'development_db': # switch to straxen_db
+    if datasource == 'straxen_db': # switch to straxen_db
         mongo_username = MongoDB().username
-        if mongo_username == 'nt_analysis':
+        if mongo_username == 'corrections_expert':
             # If statements only trigger
             target_version = "ONLINE"
             # Note to self: This is done in a very dumb way, fix later
