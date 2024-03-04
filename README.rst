@@ -1,8 +1,10 @@
 =======================================
 XeDocs - XENON Metadata management tool
 =======================================
-xedocs is meant to replace cmt and bodega as well as helping tracking all shared documents especially if
-they need to be versioned.
+
+XeDocs manages tracking versioned detector numbers, replacing CMT and ideally all hard-coded values. 
+XeDocs both looks up data from its own online database, and uses straxen URL-style lookup to find other resources. 
+To upload data to the XeDocs database, you must submit it as a PR to https://github.com/XENONnT/corrections
 
 What does Xedocs give you
 =========================
