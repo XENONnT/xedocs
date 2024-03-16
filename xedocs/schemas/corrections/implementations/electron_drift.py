@@ -13,7 +13,7 @@ See note on drift velocity, diffusion constant, and drift time at the gate
 
 import rframe
 
-from .base_corrections import TimeSampledCorrection
+from ..base_corrections import TimeSampledCorrection
 
 
 class ElectronDriftVelocity(TimeSampledCorrection):

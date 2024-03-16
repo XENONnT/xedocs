@@ -1,6 +1,6 @@
 import rframe
 
-from .base_corrections import TimeIntervalCorrection
+from ..base_corrections import TimeIntervalCorrection
 
 
 class GlobalVersion(TimeIntervalCorrection):

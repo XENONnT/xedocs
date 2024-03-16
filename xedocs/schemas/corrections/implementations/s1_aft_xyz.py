@@ -6,7 +6,7 @@ Should be treated like a normal correction for dependencies and should be update
 
 """
 
-from .base_references import BaseResourceReference
+from ..base_references import BaseResourceReference
 
 
 class S1AFTXYZMap(BaseResourceReference):

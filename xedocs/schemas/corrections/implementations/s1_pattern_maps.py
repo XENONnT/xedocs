@@ -5,7 +5,7 @@ https://xe1t-wiki.lngs.infn.it/doku.php?id=min:s1opticalmap_comparison (Min + Gi
 
 """
 
-from .base_references import BaseMap
+from ..base_references import BaseMap
 
 
 class S1PatternMap(BaseMap):

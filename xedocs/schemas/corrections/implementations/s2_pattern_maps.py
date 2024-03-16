@@ -15,7 +15,7 @@ https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenon1t:jacques:nt_sr1_s2pl (Ja
 
 """
 
-from .base_references import BaseMap
+from ..base_references import BaseMap
 
 
 class S2PatternMap(BaseMap):
