@@ -53,6 +53,7 @@ class RunDBConfig(BaseModel):
     max_pool_size: int = 100
     socket_timeout: int = 60000
     connect_timeout: int = 60000
+    read_preference: str = "secondaryPreferred"
 
 
 class StraxenConfig(BaseModel):
