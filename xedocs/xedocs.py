@@ -10,6 +10,7 @@ from tqdm.auto import tqdm
 
 from ._settings import settings
 from .schemas import XeDoc
+from .data_locations.mongodb import MongoDB
 
 
 def find_docs(schema, datasource=None, **labels):
@@ -77,6 +78,40 @@ def find_one(schema, datasource=None, **labels):
 
 
 def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=None, dry=False):
+    # Currently stuck on how to deal with instances of schemas
+    if datasource == 'straxen_db': # switch to straxen_db
+        mongo_username = MongoDB().username
+        if mongo_username == 'corrections_expert':
+            # If statements only trigger
+            target_version = "ONLINE"
+            # Note to self: This is done in a very dumb way, fix later
+            ONLINE_check = True
+            if isinstance(docs, pd.DataFrame):
+                ONLINE_check = (docs['version'] == target_version).all()
+
+            elif isinstance(docs, dict):
+                ONLINE_check = all(item['version'] == target_version for item in docs)
+
+            else:
+                if isinstance(docs, list):
+                    if isinstance(docs[0], list) or isinstance(docs[0], dict):
+                        # It could be a list of dicts, or list or schemas...
+                        # This can be an actual list or a list of docs
+                        # these cannot be treated the same
+                        ONLINE_check = all(item['version'] == target_version for item in docs)
+                    else:
+                        # This assumes the last choice is a schema, if not other things will yield errors?
+                        # This is kinda sloppy...
+                        ONLINE_check = all(item.version == target_version for item in docs)
+                elif hasattr(docs, 'version'):
+                    if docs.version != target_version: # if version isnt ONLINE
+                        ONLINE_check = False
+                else:
+                    ONLINE_check = all(item.version == target_version for item in docs)
+
+            if not ONLINE_check:
+                raise ValueError("You are attempting to modify the a straxen_db correction whose version is not ONLINE")
+
     if isinstance(docs, pd.DataFrame):
         docs = docs.reset_index().to_dict(orient="records")
     if not isinstance(docs, list):
@@ -125,13 +160,13 @@ def find_schema(name) -> Type[XeDoc]:
 
 def get_accessor(schema, db=None):
     import xedocs
-    
+
     schema = find_schema(schema)
     if not issubclass(schema, XeDoc):
         raise TypeError(
             "Schema must be a subclass of XeDoc" "or the name of a known schema."
         )
-    
+
     if db is None:
         db = settings.DEFAULT_DATABASE
     if isinstance(db, str):
@@ -169,7 +204,7 @@ def sync_dbs(from_db, to_db, schemas=None, dry=False):
 
     if isinstance(from_db, str):
         from_db = getattr(xedocs.databases, from_db)()
-    
+
     if isinstance(to_db, str):
         to_db = getattr(xedocs.databases, to_db)()
 
