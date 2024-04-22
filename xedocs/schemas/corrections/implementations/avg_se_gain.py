@@ -9,7 +9,7 @@ wiki:
 
 import rframe
 
-from ..base_corrections import TimeSampledCorrection, TimeIntervalCorrection
+from ..base_corrections import TimeIntervalCorrection
 from ...constants import PARTITION
 
 
