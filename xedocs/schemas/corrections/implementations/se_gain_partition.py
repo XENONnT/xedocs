@@ -14,12 +14,9 @@ from ..base_corrections import TimeIntervalCorrection
 from ...constants import PARTITION
 
 
-class RegionLinear(TimeIntervalCorrection):
+class SingleElectronGainPartition(TimeIntervalCorrection):
 
-    _ALIAS = "region_linear"
+    _ALIAS = "single_electron_gain_partition"
+    region: REGION = rframe.Index()
     value: float
 
-class RegionCircular(TimeIntervalCorrection):
-
-    _ALIAS = "region_circular"
-    value: float
