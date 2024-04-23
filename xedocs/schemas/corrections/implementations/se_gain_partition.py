@@ -1,5 +1,5 @@
 """
-Correction: Region linear and circular for AB/Cd partitions
+Correction: Region linear and circular for AB/CD partitions
 Affects: Corrected areas
 
 Two distinct patterns of evolution of single electron corrections between A+B and C+D. Distinguish thanks to linear and circular regions
