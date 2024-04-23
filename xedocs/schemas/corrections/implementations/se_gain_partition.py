@@ -17,6 +17,6 @@ from ...constants import PARTITION
 class SingleElectronGainPartition(TimeIntervalCorrection):
 
     _ALIAS = "single_electron_gain_partition"
-    region: REGION = rframe.Index()
+    region: str = rframe.Index(max_length=80)
     value: float
 
