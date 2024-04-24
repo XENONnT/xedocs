@@ -63,6 +63,9 @@ class MongoDB(BaseSettings):
     connect_timeout: int = 60000
     read_preference: str = "secondaryPreferred"
 
+    # Take only the last url
+    host = host.split(",")[-1]
+
     @property
     def client(self):
         if self.connection_uri is None:
@@ -73,11 +76,22 @@ class MongoDB(BaseSettings):
 
     def make_client(self, connection_uri):
         import pymongo
-        return pymongo.MongoClient(connection_uri, 
-                                   maxPoolSize=self.max_pool_size,
-                                   socketTimeoutMS=self.socket_timeout,
-                                   connectTimeoutMS=self.connect_timeout,
-                                   readPreference=self.read_preference)
+          # By default, use only the last server in the url
+        if force_single_server:
+            url = url.split(",")[-1]
+    
+        kwargs = {
+             'readPreference': self.read_preference,
+             'maxPoolSize': self.max_pool_size,
+             'socketTimeoutMS': self.socket_timeout,
+             'connectTimeoutMS': self.connect_timeout
+        }
+    
+         # directConnection is only supported after pymongo 4
+        if int(pymongo.__version__.split(".")[0]) >= 4:
+            kwargs['directConnection'] = True
+
+        return pymongo.MongoClient(connection_uri, **kwargs)
 
     @classmethod
     def from_utilix(cls, **kwargs):
