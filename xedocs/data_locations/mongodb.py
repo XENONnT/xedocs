@@ -76,10 +76,6 @@ class MongoDB(BaseSettings):
 
     def make_client(self, connection_uri):
         import pymongo
-          # By default, use only the last server in the url
-        if force_single_server:
-            url = url.split(",")[-1]
-    
         kwargs = {
              'readPreference': self.read_preference,
              'maxPoolSize': self.max_pool_size,
