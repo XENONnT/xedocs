@@ -23,6 +23,8 @@ def xenon_config_source(settings: BaseSettings) -> Dict[str, Any]:
         data['socket_timeout'] = cfg.socket_timeout
     if cfg.connect_timeout:
         data['connect_timeout'] = cfg.connect_timeout
+    if cfg.max_idle_time:
+        data['max_idle_time'] = cfg.max_idle_time
     if cfg.read_preference:
         data['read_preference'] = cfg.read_preference
     return data
@@ -61,6 +63,7 @@ class MongoDB(BaseSettings):
     max_pool_size: int = 100
     socket_timeout: int = 60000
     connect_timeout: int = 60000
+    max_idle_time: int = 1000
     read_preference: str = "secondaryPreferred"
 
     # Take only the last url
@@ -80,7 +83,8 @@ class MongoDB(BaseSettings):
              'readPreference': self.read_preference,
              'maxPoolSize': self.max_pool_size,
              'socketTimeoutMS': self.socket_timeout,
-             'connectTimeoutMS': self.connect_timeout
+             'connectTimeoutMS': self.connect_timeout,
+             'maxIdleTimeMS': self.max_idle_time
         }
     
          # directConnection is only supported after pymongo 4
