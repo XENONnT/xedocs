@@ -1,5 +1,5 @@
 """
-This schema incorporates two iece of inforamtion for the SEG & EE correciont. Namely the average single electron gain
+This schema incorporates two piece of inforamtion for the SEG & EE correciont. Namely the average single electron gain
 and the definition of the AB and CD partitions
 
 Correction: Average single electron gain
