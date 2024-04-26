@@ -11,8 +11,6 @@ SR1 wiki: https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:noahhood:corr
 import rframe
 
 from ..base_corrections import TimeIntervalCorrection
-from ...constants import PARTITION
-
 
 class SingleElectronGainPartition(TimeIntervalCorrection):
 
