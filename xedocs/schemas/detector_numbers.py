@@ -1,7 +1,7 @@
 import rframe
 import datetime
 
-from corrections.base_corrections import TimeIntervalCorrection
+from .corrections.base_corrections import TimeIntervalCorrection
 from .constants import PARTITION
 
 class DetectorNumber(TimeIntervalCorrection):
@@ -14,10 +14,6 @@ class DetectorNumber(TimeIntervalCorrection):
 
     field: str = rframe.Index(max_length=80)
     partition: PARTITION = rframe.Index(default="all_tpc")
-
     value: float
     uncertainty: float
-    definition: str
     reference: str = ""
-    date: datetime.datetime
-    comments: str = ""
