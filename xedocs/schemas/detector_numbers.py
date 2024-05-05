@@ -1,11 +1,10 @@
 import rframe
 import datetime
 
-from .base_schemas import VersionedXeDoc
+from corrections.base_corrections import TimeIntervalCorrection
 from .constants import PARTITION
 
-
-class DetectorNumber(VersionedXeDoc):
+class DetectorNumber(TimeIntervalCorrection):
     """Detector parameters
     A collection of non-time dependent detector
     values.
