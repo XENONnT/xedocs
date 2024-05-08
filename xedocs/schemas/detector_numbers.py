@@ -14,6 +14,7 @@ class DetectorNumber(TimeIntervalCorrection):
 
     field: str = rframe.Index(max_length=80)
     partition: PARTITION = rframe.Index(default="all_tpc")
+    science_run: str = rframe.Index(max_length=80)
     definition: str=""
     value: float
     uncertainty: float
