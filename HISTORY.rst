@@ -2,6 +2,12 @@
 History
 =======
 
+0.2.28 (2024-05-13)
+------------------
+* Detector numbers by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/126
+
+**Full Changelog**: https://github.com/XENONnT/xedocs/compare/v0.2.27...v0.2.28
+
 0.2.27 (2024-04-29)
 ------------------
 * Update README.rst by @kdund in https://github.com/XENONnT/xedocs/pull/116
