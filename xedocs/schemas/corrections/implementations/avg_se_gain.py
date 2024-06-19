@@ -9,11 +9,11 @@ wiki:
 
 import rframe
 
-from ..base_corrections import TimeSampledCorrection
+from ..base_corrections import TimeIntervalCorrection
 from ...constants import PARTITION
 
 
-class AvgSingleElectronGain(TimeSampledCorrection):
+class AvgSingleElectronGain(TimeIntervalCorrection):
 
     _ALIAS = "avg_se_gains"
     partition: PARTITION = rframe.Index(default="all_tpc")

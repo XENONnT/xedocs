@@ -1,11 +1,10 @@
 import rframe
 import datetime
 
-from .base_schemas import VersionedXeDoc
+from .corrections.base_corrections import TimeIntervalCorrection
 from .constants import PARTITION
 
-
-class DetectorNumber(VersionedXeDoc):
+class DetectorNumber(TimeIntervalCorrection):
     """Detector parameters
     A collection of non-time dependent detector
     values.
@@ -15,10 +14,8 @@ class DetectorNumber(VersionedXeDoc):
 
     field: str = rframe.Index(max_length=80)
     partition: PARTITION = rframe.Index(default="all_tpc")
-
+    science_run: str = rframe.Index(max_length=80)
+    definition: str=""
     value: float
     uncertainty: float
-    definition: str
     reference: str = ""
-    date: datetime.datetime
-    comments: str = ""
