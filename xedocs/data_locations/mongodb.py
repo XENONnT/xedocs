@@ -79,7 +79,7 @@ class MongoDB(BaseSettings):
                                    socketTimeoutMS=self.socket_timeout,
                                    connectTimeoutMS=self.connect_timeout,
                                    readPreference=self.read_preference,
-                                   max_idle_time_ms=self.max_idle_time)
+                                   maxIdleTimeMS=self.max_idle_time)
 
     @classmethod
     def from_utilix(cls, **kwargs):
