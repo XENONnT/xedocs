@@ -17,6 +17,14 @@ def xenon_config_source(settings: BaseSettings) -> Dict[str, Any]:
         data['password'] = cfg.xent_password
     if cfg.xent_database:
         data['auth_db'] = cfg.xent_database
+    if cfg.max_pool_size:
+        data['max_pool_size'] = cfg.max_pool_size
+    if cfg.socket_timeout:
+        data['socket_timeout'] = cfg.socket_timeout
+    if cfg.connect_timeout:
+        data['connect_timeout'] = cfg.connect_timeout
+    if cfg.read_preference:
+        data['read_preference'] = cfg.read_preference
     return data
 
 
@@ -50,6 +58,12 @@ class MongoDB(BaseSettings):
     host: str = "localhost"
     connection_uri: str = None
 
+    max_pool_size: int = 100
+    socket_timeout: int = 60000
+    connect_timeout: int = 60000
+    max_idle_time: int = 1000
+    read_preference: str = "secondaryPreferred"
+
     @property
     def client(self):
         if self.connection_uri is None:
@@ -60,23 +74,12 @@ class MongoDB(BaseSettings):
 
     def make_client(self, connection_uri):
         import pymongo
-        kwargs = {
-             'readPreference': self.read_preference,
-             'maxPoolSize': self.max_pool_size,
-             'socketTimeoutMS': self.socket_timeout,
-             'connectTimeoutMS': self.connect_timeout,
-             'maxIdleTimeMS': self.max_idle_time
-        }
-    
-         # directConnection is only supported after pymongo 4
-        if int(pymongo.__version__.split(".")[0]) >= 4:
-            kwargs['directConnection'] = True
-
-        return pymongo.MongoClient(connection_uri, **kwargs, 
+        return pymongo.MongoClient(connection_uri, 
                                    maxPoolSize=self.max_pool_size,
                                    socketTimeoutMS=self.socket_timeout,
                                    connectTimeoutMS=self.connect_timeout,
-                                   readPreference=self.read_preference)
+                                   readPreference=self.read_preference,
+                                   max_idle_time_ms=self.max_idle_time)
 
     @classmethod
     def from_utilix(cls, **kwargs):
