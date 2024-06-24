@@ -2,6 +2,10 @@
 History
 =======
 
+0.2.29 (2024-06-24)
+------------------
+* Xedocs version bump to accomdate rframe version bump https://github.com/XENONnT/rframe/pull/62
+
 0.2.28 (2024-05-13)
 ------------------
 * Detector numbers by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/126
