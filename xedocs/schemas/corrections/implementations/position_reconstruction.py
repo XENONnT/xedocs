@@ -23,7 +23,7 @@ class PosRecModel(BaseResourceReference):
     _ALIAS = "posrec_models"
     fmt = "binary"
 
-    kind: Literal["cnn", "gcn", "mlp", "s1_cnn"] = rframe.Index()
+    kind: Literal["cnn", "gcn", "mlp", "s1_cnn", "flow"] = rframe.Index()
 
     value: str
     
