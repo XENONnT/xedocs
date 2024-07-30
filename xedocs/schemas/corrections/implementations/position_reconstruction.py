@@ -8,6 +8,7 @@ See description in the Team C overview page [here](https://xe1t-wiki.lngs.infn.i
 
 Mostly following the "OFF PMTs" list [here](https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:pmt:gains:pmtsoff)
 
+More information on the flow model can be found [here](https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:svetter:conditional_norm_flow_posrec_principle)
 
 """
 
