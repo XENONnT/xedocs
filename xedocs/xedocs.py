@@ -110,7 +110,7 @@ def insert_docs(schema: str, docs: Union[list, dict, pd.DataFrame], datasource=N
                     ONLINE_check = all(item.version == target_version for item in docs)
 
             if not ONLINE_check:
-                raise ValueError("You are attempting to modify the a straxen_db correction whose version is not ONLINE")
+                raise ValueError(f"You are attempting to modify the correction {schema} in the xedocs database with a version other than ONLINE. This is not allowed.")
 
     if isinstance(docs, pd.DataFrame):
         docs = docs.reset_index().to_dict(orient="records")
