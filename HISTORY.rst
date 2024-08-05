@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.30 (2024-09-06)
+------------------
+* Add a new correction test_corrections to test inserting corrections into the xedocs database before moving to ONLINE corrections by @LuisSanchez25
+* Add a new kind of machine learning algorithm for position reconstruction by @LuisSanchez25
+
 0.2.29 (2024-06-24)
 ------------------
 * Xedocs version bump to accomdate rframe version bump https://github.com/XENONnT/rframe/pull/62
