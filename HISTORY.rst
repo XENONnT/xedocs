@@ -2,7 +2,7 @@
 History
 =======
 
-0.2.31 (2024-09-06)
+0.2.30 (2024-09-06)
 ------------------
 * Add a new correction test_corrections to test inserting corrections into the xedocs database before moving to ONLINE corrections by @LuisSanchez25
 * Add a new kind of machine learning algorithm for position reconstruction by @LuisSanchez25
