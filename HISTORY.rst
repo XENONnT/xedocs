@@ -2,7 +2,11 @@
 History
 =======
 
-0.2.30 (2024-09-06)
+0.2.31 (2024-09-16)
+------------------
+* Add new schema to log detector operations in xedocs in https://github.com/XENONnT/xedocs/pull/133 by @Ananthu-Ravindran
+
+0.2.30 (2024-08-06)
 ------------------
 * Add a new correction test_corrections to test inserting corrections into the xedocs database before moving to ONLINE corrections by @LuisSanchez25
 * Add a new kind of machine learning algorithm for position reconstruction by @LuisSanchez25
