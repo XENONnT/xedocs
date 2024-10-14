@@ -108,8 +108,8 @@ class BaseMap(BaseResourceReference):
 
     @property
     def local_file(self):
-        import straxen
-        downloader = straxen.MongoDownloader()
+        import utilix
+        downloader = utilix.mongo_storage.MongoDownloader()
         return downloader.download_single(self.value)
 
     @property
