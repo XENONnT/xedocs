@@ -14,4 +14,4 @@ from ..base_corrections import TimeSampledCorrection
 class BaselineSamplesNV(TimeSampledCorrection):
 
     _ALIAS = "baseline_samples_nv"
-    value: float
+    value: int
