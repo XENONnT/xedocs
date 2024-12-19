@@ -93,7 +93,7 @@ class BaseMap(BaseResourceReference):
                         'dill.gz','dill', 'npy_pickle',
                         'binary', 'text', 'txt', 'csv']
 
-    algorithm: Literal["cnn", "gcn", "mlp"] = rframe.Index()
+    algorithm: Literal["cnn", "gcn", "mlp", "cnf"] = rframe.Index()
 
     value: str
 
