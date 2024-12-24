@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.32 (2024-12-24)
+------------------
+* Detector Operations Log by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/133
+* import mongodownloader from utilix by @yuema137 in https://github.com/XENONnT/xedocs/pull/135
+* `baseline_samples_nv` should be int by @dachengx in https://github.com/XENONnT/xedocs/pull/136
+* adding cnf by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/139
+
 0.2.31 (2024-09-16)
 ------------------
 * Add new schema to log detector operations in xedocs in https://github.com/XENONnT/xedocs/pull/133 by @Ananthu-Ravindran
