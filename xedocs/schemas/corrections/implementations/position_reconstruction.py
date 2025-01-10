@@ -8,7 +8,7 @@ See description in the Team C overview page [here](https://xe1t-wiki.lngs.infn.i
 
 Mostly following the "OFF PMTs" list [here](https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:dsg:pmt:gains:pmtsoff)
 
-More information on the flow model can be found [here](https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:svetter:conditional_norm_flow_posrec_principle)
+More information on the cnf model can be found [here](https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:svetter:conditional_norm_flow_posrec_principle)
 
 """
 
@@ -24,7 +24,7 @@ class PosRecModel(BaseResourceReference):
     _ALIAS = "posrec_models"
     fmt = "binary"
 
-    kind: Literal["cnn", "gcn", "mlp", "s1_cnn", "flow", "cnf"] = rframe.Index()
+    kind: Literal["cnn", "gcn", "mlp", "s1_cnn", "cnf"] = rframe.Index()
 
     value: str
     
