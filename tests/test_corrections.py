@@ -310,7 +310,7 @@ class TestCorrections(unittest.TestCase):
 
         if not clock.after_cutoff(left) and clock.after_cutoff(right):
             cutoff = clock.cutoff_datetime()
-            half_diff = (cutoff - left) / 2
+            half_diff = (cutoff - clock.normalize_tz(left)) / 2
             if half_diff > datetime.timedelta(seconds=1):
                 with self.assertRaises(UpdateError):
                     last_doc.time = (left, left + half_diff)
