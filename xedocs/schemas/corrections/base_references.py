@@ -111,9 +111,3 @@ class BaseMap(BaseResourceReference):
         import utilix
         downloader = utilix.mongo_storage.MongoDownloader()
         return downloader.download_single(self.value)
-
-    @property
-    def file(self):
-        import straxen
-        file = straxen.get_resource(self.value, fmt=self.fmt)
-        return file
