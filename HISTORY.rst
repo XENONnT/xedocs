@@ -2,6 +2,17 @@
 History
 =======
 
+0.2.34 (2025-01-16)
+------------------
+* Patch release to v.0.2.33 (not available on pypi)
+* bump xedocs version by @LuisSanchez25 in https://github.com/XENONnT/xedocs/pull/144
+* Update .bumpversion.cfg by @LuisSanchez25 in https://github.com/XENONnT/xedocs/pull/145
+* Update publish.yml by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/146
+* import mongodownloader from utilix by @yuema137 in https://github.com/XENONnT/xedocs/pull/135
+* `baseline_samples_nv` should be int by @dachengx in https://github.com/XENONnT/xedocs/pull/136
+* adding cnf by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/139
+* Only use `"cnf"`, remove `"flow"` by @dachengx in https://github.com/XENONnT/xedocs/pull/142
+
 0.2.32 (2024-12-24)
 ------------------
 * Detector Operations Log by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/133
