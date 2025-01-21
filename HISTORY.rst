@@ -2,6 +2,15 @@
 History
 =======
 
+0.2.35 (2025-01-21)
+------------------
+* bump xedocs version by @LuisSanchez25 in https://github.com/XENONnT/xedocs/pull/144
+* Update .bumpversion.cfg by @LuisSanchez25 in https://github.com/XENONnT/xedocs/pull/145
+* Update publish.yml by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/146
+* Bump version: 0.2.33 → 0.2.34 by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/147
+
+**Full Changelog**: https://github.com/XENONnT/xedocs/compare/v0.2.33...v0.2.35
+
 0.2.34 (2025-01-16)
 ------------------
 * Patch release to v.0.2.33 (not available on pypi)
