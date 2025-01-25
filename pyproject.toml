@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "xedocs"
-version = "0.2.35"
+version = "0.2.36"
 homepage = "https://github.com/XENONnT/xedocs"
 description = "Top-level package for xedocs."
 authors = ["Yossi Mosbacher <joe.mosbacher@gmail.com>"]
@@ -10,9 +10,9 @@ classifiers=[
     'Development Status :: 2 - Pre-Alpha',
     'Intended Audience :: Developers',
     'Natural Language :: English',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
 ]
 packages = [
     { include = "xedocs" },
@@ -20,10 +20,10 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4.0"
+python = ">=3.9,<4.0"
 click = "*"
 rich = "*"
-rframe = "^0.2.21"
+rframe = "^0.2.22"
 pymongo = {version = "*", optional = true}
 appdirs = "^1.4.4"
 tinydb = "^4.7.0"
@@ -65,7 +65,7 @@ xedocs = 'xedocs.cli:main'
 "xedocs_protocol" = "xedocs._straxen_plugin"
 
 [build-system]
-requires = ["poetry-core>=1.0.8", "setuptools"]
+requires = ["poetry-core>=1.8.3", "setuptools"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.dephell.main]

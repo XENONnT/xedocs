@@ -2,6 +2,12 @@
 History
 =======
 
+0.2.36 (2025-01-25)
+------------------
+* Upgrade rframe and drop python 3.8 by @dachengx in https://github.com/XENONnT/xedocs/pull/149
+
+**Full Changelog**: https://github.com/XENONnT/xedocs/compare/v0.2.35...v0.2.36
+
 0.2.35 (2025-01-21)
 ------------------
 * bump xedocs version by @LuisSanchez25 in https://github.com/XENONnT/xedocs/pull/144
