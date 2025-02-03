@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.37 (2025-02-03)
+------------------
+* Try to update dependencies by @dachengx in https://github.com/XENONnT/xedocs/pull/152
+
+**Full Changelog**: https://github.com/XENONnT/xedocs/compare/v0.2.36...v0.2.37
+
+
 0.2.36 (2025-01-25)
 ------------------
 * Upgrade rframe and drop python 3.8 by @dachengx in https://github.com/XENONnT/xedocs/pull/149
