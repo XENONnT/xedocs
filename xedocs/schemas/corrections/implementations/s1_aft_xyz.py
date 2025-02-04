@@ -6,11 +6,8 @@ Should be treated like a normal correction for dependencies and should be update
 
 """
 
-from ..base_references import BaseResourceReference
+from ..base_references import BaseMap
 
 
-class S1AFTXYZMap(BaseResourceReference):
+class S1AFTXYZMap(BaseMap):
     _ALIAS = "s1_aft_xyz_maps"
-    fmt = "json"
-
-    value: str
