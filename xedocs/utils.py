@@ -134,8 +134,9 @@ class LazyFileAccessor(DataAccessor):
     def iter_path_records(self, ignore_paths=(), **labels):
         for path in self.urlpaths:
             glob_patttern = self.format_to_glob(path)
-            fs, _, fpaths = fsspec.get_fs_token_paths(glob_patttern,
-                                                   storage_options=self.storage_options)
+            fs, _, fpaths = fsspec.get_fs_token_paths(glob_patttern, storage_options=self.storage_options)
+            # force the protocol to be file
+            fs.protocol = "file"
             pattern = path.replace(f"{fs.protocol}://", "")
             pattern = parse.compile(self.glob_to_format(pattern))
             loaded = set(ignore_paths)

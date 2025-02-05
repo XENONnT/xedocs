@@ -54,8 +54,8 @@ def read_csv_files(path, **kwargs) -> List[dict]:
     docs =[]
     
     with fsspec.open_files(path, **kwargs) as fs:
-         kwargs = rframe.utils.filter_kwargs(pd.read_csv, kwargs)
-         for f in fs:
+        kwargs = rframe.utils.filter_kwargs(pd.read_csv, kwargs)
+        for f in fs:
             ds = pd.read_csv(f, **kwargs).to_dict(orient='records')
             docs.extend(ds)
     return docs
