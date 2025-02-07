@@ -6,6 +6,8 @@
     # that specifies the PMT number. The `value` field is a float that represents the
     # correction factor. (Previously known as gain_models)
 
+from typing import Literal
+
 import rframe
 
 from ..base_corrections import TimeSampledCorrection
@@ -23,5 +25,17 @@ class PmtAreaToPE(TimeSampledCorrection):
 
     detector: DETECTOR = rframe.Index()
     pmt: int = rframe.Index(ge=0)
+
+    value: float
+
+class PmtAreaToPEScienceRun(TimeSampledCorrection):
+    _ALIAS = "pmt_area_to_pes_per_science_run"
+
+    # Copied from PmtAreaToPE
+    # with the additon of science run indexing
+
+    detector: DETECTOR = rframe.Index()
+    pmt: int = rframe.Index(ge=0)
+    science_run: Literal["all", "sr0", "sr1", "sr2"] = rframe.Index()
 
     value: float
