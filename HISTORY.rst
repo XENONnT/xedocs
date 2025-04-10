@@ -1,6 +1,14 @@
 =======
 History
 =======
+0.2.38 (2025-04-10)
+------------------
+* Force to use file protocol in fsspec by @dachengx in https://github.com/XENONnT/xedocs/pull/155
+* Bump JRubics/poetry-publish from 2.0 to 2.1 by @dependabot in https://github.com/XENONnT/xedocs/pull/150
+* Bump supercharge/mongodb-github-action from 1.11.0 to 1.12.0 by @dependabot in https://github.com/XENONnT/xedocs/pull/151
+* Revert "Bump JRubics/poetry-publish from 2.0 to 2.1" by @Ananthu-Ravindran in https://github.com/XENONnT/xedocs/pull/158
+
+**Full Changelog**: https://github.com/XENONnT/xedocs/compare/v0.2.37...v0.2.38
 
 0.2.37 (2025-02-03)
 ------------------
