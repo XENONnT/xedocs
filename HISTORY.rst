@@ -1,6 +1,12 @@
 =======
 History
 =======
+0.2.39 (2025-04-19)
+------------------
+* Fix iter path records by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/160
+
+**Full Changelog**: https://github.com/XENONnT/xedocs/compare/v0.2.38...v0.2.39
+
 0.2.38 (2025-04-10)
 ------------------
 * Force to use file protocol in fsspec by @dachengx in https://github.com/XENONnT/xedocs/pull/155
