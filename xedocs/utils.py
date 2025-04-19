@@ -136,18 +136,17 @@ class LazyFileAccessor(DataAccessor):
             glob_patttern = self.format_to_glob(path)
             fs, _, fpaths = fsspec.get_fs_token_paths(glob_patttern, storage_options=self.storage_options)
 
-            # Ensure fs.protocol is set, if not set a default protocol (e.g., 'file')
-            original_protocol1 = fs.protocol if fs.protocol else 'file'
-        
-            # Ensure only one protocol is selected, if it's a tuple, choose the first one
-            if isinstance(original_protocol1, tuple):
-                original_protocol = original_protocol1[0]
-    
+            # Always define original_protocol
+            original_protocol = fs.protocol if fs.protocol else 'file'
+            if isinstance(original_protocol, tuple):
+                original_protocol = original_protocol[0]
+            else:
+                original_protocol = original_protocol
+
             # Debug prints
             print(f"\n[DEBUG]")
             print(f"Processing path: {path}")
             print(f"fs.protocol: {fs.protocol}")
-            print(f"Original protocol1: {original_protocol1}")
             print(f"Original protocol: {original_protocol}")
             print(f"Glob pattern: {glob_patttern}")
             print(f"File paths: {fpaths}")
