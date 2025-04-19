@@ -135,20 +135,37 @@ class LazyFileAccessor(DataAccessor):
         for path in self.urlpaths:
             glob_patttern = self.format_to_glob(path)
             fs, _, fpaths = fsspec.get_fs_token_paths(glob_patttern, storage_options=self.storage_options)
-            # force the protocol to be file
-            fs.protocol = "file"
-            pattern = path.replace(f"{fs.protocol}://", "")
-            pattern = parse.compile(self.glob_to_format(pattern))
-            loaded = set(ignore_paths)
 
+            # Always define original_protocol
+            original_protocol = fs.protocol if fs.protocol else 'file'
+            if isinstance(original_protocol, tuple):
+                original_protocol = original_protocol[0]
+            else:
+                original_protocol = original_protocol
+
+            # Debug prints
+            print(f"\n[DEBUG]")
+            print(f"Processing path: {path}")
+            print(f"fs.protocol: {fs.protocol}")
+            print(f"Original protocol: {original_protocol}")
+            print(f"Glob pattern: {glob_patttern}")
+            print(f"File paths: {fpaths}")
+    
+            pattern = path.replace(f"{original_protocol}://", "")
+            pattern = parse.compile(self.glob_to_format(pattern))
+    
+            # More debug prints
+            print(f"Parse pattern: {pattern}")
+    
+            loaded = set(ignore_paths)
+    
             for fpath in fpaths:
                 if fpath in loaded:
                     continue
                 r = pattern.parse(fpath)
                 if r is None:
                     continue
-                for k,vs in labels.items():
-                    
+                for k, vs in labels.items():
                     if vs is None:
                         continue
                     if not isinstance(vs, list):
@@ -165,9 +182,10 @@ class LazyFileAccessor(DataAccessor):
                     if label not in vs:
                         break
                 else:
-                    records = read_files(fpath, protocol=fs.protocol, **fs.storage_options)
+                    records = read_files(fpath, protocol=original_protocol, **fs.storage_options)
                     yield fpath, records
                     self.loaded.add(fpath)
+
 
     def load_files(self, **labels):
         index_fields = list(self.schema.get_index_fields())
