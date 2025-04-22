@@ -1,8 +1,8 @@
-
 import os
 import fsspec
 from pydantic import BaseSettings, root_validator
 import yaml
+import logging
 
 from ..utils import Database, LazyDataAccessor
 from .data_folder import DataFolder
@@ -78,28 +78,35 @@ class GithubRepo(DataFolder):
     branch: str = None
     
     def abs_path(self, path):
+        logging.info(f"[GithubRepo] Accessing GitHub path: {path}")
         if isinstance(path, list):
             return [self.abs_path(p) for p in path]
         return f"github://{path.lstrip('/')}"
 
     def storage_kwargs(self, path):
-        return {
+        kwargs = {
             "org": self.org,
             "repo": self.repo,
             "username": self.username,
             "token": self.token,
             "sha": self.branch,
         }
+        logging.info(f"[GithubRepo] Storage kwargs for path '{path}': {kwargs}")
+        return kwargs
 
     @root_validator
     def get_token(cls, values):
         token = values.get('token', None)
         if token is None:
+            logging.info("[GithubRepo] Token not found in values, attempting to retrieve via GithubCredentials.find()")
             cred = GithubCredentials.find()
             values['username'] = cred.username
             values['token'] = cred.token
+        else:
+            logging.info("[GithubRepo] Token found in values.")
         return values
-    
+
     @property
     def datasets_config(self):
+        logging.info("[GithubRepo] Reading datasets config via read_config()")
         return self.read_config()
