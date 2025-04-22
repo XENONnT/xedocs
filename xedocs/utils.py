@@ -144,18 +144,18 @@ class LazyFileAccessor(DataAccessor):
                 original_protocol = original_protocol
 
             # Debug prints
-            print(f"\n[DEBUG]")
-            print(f"Processing path: {path}")
-            print(f"fs.protocol: {fs.protocol}")
-            print(f"Original protocol: {original_protocol}")
-            print(f"Glob pattern: {glob_patttern}")
-            print(f"File paths: {fpaths}")
+            # print(f"\n[DEBUG]")
+            # print(f"Processing path: {path}")
+            # print(f"fs.protocol: {fs.protocol}")
+            # print(f"Original protocol: {original_protocol}")
+            # print(f"Glob pattern: {glob_patttern}")
+            # print(f"File paths: {fpaths}")
     
             pattern = path.replace(f"{original_protocol}://", "")
             pattern = parse.compile(self.glob_to_format(pattern))
     
             # More debug prints
-            print(f"Parse pattern: {pattern}")
+            # print(f"Parse pattern: {pattern}")
     
             loaded = set(ignore_paths)
     
