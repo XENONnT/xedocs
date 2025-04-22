@@ -34,7 +34,10 @@ class XedocsApi(BaseSettings):
         headers = {}
         if self.token:
             headers['Authorization'] = f"Bearer {self.token}"
+        import logging
+        logging.info(f"[XedocsApi] Fetching paths from {URL} with headers: {headers}")
         response = requests.get(URL, headers=headers)
+        logging.info(f"[XedocsApi] Response status: {response.status_code}")
         response.raise_for_status()
         return dict(response.json())
     
@@ -50,6 +53,8 @@ class XedocsApi(BaseSettings):
         for name, path in paths.items():
             schema = find_schema(name)
             url = f"{self.base_url.strip('/')}{path}"
+            import logging
+            logging.info(f"[XedocsApi] Creating RestClient for schema '{name}' at url '{url}'")
             datasource = rframe.RestClient(
                         url,
                         auth=ApiAuth(self),
