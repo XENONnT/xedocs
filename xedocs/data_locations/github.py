@@ -119,15 +119,3 @@ class GithubRepo(DataFolder):
             config = yaml.safe_load(f)
         logging.info(f"[GithubRepo] Config loaded successfully from {path}")
         return config
-
-    def get_file(self, path):
-        # Example: Add this if you have a method that fetches files from GitHub
-        import logging
-        abs_path = self.abs_path(path)
-        kwargs = self.storage_kwargs(path)
-        logging.info(f"[GithubRepo] Fetching file from GitHub: {abs_path} with kwargs: {kwargs}")
-        # This is a placeholder for the actual fetch logic, e.g. using fsspec or requests
-        # content = ...
-        # logging.info(f"[GithubRepo] Fetched file content length: {len(content)}")
-        # return content
-        pass
