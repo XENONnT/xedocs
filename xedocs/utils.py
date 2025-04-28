@@ -132,6 +132,8 @@ class LazyFileAccessor(DataAccessor):
         return path.replace("*", "{}")
 
     def iter_path_records(self, ignore_paths=(), **labels):
+        print(f"self.urlpaths: {self.urlpaths}")
+        print(f"labels: {labels}")
         for path in self.urlpaths:
             glob_patttern = self.format_to_glob(path)
             fs, _, fpaths = fsspec.get_fs_token_paths(glob_patttern, storage_options=self.storage_options)
@@ -144,18 +146,18 @@ class LazyFileAccessor(DataAccessor):
                 original_protocol = original_protocol
 
             # Debug prints
-            # print(f"\n[DEBUG]")
-            # print(f"Processing path: {path}")
-            # print(f"fs.protocol: {fs.protocol}")
-            # print(f"Original protocol: {original_protocol}")
-            # print(f"Glob pattern: {glob_patttern}")
-            # print(f"File paths: {fpaths}")
+            print(f"\n[DEBUG]")
+            print(f"Processing path: {path}")
+            print(f"fs.protocol: {fs.protocol}")
+            print(f"Original protocol: {original_protocol}")
+            print(f"Glob pattern: {glob_patttern}")
+            print(f"File paths: {fpaths}")
     
             pattern = path.replace(f"{original_protocol}://", "")
             pattern = parse.compile(self.glob_to_format(pattern))
     
             # More debug prints
-            # print(f"Parse pattern: {pattern}")
+            print(f"Parse pattern: {pattern}")
     
             loaded = set(ignore_paths)
     
@@ -163,6 +165,7 @@ class LazyFileAccessor(DataAccessor):
                 if fpath in loaded:
                     continue
                 r = pattern.parse(fpath)
+                print(f"r: {r}")
                 if r is None:
                     continue
                 for k, vs in labels.items():
@@ -173,6 +176,7 @@ class LazyFileAccessor(DataAccessor):
                     elif not len(vs):
                         continue
                     label = r.named.get(k, None)
+                    print(f"label: {label}")
                     if label is None:
                         continue
                     if k in self.schema.__fields__:
