@@ -151,39 +151,53 @@ class LazyFileAccessor(DataAccessor):
             print(f"fs.protocol: {fs.protocol}")
             print(f"Original protocol: {original_protocol}")
             print(f"Glob pattern: {glob_patttern}")
-            print(f"File paths: {fpaths}")
+            # print(f"File paths: {fpaths}")
     
-            pattern = path.replace(f"{original_protocol}://", "")
-            pattern = parse.compile(self.glob_to_format(pattern))
-    
-            # More debug prints
+            pattern_str = self.glob_to_format(path.replace(f"{original_protocol}://", ""))
+            print(f"Format string for parser (FULL): {pattern_str}")
+            pattern = parse.compile(pattern_str)
             print(f"Parse pattern: {pattern}")
-    
+            
             loaded = set(ignore_paths)
-    
+            print(f"Loaded (ignore_paths): {loaded}")
+            
             for fpath in fpaths:
                 if fpath in loaded:
+                    print(f"  Skipping {fpath} (in ignore_paths)")
                     continue
+                    
                 r = pattern.parse(fpath)
                 print(f"r: {r}")
                 if r is None:
+                    print(f"  Pattern did not match for: {fpath}")
                     continue
+                print(f"  Pattern matched: {r.named}")
+                
                 for k, vs in labels.items():
+                    print('labels.items(): ', k, vs)
                     if vs is None:
+                        print(f"    Skipping label {k} (value is None)")
                         continue
                     if not isinstance(vs, list):
                         vs = [vs]
                     elif not len(vs):
+                        print(f"    Skipping label {k} (empty list)")
                         continue
+                        
+                    print(f"label: {k}")
                     label = r.named.get(k, None)
                     print(f"label: {label}")
                     if label is None:
+                        print(f"    Label {k} not found in parsed result")
                         continue
+                        
                     if k in self.schema.__fields__:
                         index = self.schema.index_for(k)
                         label = index.validate_label(label)
                         vs = [index.validate_label(v) for v in vs]
+                        
                     if label not in vs:
+                        print(f"    Label value {label} for key {k} not in {vs}")
                         break
                 else:
                     records = read_files(fpath, protocol=original_protocol, **fs.storage_options)
