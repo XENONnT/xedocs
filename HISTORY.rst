@@ -1,6 +1,11 @@
 =======
 History
 =======
+0.2.40 (2025-04-28)
+------------------
+* Updates utils.py by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/162
+* Peak reconstruction bias schema by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/163
+
 0.2.39 (2025-04-19)
 ------------------
 * Fix iter path records by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/160
