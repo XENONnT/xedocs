@@ -1,7 +1,7 @@
 =======
 History
 =======
-0.2.40 (2025-04-28)
+0.2.41 (2025-04-28)
 ------------------
 * Updates utils.py by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/162
 * Peak reconstruction bias schema by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/163
