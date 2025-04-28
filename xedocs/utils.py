@@ -132,62 +132,88 @@ class LazyFileAccessor(DataAccessor):
         return path.replace("*", "{}")
 
     def iter_path_records(self, ignore_paths=(), **labels):
+        print('urlpaths: ', self.urlpaths)
+        print('labels: ', labels)
         for path in self.urlpaths:
-            glob_patttern = self.format_to_glob(path)
-            fs, _, fpaths = fsspec.get_fs_token_paths(glob_patttern, storage_options=self.storage_options)
-
+            glob_pattern = self.format_to_glob(path)
+            fs, _, fpaths = fsspec.get_fs_token_paths(glob_pattern, storage_options=self.storage_options)
+    
             # Always define original_protocol
             original_protocol = fs.protocol if fs.protocol else 'file'
             if isinstance(original_protocol, tuple):
                 original_protocol = original_protocol[0]
-            else:
-                original_protocol = original_protocol
-
+    
             # Debug prints
-            # print(f"\n[DEBUG]")
-            # print(f"Processing path: {path}")
-            # print(f"fs.protocol: {fs.protocol}")
-            # print(f"Original protocol: {original_protocol}")
-            # print(f"Glob pattern: {glob_patttern}")
+            print(f"\n[DEBUG]")
+            print(f"Processing path: {path}")
+            print(f"fs.protocol: {fs.protocol}")
+            print(f"Original protocol: {original_protocol}")
+            # print(f"Glob pattern: {glob_pattern}")
             # print(f"File paths: {fpaths}")
     
-            pattern = path.replace(f"{original_protocol}://", "")
-            pattern = parse.compile(self.glob_to_format(pattern))
+            pattern_str = self.glob_to_format(path.replace(f"{original_protocol}://", ""))
+            print(f"Format string for parser (FULL): {pattern_str}")
+            pattern = parse.compile(pattern_str)
     
             # More debug prints
-            # print(f"Parse pattern: {pattern}")
+            print(f"Parse pattern: {pattern}")
     
             loaded = set(ignore_paths)
-    
+            print(f"Loaded (ignore_paths): {loaded}")
+            
             for fpath in fpaths:
+                print(f"\n[DEBUG] Checking file path: {fpath}")
                 if fpath in loaded:
+                    print(f"  Skipping {fpath} (in ignore_paths)")
                     continue
+                    
                 r = pattern.parse(fpath)
+                print('r: ', r)
                 if r is None:
+                    print(f"  Pattern did not match for: {fpath}")
                     continue
+                print(f"  Pattern matched: {r.named}")
+    
+                skip_due_to_labels = False
                 for k, vs in labels.items():
+                    print('labels.items(): ', k, vs)
                     if vs is None:
+                        print(f"    Skipping label {k} (value is None)")
                         continue
                     if not isinstance(vs, list):
                         vs = [vs]
                     elif not len(vs):
+                        print(f"    Skipping label {k} (empty list)")
                         continue
+
+                    print('k: ', k)
                     label = r.named.get(k, None)
+                    print('labels: ', label)
                     if label is None:
-                        continue
+                        print(f"    Label {k} not found in parsed result")
+                        skip_due_to_labels = True
+                        break
+    
                     if k in self.schema.__fields__:
                         index = self.schema.index_for(k)
                         label = index.validate_label(label)
                         vs = [index.validate_label(v) for v in vs]
+    
                     if label not in vs:
+                        print(f"    Label value {label} for key {k} not in {vs}")
+                        skip_due_to_labels = True
                         break
-                else:
-                    records = read_files(fpath, protocol=original_protocol, **fs.storage_options)
-                    yield fpath, records
-                    self.loaded.add(fpath)
-
+    
+                if skip_due_to_labels:
+                    continue
+    
+                print(f"  Loading records for: {fpath}")
+                records = read_files(fpath, protocol=original_protocol, **fs.storage_options)
+                yield fpath, records
+                self.loaded.add(fpath)
 
     def load_files(self, **labels):
+        print('labels: ', labels)
         index_fields = list(self.schema.get_index_fields())
         if len(index_fields) == 1:
             index_fields = index_fields[0]
