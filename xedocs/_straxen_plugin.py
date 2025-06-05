@@ -16,7 +16,9 @@ def get_accessor(name, db=None, **kwargs):
     if len(db_kwargs):
         db_key = db_key + tuple(sorted(db_kwargs.items()))
     if db_key not in DB_CACHE:
-        DB_CACHE[db_key] = db_func(**db_kwargs)
+        PATH_TO_REPO = '/home/ravindran/corrections'
+        db = xedocs.local_folder(PATH_TO_REPO)
+        DB_CACHE[db_key] = db
     db = DB_CACHE[db_key]
     if name not in db:
         raise KeyError(f"{db_key} database has no such collection: {name}")
