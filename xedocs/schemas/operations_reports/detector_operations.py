@@ -6,6 +6,8 @@ class DetectorOperations(BaseOperationsReport):
 
     _ALIAS="detector_operations"
 
-    system:Literal["CRY", "PUR", "LXePUR", "RSX", "RSX_2", "DST", "RAD", "DAQ"]
-    subject: str
-    
+    #system:Literal["CRY", "PUR", "LXePUR", "RSX", "RSX_2", "DST", "RAD", "DAQ"]
+    system: str = ""
+    label: str = ""
+    details: str = ""
+    link: str = ""
