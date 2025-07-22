@@ -3,7 +3,7 @@ History
 =======
 0.2.42 (2025-07-22)
 ------------------
-* Updates utils.py by @LutzAlthueser in https://github.com/XENONnT/xedocs/pull/167
+* Updates detector_operation schema by @LutzAlthueser in https://github.com/XENONnT/xedocs/pull/167
 
 0.2.41 (2025-04-28)
 ------------------
