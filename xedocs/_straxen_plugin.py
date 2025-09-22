@@ -16,7 +16,7 @@ def get_accessor(name, db=None, **kwargs):
     if len(db_kwargs):
         db_key = db_key + tuple(sorted(db_kwargs.items()))
     if db_key not in DB_CACHE:
-        PATH_TO_REPO = '/home/ravindran/corrections'
+        PATH_TO_REPO = '/home/ravindran/corrections'  # Change this to your path
         db = xedocs.local_folder(PATH_TO_REPO)
         DB_CACHE[db_key] = db
     db = DB_CACHE[db_key]
