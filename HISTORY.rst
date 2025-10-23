@@ -1,6 +1,10 @@
 =======
 History
 =======
+0.2.43 (2025-08-12)
+------------------
+* rel CY by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/171
+
 0.2.42 (2025-07-22)
 ------------------
 * Updates detector_operation schema by @LutzAlthueser in https://github.com/XENONnT/xedocs/pull/167
