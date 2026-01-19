@@ -574,6 +574,20 @@ files = [
 markers = {main = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
+name = "commentjson"
+version = "0.9.0"
+description = "Add Python and JavaScript style comments in your JSON files."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "commentjson-0.9.0.tar.gz", hash = "sha256:42f9f231d97d93aff3286a4dc0de39bfd91ae823d1d9eba9fa901fe0c7113dd4"},
+]
+
+[package.dependencies]
+lark-parser = ">=0.7.1,<0.8.0"
+
+[[package]]
 name = "coverage"
 version = "7.4.1"
 description = "Code coverage measurement for Python"
@@ -1375,6 +1389,17 @@ sphinx = ">=4"
 [package.extras]
 dev = ["hatch"]
 docs = ["jupyterlite-xeus-python (>=0.9.0,<0.10.0)", "myst-parser", "pydata-sphinx-theme"]
+
+[[package]]
+name = "lark-parser"
+version = "0.7.8"
+description = "a modern parsing library"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "lark-parser-0.7.8.tar.gz", hash = "sha256:26215ebb157e6fb2ee74319aa4445b9f3b7e456e26be215ce19fdaaa901c20a4"},
+]
 
 [[package]]
 name = "loguru"
@@ -2852,6 +2877,18 @@ objc = ["pyobjc-framework-Cocoa"]
 win32 = ["pywin32"]
 
 [[package]]
+name = "simple-slurm"
+version = "0.3.6"
+description = "A simple Python wrapper for Slurm with flexibility in mind."
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "simple_slurm-0.3.6-py3-none-any.whl", hash = "sha256:d40bcca57cce034d7765a132c38c1c90ae6219f02e2ddae8d64b57c4e8256a1f"},
+    {file = "simple_slurm-0.3.6.tar.gz", hash = "sha256:0f88cac96b39d7d7e34c5a124919cebb41eb8a8ef2ff4fb65c363d940ff8551e"},
+]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -3350,6 +3387,27 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
+name = "utilix"
+version = "0.12.0"
+description = "User-friendly interface to various utilities for XENON users"
+optional = false
+python-versions = "<3.13,>=3.8"
+groups = ["main"]
+files = [
+    {file = "utilix-0.12.0-py3-none-any.whl", hash = "sha256:b2c5175bf72fd588ece7b920394f427d46af091f02a3857bffe11905b07e7c6f"},
+    {file = "utilix-0.12.0.tar.gz", hash = "sha256:d82899f0ac6822c613aae0ad8f7a09bbb6b168e89556ead3d859e0349e69739b"},
+]
+
+[package.dependencies]
+commentjson = "*"
+pandas = "*"
+pydantic = ">=1.10,<2.0"
+pymongo = "*"
+requests = "*"
+simple_slurm = "*"
+tqdm = "*"
+
+[[package]]
 name = "virtualenv"
 version = "20.25.0"
 description = "Virtual Python Environment builder"
@@ -3486,4 +3544,4 @@ db = ["pymongo"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.13"
-content-hash = "1eb7e41ddfa811fd49924fe4312169c30d0508e227735ef658798fc7e45330ae"
+content-hash = "595d11133f6b6dcd89a052d61390bffd198a2789e9be63fb318d2e2e4df78d0e"
