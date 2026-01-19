@@ -57,6 +57,8 @@ autodoc-pydantic = "*"
 jupyterlite-sphinx = "*"
 sphinxext-rediraffe = "*"
 pymongo = "*"
+utilix = "*"
+
 
 [tool.poetry.scripts]
 xedocs = 'xedocs.cli:main'
