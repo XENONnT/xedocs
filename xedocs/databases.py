@@ -5,13 +5,15 @@ from .data_locations.corrections_repo import CorrectionsRepo
 from .data_locations.api import XedocsApi
 from .data_locations.data_folder import DataFolder
 from .data_locations.sqlite_corrections import SQLiteCorrections
-
-from utilix.sqlite_backend import SQLiteConfig, _load_sqlite_config
+import utilix
 
 def straxen_db():
     # Check if sqlite is active
-    sqlite_cfg = _load_sqlite_config()
-    sqlite_active = sqlite_cfg.sqlite_active()
+    if hasattr(utilix, "sqlite_backend"):
+        sqlite_cfg = utilix.sqlite_backend._load_sqlite_config()
+        sqlite_active = sqlite_cfg.sqlite_active()
+    else:
+        sqlite_active = False
 
     if not sqlite_active:
         # Proceed with the normal MongoDB backend
@@ -21,7 +23,7 @@ def straxen_db():
         return Database(accessors)
     else:
         # Proceed with the local sqlite corrections backend
-        db = SQLiteCorrections(sqlite_path=sqlite_cfg.xedocs_sqlite_path)
+        db = utilix.sqlite_backend.SQLiteCorrections(sqlite_path=sqlite_cfg.xedocs_sqlite_path)
         return db.get_datasets()
 
 
