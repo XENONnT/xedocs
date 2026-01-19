@@ -3,6 +3,7 @@ import appdirs
 import logging
 import pandas as pd
 from rframe.types import TimeInterval
+from utilix import xent_collection
 
 from .xenon_config import XenonConfig
 
@@ -124,7 +125,8 @@ class Settings(BaseSettings):
         return client[collection]
 
     def xent_collection(self, collection="runs", **kwargs):
-        return self._mongo_collection("xent", collection, **kwargs)
+        # Let's use the utilix version of xent_collection here
+        return xent_collection(collection=collection, **kwargs)
 
     def xe1t_collection(self, collection="runs_new", **kwargs):
         return self._mongo_collection("xe1t", collection, **kwargs)
