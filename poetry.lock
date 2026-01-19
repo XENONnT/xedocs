@@ -3544,4 +3544,4 @@ db = ["pymongo"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.13"
-content-hash = "595d11133f6b6dcd89a052d61390bffd198a2789e9be63fb318d2e2e4df78d0e"
+content-hash = "e4e83a8813334b64edff2032a0eb68f1c1fa2868901f5564662b8e55b92793fb"
