@@ -2684,14 +2684,14 @@ files = [
 
 [[package]]
 name = "rframe"
-version = "0.2.23"
+version = "0.2.25"
 description = "Top-level package for rframe."
 optional = false
 python-versions = "<3.13,>=3.9"
 groups = ["main"]
 files = [
-    {file = "rframe-0.2.23-py3-none-any.whl", hash = "sha256:2a4938eafbe462e024238efef202f64f7efb9091f3c44b02feff05e8bf600f94"},
-    {file = "rframe-0.2.23.tar.gz", hash = "sha256:8e06fd3ed494d93ae1a88f83c40cb9ae6171ef59ff20ff627b1b6049946baba2"},
+    {file = "rframe-0.2.25-py3-none-any.whl", hash = "sha256:3eed1de773221840ed2bc2306f059a2acded95533f2dfd5e5e14b3cfa53e8717"},
+    {file = "rframe-0.2.25.tar.gz", hash = "sha256:81d157a024cf020042704f6d9b87a4c91627574a5a6918cb1282bd22aa6d333c"},
 ]
 
 [package.dependencies]
@@ -2699,10 +2699,10 @@ fsspec = ">=2025.2.0,<2026.0.0"
 jsonschema = ">=4.23.0,<5.0.0"
 loguru = ">=0.7.3,<0.8.0"
 makefun = ">=1.15.6,<2.0.0"
-pandas = "*"
+pandas = "<3.0"
 plum-dispatch = "2.5.7"
 pydantic = "<2.0"
-requests = ">=2.32.3,<3.0.0"
+requests = ">=2.31.0,<3.0.0"
 toolz = ">=1.0.0,<2.0.0"
 yapf = "0.43.0"
 
@@ -3486,4 +3486,4 @@ db = ["pymongo"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.13"
-content-hash = "1eb7e41ddfa811fd49924fe4312169c30d0508e227735ef658798fc7e45330ae"
+content-hash = "6b9a94ac20c7f0e215a92909ffa6bbd5898661acafd0d4cf4dafc85a1ca829a5"
