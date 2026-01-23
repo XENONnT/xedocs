@@ -1,6 +1,9 @@
 =======
 History
 =======
+0.2.44 (2026-01-23)
+------------------
+
 0.2.43 (2025-08-12)
 ------------------
 * rel CY by @GiovanniVolta in https://github.com/XENONnT/xedocs/pull/171
