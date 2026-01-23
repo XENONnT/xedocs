@@ -23,7 +23,7 @@ packages = [
 python = ">=3.9,<3.13"
 click = "*"
 rich = "*"
-rframe = "^0.2.23"
+rframe = "^0.2.25"
 pymongo = {version = "*", optional = true}
 appdirs = "^1.4.4"
 tinydb = "^4.8.2"
