@@ -82,6 +82,8 @@ class MongoDB(BaseSettings):
     @classmethod
     def from_utilix(cls, **kwargs):
         from utilix import uconfig
+        if uconfig is None:
+            return cls(**kwargs)
         host = uconfig.get('RunDB', 'xent_url')
         username = uconfig.get('RunDB', 'xent_user')
         password = uconfig.get('RunDB', 'xent_password')
