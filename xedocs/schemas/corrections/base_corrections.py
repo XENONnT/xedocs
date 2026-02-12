@@ -119,8 +119,8 @@ class TimeIntervalCorrection(BaseCorrectionSchema):
             run_id = values.pop("run_id")
             try:
                 values["time"] = settings.run_id_to_interval(run_id)
-            except Exception as e:
-                raise ValueError(f"Failed to convert run_id {run_id} to time interval: {e}") from e
+            except:
+                values["time"] = run_id
         return values
 
     @classmethod
@@ -246,11 +246,11 @@ class TimeSampledCorrection(BaseCorrectionSchema):
     @root_validator(pre=True)
     def run_id_to_time(cls, values):
         if "run_id" in values:
-            run_id = values.pop("run_id")
             try:
+                run_id = values.pop("run_id")
                 values["time"] = settings.run_id_to_time(run_id)
-            except Exception as e:
-                raise ValueError(f"Failed to convert run_id {run_id} to time: {e}") from e
+            except:
+                values["time"] = run_id
         return values
 
     @classmethod
