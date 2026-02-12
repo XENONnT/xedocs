@@ -59,15 +59,29 @@ class Settings(BaseSettings):
 
     def run_id_to_time(self, run_id):
         doc = self.run_doc(run_id)
-        # use center time of run
-        time = doc["start"] + (doc["end"] - doc["start"]) / 2
+        start = doc["start"]
+        end = doc.get("end", None)
+    
+        # Run still ongoing
+        if end is None:
+            time = start
+        else:
+            time = start + (end - start) / 2
+    
         return self.clock.normalize_tz(time)
-
+    
+    
     def run_id_to_interval(self, run_id):
         doc = self.run_doc(run_id)
-        start = self.clock.normalize_tz(doc["start"]+pd.Timedelta("1s"))
-        end = self.clock.normalize_tz(doc["end"]-pd.Timedelta("1s"))
-        
+        start = self.clock.normalize_tz(doc["start"] + pd.Timedelta("1s"))
+    
+        end_raw = doc.get("end", None)
+        if end_raw is None:
+            # ongoing run: interval up to "now"
+            end = self.clock.normalize_tz(pd.Timestamp.utcnow())
+        else:
+            end = self.clock.normalize_tz(end_raw - pd.Timedelta("1s"))
+    
         return TimeInterval(left=start, right=end)
 
     def extract_time(self, kwargs):
