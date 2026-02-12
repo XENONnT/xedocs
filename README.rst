@@ -109,6 +109,101 @@ If you cloned the corrections gitub repo to a local folder, this database can be
     ...
 
 
+Offline SQLite Backend
+----------------------
+
+For working without network connectivity (e.g., on compute nodes, while traveling, or during database outages), 
+xedocs supports an **offline SQLite backend** for corrections data. This allows you to continue analysis work 
+with local database copies.
+
+Setup Offline Mode
+~~~~~~~~~~~~~~~~~~
+
+1. **Generate SQLite files** using the utilix dump script (requires MongoDB access):
+
+.. code-block:: bash
+
+    # Create dump specification
+    cat > dump_spec.txt << EOF
+    xenonnt:runs
+    files:GRIDFS
+    xedocs:ALL
+    corrections:ALL
+    EOF
+
+    # Run the dump
+    python -m utilix.mongo_to_sqlite \
+        --spec dump_spec.txt \
+        --rundb-out /path/to/rundb.sqlite \
+        --xedocs-out /path/to/xedocs.sqlite
+
+2. **Configure environment variables**:
+
+.. code-block:: bash
+
+    export RUNDB_SQLITE_PATH="/path/to/rundb.sqlite"
+    export XEDOCS_SQLITE_PATH="/path/to/xedocs.sqlite"
+    # Optional:
+    export OFFLINE_DEBUG="1"
+
+3. **Use xedocs normally** - offline mode activates automatically:
+
+.. code-block:: python
+
+    import xedocs
+
+    # Automatically uses SQLite if configured, MongoDB otherwise
+    db = xedocs.straxen_db()
+    
+    docs = db.pmt_area_to_pes.find_docs(
+        version='v1', 
+        pmt=[1,2,3], 
+        run_id=25000,  # run_id lookup works offline too
+        detector='tpc'
+    )
+
+Offline Features
+~~~~~~~~~~~~~~~~
+
+The offline SQLite backend supports:
+
+- ✅ Time-sampled corrections (e.g., ``pmt_area_to_pes``) with interpolation
+- ✅ Time-interval corrections (e.g., ``fax_configs``) 
+- ✅ List-style queries (``as_list=True``, ``sort='pmt'``)
+- ✅ Run ID to time/interval conversion via utilix
+- ✅ Context configs and all xedocs collections
+- ✅ GridFS file access for configuration files
+
+The backend automatically:
+
+- Interpolates numeric values between time samples
+- Selects appropriate time intervals for run IDs  
+- Returns the latest correction per PMT for multi-PMT queries
+- Falls back to MongoDB if SQLite files are unavailable
+
+Limitations
+~~~~~~~~~~~
+
+- ⚠️ Read-only (no writes to SQLite)
+- ⚠️ Static snapshot (won't reflect new MongoDB data)
+- ⚠️ Both SQLite files (rundb + xedocs) must be present to activate
+
+Updating Your Offline Database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Re-run the dump script periodically to refresh your local copy:
+
+.. code-block:: bash
+
+    python -m utilix.mongo_to_sqlite \
+        --spec dump_spec.txt \
+        --rundb-out /path/to/rundb.sqlite \
+        --xedocs-out /path/to/xedocs.sqlite \
+        --overwrite
+
+See the utilix documentation for more details on the offline backend.
+
+
 Read data from alternative data sources specified by path, 
 e.g csv files which will be loaded by pandas.
 
