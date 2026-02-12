@@ -44,6 +44,6 @@ class BaseOperationsReport(XeDoc):
             run_id = values.pop("run_id")
             try:
                 values["time"] = settings.run_id_to_interval(run_id)
-            except:
-                values["time"] = run_id
+            except Exception as e:
+                raise ValueError(f"Failed to convert run_id {run_id} to time interval: {e}") from e
         return values
