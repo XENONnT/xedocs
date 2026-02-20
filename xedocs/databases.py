@@ -23,7 +23,7 @@ def straxen_db():
         return Database(accessors)
     else:
         # Proceed with the local sqlite corrections backend
-        db = utilix.sqlite_backend.SQLiteCorrections(sqlite_path=sqlite_cfg.xedocs_sqlite_path)
+        db = SQLiteCorrections(sqlite_path=sqlite_cfg.xedocs_sqlite_path)
         return db.get_datasets()
 
 
