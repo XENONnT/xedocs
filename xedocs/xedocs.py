@@ -188,15 +188,15 @@ def default_datasource_for(schema):
     return accessor.storage
 
 
-def get_api_client(schema):
-    from .databases import xedocs_api
-    schema = find_schema(schema)
-    if not issubclass(schema, XeDoc):
-        raise TypeError(
-            "Schema must be a subclass of XeDoc" "or the name of a known schema."
-        )
-    db = xedocs_api()
-    return db[schema._ALIAS]
+# def get_api_client(schema):
+#     from .databases import xedocs_api
+#     schema = find_schema(schema)
+#     if not issubclass(schema, XeDoc):
+#         raise TypeError(
+#             "Schema must be a subclass of XeDoc" "or the name of a known schema."
+#         )
+#     db = xedocs_api()
+#     return db[schema._ALIAS]
 
 
 def sync_dbs(from_db, to_db, schemas=None, dry=False):
