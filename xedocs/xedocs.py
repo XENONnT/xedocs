@@ -187,7 +187,11 @@ def default_datasource_for(schema):
     accessor = get_accessor(schema)
     return accessor.storage
 
-
+# =====================================================================
+# DEPRECATED: Leftover from the xeauth package.
+# Disabled while severing the API dependency. 
+# TODO: Remove completely in a future cleanup.
+# =====================================================================
 # def get_api_client(schema):
 #     from .databases import xedocs_api
 #     schema = find_schema(schema)
