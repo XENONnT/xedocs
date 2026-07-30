@@ -11,7 +11,6 @@ classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Developers",
   "Natural Language :: English",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
@@ -30,10 +29,8 @@ Homepage = "https://github.com/XENONnT/xedocs"
 
 [project.optional-dependencies]
 db = ["pymongo"]
-github = ["xeauth>=0.2.3"]
 all = [
   "pymongo",
-  "xeauth>=0.2.3",
 ]
 
 [project.scripts]
