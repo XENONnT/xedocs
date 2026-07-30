@@ -1,40 +1,52 @@
-[tool]
-[tool.poetry]
+[project]
 name = "xedocs"
 version = "0.2.44"
-homepage = "https://github.com/XENONnT/xedocs"
 description = "Top-level package for xedocs."
-authors = ["Yossi Mosbacher <joe.mosbacher@gmail.com>"]
 readme = "README.rst"
-classifiers=[
-    'Development Status :: 2 - Pre-Alpha',
-    'Intended Audience :: Developers',
-    'Natural Language :: English',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
+requires-python = ">=3.11,<3.13"
+authors = [
+  { name = "Yossi Mosbacher", email = "joe.mosbacher@gmail.com" },
 ]
-packages = [
-    { include = "xedocs" },
-    { include = "tests", format = "sdist" },
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "click",
+  "rich",
+  "rframe>=0.2.25",
+  "appdirs>=1.4.4",
+  "tqdm>=4.67.1",
+  "pyyaml>=6",
+  "parse>=1.20.2",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-click = "*"
-rich = "*"
-rframe = "^0.2.25"
-pymongo = {version = "*", optional = true}
-appdirs = "^1.4.4"
-tinydb = "^4.8.2"
-tqdm = "^4.67.1"
-xeauth = "^0.2.3"
-pyyaml = "^6.0"
-parse = "^1.20.2"
+[project.urls]
+Homepage = "https://github.com/XENONnT/xedocs"
 
-[tool.poetry.extras]
+[project.optional-dependencies]
 db = ["pymongo"]
-all = ["db"]
+github = ["xeauth>=0.2.3"]
+all = [
+  "pymongo",
+  "xeauth>=0.2.3",
+]
+
+[project.scripts]
+xedocs = "xedocs.cli:main"
+
+[project.entry-points.straxen]
+xedocs_protocol = "xedocs._straxen_plugin"
+
+[tool.poetry]
+packages = [
+  { include = "xedocs" },
+  { include = "tests", format = "sdist" },
+]
 
 [tool.poetry.group.dev.dependencies]
 bumpversion = "*"
@@ -47,7 +59,6 @@ sphinx = "*"
 tox = "*"
 yapf = "*"
 sphinx-material = "*"
-nbsphinx = "*"
 invoke = "*"
 black = "*"
 pytest-cov = "*"
@@ -57,21 +68,12 @@ jupyterlite-sphinx = "*"
 sphinxext-rediraffe = "*"
 pymongo = "*"
 
-[tool.poetry.scripts]
-xedocs = 'xedocs.cli:main'
-
-[tool.poetry.plugins]
-[tool.poetry.plugins."straxen"]
-"xedocs_protocol" = "xedocs._straxen_plugin"
-
 [build-system]
-requires = ["poetry-core>=1.8.3", "setuptools"]
+requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.dephell.main]
-versioning = "semver"
-from = {format = "poetry", path = "pyproject.toml"}
-to = {format = "setuppy", path = "setup.py"}
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.poe.tasks]
 test   = "pytest --cov=xedocs"

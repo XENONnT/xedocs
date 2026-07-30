@@ -23,6 +23,7 @@ files = [
     {file = "anyio-4.2.0-py3-none-any.whl", hash = "sha256:745843b39e829e108e518c489b31dc757de7d2131d53fac32bd8df268227bfee"},
     {file = "anyio-4.2.0.tar.gz", hash = "sha256:e1875bb4b4e2de1669f4bc7869b6d3f54231cdced71605e6e64c9be77e3be50f"},
 ]
+markers = {main = "extra == \"github\" or extra == \"all\""}
 
 [package.dependencies]
 exceptiongroup = {version = ">=1.0.2", markers = "python_version < \"3.11\""}
@@ -752,11 +753,11 @@ description = "Backport of PEP 654 (exception groups)"
 optional = false
 python-versions = ">=3.7"
 groups = ["main", "dev"]
-markers = "python_version < \"3.11\""
 files = [
     {file = "exceptiongroup-1.2.0-py3-none-any.whl", hash = "sha256:4bfd3996ac73b41e9b9628b04e079f193850720ea5945fc96a08633c66912f14"},
     {file = "exceptiongroup-1.2.0.tar.gz", hash = "sha256:91f5c769735f051a4290d52edd0858999b57e5876e9f85937691bd4c9fa3ed68"},
 ]
+markers = {main = "python_version < \"3.11\" and (extra == \"github\" or extra == \"all\")", dev = "python_version < \"3.11\""}
 
 [package.extras]
 test = ["pytest (>=6)"]
@@ -866,9 +867,10 @@ tqdm = ["tqdm"]
 name = "gnupg"
 version = "2.3.1"
 description = "A Python wrapper for GnuPG"
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
+markers = "extra == \"github\" or extra == \"all\""
 files = [
     {file = "gnupg-2.3.1.tar.gz", hash = "sha256:8db5a05c369dbc231dab4c98515ce828f2dffdc14f1534441a6c59b71c6d2031"},
 ]
@@ -883,9 +885,10 @@ docs = ["Sphinx (>=1.1)", "sphinxcontrib-fulltoc (==1.0)"]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
-optional = false
+optional = true
 python-versions = ">=3.7"
 groups = ["main"]
+markers = "extra == \"github\" or extra == \"all\""
 files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
@@ -895,9 +898,10 @@ files = [
 name = "httpcore"
 version = "0.17.3"
 description = "A minimal low-level HTTP client."
-optional = false
+optional = true
 python-versions = ">=3.7"
 groups = ["main"]
+markers = "extra == \"github\" or extra == \"all\""
 files = [
     {file = "httpcore-0.17.3-py3-none-any.whl", hash = "sha256:c2789b767ddddfa2a5782e3199b2b7f6894540b17b16ec26b2c4d8e103510b87"},
     {file = "httpcore-0.17.3.tar.gz", hash = "sha256:a6f30213335e34c1ade7be6ec7c47f19f50c56db36abef1a9dfa3815b1cb3888"},
@@ -917,9 +921,10 @@ socks = ["socksio (==1.*)"]
 name = "httpx"
 version = "0.24.1"
 description = "The next generation HTTP client."
-optional = false
+optional = true
 python-versions = ">=3.7"
 groups = ["main"]
+markers = "extra == \"github\" or extra == \"all\""
 files = [
     {file = "httpx-0.24.1-py3-none-any.whl", hash = "sha256:06781eb9ac53cde990577af654bd990a4949de37a28bdb4a230d434f3a30b9bd"},
     {file = "httpx-0.24.1.tar.gz", hash = "sha256:5853a43053df830c20f8110c5e69fe44d035d850b2dfe795e196f00fdb774bdd"},
@@ -1171,7 +1176,6 @@ files = [
 ]
 
 [package.dependencies]
-importlib-metadata = {version = ">=4.8.3", markers = "python_version < \"3.10\""}
 jupyter-core = ">=4.12,<5.0.dev0 || >=5.1.dev0"
 python-dateutil = ">=2.8.2"
 pyzmq = ">=23.0"
@@ -1312,7 +1316,6 @@ files = [
 
 [package.dependencies]
 babel = ">=2.10"
-importlib-metadata = {version = ">=4.8.3", markers = "python_version < \"3.10\""}
 jinja2 = ">=3.0.3"
 json5 = ">=0.9.0"
 jsonschema = ">=4.18.0"
@@ -1339,7 +1342,6 @@ files = [
 
 [package.dependencies]
 doit = ">=0.34,<1"
-importlib-metadata = {version = ">=3.6", markers = "python_version < \"3.10\""}
 jupyter-core = ">=4.7"
 
 [package.extras]
@@ -1683,7 +1685,6 @@ files = [
 beautifulsoup4 = "*"
 bleach = "!=5.0.0"
 defusedxml = "*"
-importlib-metadata = {version = ">=3.6", markers = "python_version < \"3.10\""}
 jinja2 = ">=3.0"
 jupyter-core = ">=4.7"
 jupyterlab-pygments = "*"
@@ -1727,26 +1728,6 @@ traitlets = ">=5.1"
 [package.extras]
 docs = ["myst-parser", "pydata-sphinx-theme", "sphinx", "sphinxcontrib-github-alt", "sphinxcontrib-spelling"]
 test = ["pep440", "pre-commit", "pytest", "testpath"]
-
-[[package]]
-name = "nbsphinx"
-version = "0.9.3"
-description = "Jupyter Notebook Tools for Sphinx"
-optional = false
-python-versions = ">=3.6"
-groups = ["dev"]
-files = [
-    {file = "nbsphinx-0.9.3-py3-none-any.whl", hash = "sha256:6e805e9627f4a358bd5720d5cbf8bf48853989c79af557afd91a5f22e163029f"},
-    {file = "nbsphinx-0.9.3.tar.gz", hash = "sha256:ec339c8691b688f8676104a367a4b8cf3ea01fd089dc28d24dec22d563b11562"},
-]
-
-[package.dependencies]
-docutils = "*"
-jinja2 = "*"
-nbconvert = "!=5.4"
-nbformat = "*"
-sphinx = ">=1.8"
-traitlets = ">=5"
 
 [[package]]
 name = "numpy"
@@ -1855,7 +1836,6 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.20.3", markers = "python_version < \"3.10\""},
     {version = ">=1.21.0", markers = "python_version >= \"3.10\" and python_version < \"3.11\""},
     {version = ">=1.23.2", markers = "python_version >= \"3.11\""},
 ]
@@ -1902,9 +1882,10 @@ files = [
 name = "param"
 version = "1.13.0"
 description = "Make your Python code clearer and more reliable by declaring Parameters."
-optional = false
+optional = true
 python-versions = ">=2.7"
 groups = ["main"]
+markers = "extra == \"github\" or extra == \"all\""
 files = [
     {file = "param-1.13.0-py2.py3-none-any.whl", hash = "sha256:a2e3b7b07ca7dd1adaa4fb3020a3ef4fe434f27ede453a9d94194c5155677e30"},
     {file = "param-1.13.0.tar.gz", hash = "sha256:59d55048d42a85e148a69837df42bd11c3391d47fad15ba57d118e145f001ef2"},
@@ -2010,9 +1991,10 @@ twisted = ["twisted"]
 name = "psutil"
 version = "5.9.8"
 description = "Cross-platform lib for process and system monitoring in Python."
-optional = false
+optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 groups = ["main"]
+markers = "extra == \"github\" or extra == \"all\""
 files = [
     {file = "psutil-5.9.8-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:26bd09967ae00920df88e0352a91cff1a78f8d69b3ecabbfe733610c0af486c8"},
     {file = "psutil-5.9.8-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:05806de88103b25903dff19bb6692bd2e714ccf9e668d050d144012055cbca73"},
@@ -2178,7 +2160,6 @@ mccabe = ">=0.6,<0.8"
 platformdirs = ">=2.2.0"
 tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 tomlkit = ">=0.10.1"
-typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 spelling = ["pyenchant (>=3.2,<4.0)"]
@@ -2415,7 +2396,7 @@ description = "Python for Window Extensions"
 optional = false
 python-versions = "*"
 groups = ["dev"]
-markers = "sys_platform == \"win32\" and platform_python_implementation != \"PyPy\""
+markers = "platform_python_implementation != \"PyPy\" and sys_platform == \"win32\""
 files = [
     {file = "pywin32-306-cp310-cp310-win32.whl", hash = "sha256:06d3420a5155ba65f0b72f2699b5bacf3109f36acbe8923765c22938a69dfc8d"},
     {file = "pywin32-306-cp310-cp310-win_amd64.whl", hash = "sha256:84f4471dbca1887ea3803d8848a1616429ac94a4a8d05f4bc9c5dcfd42ca99c8"},
@@ -2874,6 +2855,7 @@ files = [
     {file = "sniffio-1.3.0-py3-none-any.whl", hash = "sha256:eecefdce1e5bbfb7ad2eeaabf7c1eeb404d7757c379bd1f7e5cce9d8bf425384"},
     {file = "sniffio-1.3.0.tar.gz", hash = "sha256:e60305c5e5d314f5389259b7f22aaa33d8f7dee49763119234af3755c55b9101"},
 ]
+markers = {main = "extra == \"github\" or extra == \"all\""}
 
 [[package]]
 name = "snowballstemmer"
@@ -2929,7 +2911,6 @@ babel = ">=2.9"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 docutils = ">=0.18.1,<0.21"
 imagesize = ">=1.3"
-importlib-metadata = {version = ">=4.8", markers = "python_version < \"3.10\""}
 Jinja2 = ">=3.0"
 packaging = ">=21.0"
 Pygments = ">=2.13"
@@ -3131,18 +3112,6 @@ webencodings = ">=0.4"
 [package.extras]
 doc = ["sphinx", "sphinx_rtd_theme"]
 test = ["flake8", "isort", "pytest"]
-
-[[package]]
-name = "tinydb"
-version = "4.8.2"
-description = "TinyDB is a tiny, document oriented database optimized for your happiness :)"
-optional = false
-python-versions = "<4.0,>=3.8"
-groups = ["main"]
-files = [
-    {file = "tinydb-4.8.2-py3-none-any.whl", hash = "sha256:f97030ee5cbc91eeadd1d7af07ab0e48ceb04aa63d4a983adbaca4cba16e86c3"},
-    {file = "tinydb-4.8.2.tar.gz", hash = "sha256:f7dfc39b8d7fda7a1ca62a8dbb449ffd340a117c1206b68c50b1a481fb95181d"},
-]
 
 [[package]]
 name = "tomli"
@@ -3431,9 +3400,10 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 name = "xeauth"
 version = "0.2.3"
 description = "Top-level package for xeauth."
-optional = false
+optional = true
 python-versions = ">=3.7,<4"
 groups = ["main"]
+markers = "extra == \"github\" or extra == \"all\""
 files = [
     {file = "xeauth-0.2.3-py3-none-any.whl", hash = "sha256:aa4a4643a109113bd0e122dd0ae3f462e4e05e19eb55a914fbbbbdc9ec559626"},
     {file = "xeauth-0.2.3.tar.gz", hash = "sha256:5f46b3803102a54bcfdbf72ec6088b3ae0eb893aa43b79cccf792ba06a447725"},
@@ -3480,10 +3450,11 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.link
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
 
 [extras]
-all = []
+all = ["pymongo", "xeauth"]
 db = ["pymongo"]
+github = ["xeauth"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.9,<3.13"
-content-hash = "6b9a94ac20c7f0e215a92909ffa6bbd5898661acafd0d4cf4dafc85a1ca829a5"
+python-versions = ">=3.10,<3.13"
+content-hash = "47fbd882a884b5eb3a467f87b6f10d5da0630833ef27aadf0e1265f6d12240c9"

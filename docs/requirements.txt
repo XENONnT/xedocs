@@ -1,9 +1,7 @@
 xedocs
 utilix
 pandas
-numpydoc
 sphinx
 sphinx-material
-nbsphinx
 autodoc-pydantic
 jupyterlite-sphinx
