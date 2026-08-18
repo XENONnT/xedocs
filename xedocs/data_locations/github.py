@@ -1,4 +1,8 @@
-
+# =====================================================================
+# DEPRECATED: Leftover from the xeauth package.
+# Disabled while severing the API dependency. 
+# TODO: Remove completely in a future cleanup.
+# =====================================================================
 import os
 import fsspec
 from pydantic import BaseSettings, root_validator

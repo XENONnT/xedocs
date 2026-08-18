@@ -1,3 +1,9 @@
+# =====================================================================
+# DEPRECATED: Leftover from the xeauth package.
+# Disabled while severing the API dependency. 
+# TODO: Remove completely in a future cleanup.
+# =====================================================================
+
 import rframe
 import requests
 from pydantic import BaseSettings
