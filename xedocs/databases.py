@@ -2,6 +2,8 @@ from .utils import Database
 from .xedocs import schemas_by_category, all_schemas
 from .data_locations.mongodb import MongoDB
 from .data_locations.data_folder import DataFolder
+from .data_locations.sqlite_corrections import SQLiteCorrections
+import utilix
 
 # =====================================================================
 # DEPRECATED: Leftover from the xeauth package.
@@ -12,10 +14,23 @@ from .data_locations.data_folder import DataFolder
 # from .data_locations.api import XedocsApi
 
 def straxen_db():
-    schemas = all_schemas()
-    db = MongoDB.from_utilix()
-    accessors = {name: db.data_accessor(schema) for name, schema in schemas.items()}
-    return Database(accessors)
+    # Check if sqlite is active
+    if hasattr(utilix, "sqlite_backend"):
+        sqlite_cfg = utilix.sqlite_backend._load_sqlite_config()
+        sqlite_active = sqlite_cfg.sqlite_active()
+    else:
+        sqlite_active = False
+
+    if not sqlite_active:
+        # Proceed with the normal MongoDB backend
+        schemas = all_schemas()
+        db = MongoDB.from_utilix()
+        accessors = {name: db.data_accessor(schema) for name, schema in schemas.items()}
+        return Database(accessors)
+    else:
+        # Proceed with the local sqlite corrections backend
+        db = SQLiteCorrections(sqlite_path=sqlite_cfg.xedocs_sqlite_path)
+        return db.get_datasets()
 
 
 def corrections_db():

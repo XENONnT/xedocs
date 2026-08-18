@@ -574,6 +574,20 @@ files = [
 markers = {main = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
+name = "commentjson"
+version = "0.9.0"
+description = "Add Python and JavaScript style comments in your JSON files."
+optional = false
+python-versions = "*"
+groups = ["main", "dev"]
+files = [
+    {file = "commentjson-0.9.0.tar.gz", hash = "sha256:42f9f231d97d93aff3286a4dc0de39bfd91ae823d1d9eba9fa901fe0c7113dd4"},
+]
+
+[package.dependencies]
+lark-parser = ">=0.7.1,<0.8.0"
+
+[[package]]
 name = "coverage"
 version = "7.4.1"
 description = "Code coverage measurement for Python"
@@ -1302,6 +1316,17 @@ dev = ["hatch"]
 docs = ["jupyterlite-xeus-python (>=0.9.0,<0.10.0)", "myst-parser", "pydata-sphinx-theme"]
 
 [[package]]
+name = "lark-parser"
+version = "0.7.8"
+description = "a modern parsing library"
+optional = false
+python-versions = "*"
+groups = ["main", "dev"]
+files = [
+    {file = "lark-parser-0.7.8.tar.gz", hash = "sha256:26215ebb157e6fb2ee74319aa4445b9f3b7e456e26be215ce19fdaaa901c20a4"},
+]
+
+[[package]]
 name = "loguru"
 version = "0.7.3"
 description = "Python logging made (stupidly) simple"
@@ -1679,7 +1704,7 @@ version = "1.26.4"
 description = "Fundamental package for array computing in Python"
 optional = false
 python-versions = ">=3.9"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "numpy-1.26.4-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:9ff0f4f29c51e2803569d7a51c2304de5554655a60c5d776e35b4a41413830d0"},
     {file = "numpy-1.26.4-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:2e4ee3380d6de9c9ec04745830fd9e2eccb3e6cf790d39d7b98ffd19b0dd754a"},
@@ -1749,7 +1774,7 @@ version = "2.0.3"
 description = "Powerful data structures for data analysis, time series, and statistics"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pandas-2.0.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e4c7c9f27a4185304c7caf96dc7d91bc60bc162221152de697c98eb0b2648dd8"},
     {file = "pandas-2.0.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:f167beed68918d62bffb6ec64f2e1d8a7d297a038f86d4aed056b9493fca407f"},
@@ -2281,7 +2306,7 @@ version = "2024.1"
 description = "World timezone definitions, modern and historical"
 optional = false
 python-versions = "*"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "pytz-2024.1-py2.py3-none-any.whl", hash = "sha256:328171f4e3623139da4983451950b28e95ac706e13f3f2630a879749e7a8b319"},
     {file = "pytz-2024.1.tar.gz", hash = "sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812"},
@@ -2731,6 +2756,18 @@ objc = ["pyobjc-framework-Cocoa"]
 win32 = ["pywin32"]
 
 [[package]]
+name = "simple-slurm"
+version = "0.3.6"
+description = "A simple Python wrapper for Slurm with flexibility in mind."
+optional = false
+python-versions = ">=3.6"
+groups = ["main", "dev"]
+files = [
+    {file = "simple_slurm-0.3.6-py3-none-any.whl", hash = "sha256:d40bcca57cce034d7765a132c38c1c90ae6219f02e2ddae8d64b57c4e8256a1f"},
+    {file = "simple_slurm-0.3.6.tar.gz", hash = "sha256:0f88cac96b39d7d7e34c5a124919cebb41eb8a8ef2ff4fb65c363d940ff8551e"},
+]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -3115,7 +3152,7 @@ version = "4.67.1"
 description = "Fast, Extensible Progress Meter"
 optional = false
 python-versions = ">=3.7"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2"},
     {file = "tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2"},
@@ -3177,7 +3214,7 @@ version = "2024.1"
 description = "Provider of IANA time zone data"
 optional = false
 python-versions = ">=2"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
     {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
@@ -3227,6 +3264,27 @@ brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
 h2 = ["h2 (>=4,<5)"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
+
+[[package]]
+name = "utilix"
+version = "0.12.0"
+description = "User-friendly interface to various utilities for XENON users"
+optional = false
+python-versions = "<3.13,>=3.8"
+groups = ["main", "dev"]
+files = [
+    {file = "utilix-0.12.0-py3-none-any.whl", hash = "sha256:b2c5175bf72fd588ece7b920394f427d46af091f02a3857bffe11905b07e7c6f"},
+    {file = "utilix-0.12.0.tar.gz", hash = "sha256:d82899f0ac6822c613aae0ad8f7a09bbb6b168e89556ead3d859e0349e69739b"},
+]
+
+[package.dependencies]
+commentjson = "*"
+pandas = "*"
+pydantic = ">=1.10,<2.0"
+pymongo = "*"
+requests = "*"
+simple_slurm = "*"
+tqdm = "*"
 
 [[package]]
 name = "virtualenv"
@@ -3345,4 +3403,4 @@ db = ["pymongo"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.13"
-content-hash = "92310ea611a4f5354d587147ccec720e49e4d36122665c070acfd12f2cf2b5dc"
+content-hash = "be638d805381e5e9b163b9ce05d8dae1caea3d99ae55dc92d7936db27f4669e3"

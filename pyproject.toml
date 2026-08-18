@@ -30,6 +30,7 @@ tinydb = "^4.8.2"
 tqdm = "^4.67.1"
 pyyaml = "^6.0"
 parse = "^1.20.2"
+utilix = "*"
 
 [tool.poetry.extras]
 db = ["pymongo"]
@@ -55,6 +56,8 @@ autodoc-pydantic = "*"
 jupyterlite-sphinx = "*"
 sphinxext-rediraffe = "*"
 pymongo = "*"
+utilix = "*"
+
 
 [tool.poetry.scripts]
 xedocs = 'xedocs.cli:main'
