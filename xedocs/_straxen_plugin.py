@@ -51,7 +51,7 @@ def xedocs_protocol(
 
     if not docs:
         raise KeyError(
-            f"No matching documents found for {name}. "
+            f"No matching documents found for {name} with kwargs: {kwargs}."
             "It is possible that there is no corresponding data."
         )
 
