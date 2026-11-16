@@ -134,8 +134,7 @@ Setup Offline Mode
     # Run the dump
     python -m utilix.mongo_to_sqlite \
         --spec dump_spec.txt \
-        --rundb-out /path/to/rundb.sqlite \
-        --xedocs-out /path/to/xedocs.sqlite
+        --out /path/to/sqlite
 
 2. **Configure environment variables**:
 
