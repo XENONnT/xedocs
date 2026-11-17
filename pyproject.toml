@@ -65,6 +65,8 @@ jupyterlite-sphinx = "*"
 jupyterlite-pyodide-kernel = "*"
 sphinxext-rediraffe = "*"
 pymongo = "*"
+utilix = "*"
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0"]
