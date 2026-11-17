@@ -51,3 +51,4 @@ dependencies:
     - sphinx-material
     - autodoc-pydantic
     - jupyterlite-sphinx
+    - jupyterlite-pyodide-kernel

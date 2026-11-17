@@ -62,6 +62,7 @@ pytest-cov = "*"
 hypothesis = "*"
 autodoc-pydantic = "*"
 jupyterlite-sphinx = "*"
+jupyterlite-pyodide-kernel = "*"
 sphinxext-rediraffe = "*"
 pymongo = "*"
 
