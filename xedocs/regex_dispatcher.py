@@ -29,7 +29,7 @@ def normalize(r):
 
 
 class RegexDispatcher(object):
-    """
+    r"""
     Regular Expression Dispatcher
 
     >>> f = RegexDispatcher('f')
